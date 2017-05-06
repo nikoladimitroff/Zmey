@@ -1,9 +1,11 @@
 #pragma once
 
+#include <Zmey/Config.h>
+
 namespace Zmey
 {
 
-class EngineLoop
+class ZMEY_API EngineLoop
 {
 public:
 	EngineLoop();
