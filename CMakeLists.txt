@@ -3,12 +3,16 @@ project(Zmey CXX)
 
 # Zmey
 set(ZmeyHeaders
-    "include/Zmey/Allocator.h"
     "include/Zmey/Config.h"
+    "include/Zmey/EngineLoop.h"
     "include/Zmey/LogHandler.h"
-    "Source/Memory/DefaultAllocator.h"
-    "Source/Memory/LinearAllocator.h"
-    "Source/Memory/STLAllocator.h"
+    "include/Zmey/Logging.h"
+    "include/Zmey/Memory/Allocator.h"
+    "include/Zmey/Memory/LinearAllocator.h"
+    "include/Zmey/Memory/MemoryManagement.h"
+    "include/Zmey/Memory/STLAllocator.h"
+    "include/Zmey/Tasks/BlockingQueue.h"
+    "include/Zmey/Tasks/TaskSystem.h"
 )
 
 set(ZmeySource
@@ -17,7 +21,7 @@ set(ZmeySource
     "Source/Memory/MemoryManagement.cpp"
 )
 
-add_library(Zmey ${ZmeySource})
+add_library(Zmey ${ZmeyHeaders} ${ZmeySource})
 target_include_directories(Zmey PUBLIC "include")
 
 # Gift of the sanctum
