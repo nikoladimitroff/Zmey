@@ -23,8 +23,11 @@ set(ZmeySource
 	"Source/Modules.cpp"
 )
 
+set(ThirdPartyHeadersDirectory "ThirdParty")
+
 add_library(Zmey ${ZmeyHeaders} ${ZmeySource})
 target_include_directories(Zmey PUBLIC "include")
+target_include_directories(Zmey PUBLIC ${ThirdPartyHeadersDirectory})
 
 # Gift of the sanctum
 set(GSHeaders "")
@@ -35,4 +38,5 @@ set(GSSource
 
 add_executable(GiftOfTheSanctum ${GSSource})
 target_include_directories(GiftOfTheSanctum PUBLIC "include")
+target_include_directories(GiftOfTheSanctum PUBLIC ${ThirdPartyHeadersDirectory})
 target_link_libraries(GiftOfTheSanctum Zmey)
