@@ -18,6 +18,7 @@ extern Zmey::ILogHandler* GLogHandler;
 #define FORMAT_LOG(Severity, Message, ...) \
 	do \
 	{ \
+		auto scope = TempAllocator::GetTlsAllocator().ScopeNow(); \
 		tmp::string buffer(sizeof(Message) * 2, '\0'); \
 		sprintf_s(&buffer[0], sizeof(Message) * 2, Message, __VA_ARGS__); \
 		GLogHandler->WriteLog(Zmey::LogSeverity::##Severity, buffer.c_str()); \

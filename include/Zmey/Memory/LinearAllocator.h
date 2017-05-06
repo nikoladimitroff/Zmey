@@ -33,10 +33,10 @@ public:
 
 	inline void Reset(void* ptr)
 	{
-		m_Marker = ptr;
+		m_Marker = reinterpret_cast<char*>(ptr);
 	}
 
-	// Used to reset 
+	// Used to reset
 	struct Scope
 	{
 		Scope(LinearAllocator* allocator)
@@ -45,9 +45,15 @@ public:
 		{}
 		Scope(const Scope&) = delete;
 		Scope& operator=(const Scope&) = delete;
+		Scope(Scope&& other)
+			: m_Allocator(other.m_Allocator)
+			, m_Marker(other.m_Marker)
+		{
+			other.m_Marker = m_Allocator->GetMarker();
+		}
 		~Scope()
 		{
-			allocator->Reset(m_Marker);
+			m_Allocator->Reset(m_Marker);
 		}
 	private:
 		LinearAllocator* m_Allocator;
@@ -55,7 +61,7 @@ public:
 	};
 	inline Scope ScopeNow()
 	{
-		return Scope(this);
+		return std::move(Scope(this));
 	}
 private:
 	char m_Buffer[Bytes];

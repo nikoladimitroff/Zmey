@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include <array>
 
 #include <Zmey/Memory/Allocator.h>
 #include "StlAllocator.h"
@@ -32,6 +33,11 @@ namespace Zmey
 	T* StaticAlloc()
 	{
 		return new (GStaticDataAllocator.Malloc(sizeof(T), alignof(T))) T();
+	}
+	template<typename T>
+	T* StaticAllocArray(unsigned count)
+	{
+		return new (GStaticDataAllocator.Malloc(count * sizeof(T), alignof(T))) T[count];
 	}
 
 	constexpr size_t tls_TempAllocatorSize = 4 * 1024 * 1024; // 4MB
