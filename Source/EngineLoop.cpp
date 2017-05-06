@@ -5,6 +5,7 @@
 #include <Zmey/Memory/Allocator.h>
 #include <Zmey/Memory/MemoryManagement.h>
 #include <Zmey/Logging.h>
+#include <Zmey/Tasks/TaskSystem.h>
 
 namespace Zmey
 {
@@ -58,9 +59,17 @@ EngineLoop::EngineLoop()
 }
 void EngineLoop::Run()
 {
+	TaskSystem<4> taskSystem;
+	auto lambda = []()
+	{
+		FORMAT_LOG(Info, "from thread %d", std::this_thread::get_id());
+	};
 	while (1)
 	{
-		LOG(Info, "HEEEY");
+		taskSystem.SpawnTask("Log", lambda);
+		taskSystem.SpawnTask("Log", lambda);
+		taskSystem.SpawnTask("Log", lambda);
+		taskSystem.SpawnTask("Log", lambda);
 	}
 }
 EngineLoop::~EngineLoop()
