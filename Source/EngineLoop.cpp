@@ -63,6 +63,11 @@ void EngineLoop::Run()
 	// TODO(alex): get this params from somewhere
 	auto windowHandle = Modules::Platform->SpawnWindow(1280, 720, "Zmey");
 
+	if (!Modules::Renderer->CreateWindowSurface(windowHandle))
+	{
+		return;
+	}
+
 	auto lambda = []()
 	{
 		FORMAT_LOG(Info, "from thread %d", std::this_thread::get_id());
@@ -75,6 +80,9 @@ void EngineLoop::Run()
 		Modules::TaskSystem->SpawnTask("Log", lambda);
 		Modules::TaskSystem->SpawnTask("Log", lambda);
 		Modules::TaskSystem->SpawnTask("Log", lambda);
+
+		float clearColor[] = {1.0f, 0.0f, 0.0f, 1.0f};
+		Modules::Renderer->ClearBackbufferSurface(clearColor);
 	}
 
 	Modules::Platform->KillWindow(windowHandle);

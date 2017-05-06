@@ -28,7 +28,7 @@ inline void ZmeyFree(void* ptr)
 	GAllocator->Free(ptr);
 }
 
-extern Zmey::StaticDataAllocator<1024> GStaticDataAllocator;
+extern Zmey::StaticDataAllocator<1024 * 2> GStaticDataAllocator;
 template<typename T>
 inline T* StaticAlloc()
 {
