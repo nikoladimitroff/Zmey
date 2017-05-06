@@ -8,6 +8,11 @@
 
 namespace Zmey
 {
+namespace Modules
+{
+void Initialize();
+}
+
 struct Task
 {
 public:
@@ -82,13 +87,15 @@ private:
 template<unsigned ThreadCount>
 class TaskSystem
 {
-public:
+private:
+	// Singleton
 	TaskSystem::TaskSystem()
 		: m_Workers(reinterpret_cast<WorkerThread*>(m_ThreadBuffer))
 	{
 		SpawnThreads();
 	}
 
+public:
 	TaskSystem::~TaskSystem()
 	{
 		for (int i = 0; i < ThreadCount; ++i)
@@ -102,6 +109,9 @@ public:
 	{
 		m_TaskQueue.Enqueue(stl::make_unique<SimpleTask<Functor>>(name, f));
 	}
+	// Make StaticAlloc a friend so that the system can be initialized
+	template<typename T>
+	friend T* StaticAlloc();
 
 private:
 	WorkerThread* m_Workers;

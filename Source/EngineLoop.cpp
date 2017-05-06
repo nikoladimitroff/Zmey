@@ -5,7 +5,7 @@
 #include <Zmey/Memory/Allocator.h>
 #include <Zmey/Memory/MemoryManagement.h>
 #include <Zmey/Logging.h>
-#include <Zmey/Tasks/TaskSystem.h>
+#include <Zmey/Modules.h>
 
 namespace Zmey
 {
@@ -56,20 +56,20 @@ EngineLoop::EngineLoop()
 {
 	Zmey::GAllocator = StaticAlloc<MallocAllocator>();
 	Zmey::GLogHandler = StaticAlloc<StdOutLogHandler>();
+	Zmey::Modules::Initialize();
 }
 void EngineLoop::Run()
 {
-	TaskSystem<4> taskSystem;
 	auto lambda = []()
 	{
 		FORMAT_LOG(Info, "from thread %d", std::this_thread::get_id());
 	};
 	while (1)
 	{
-		taskSystem.SpawnTask("Log", lambda);
-		taskSystem.SpawnTask("Log", lambda);
-		taskSystem.SpawnTask("Log", lambda);
-		taskSystem.SpawnTask("Log", lambda);
+		Modules::TaskSystem->SpawnTask("Log", lambda);
+		Modules::TaskSystem->SpawnTask("Log", lambda);
+		Modules::TaskSystem->SpawnTask("Log", lambda);
+		Modules::TaskSystem->SpawnTask("Log", lambda);
 	}
 }
 EngineLoop::~EngineLoop()

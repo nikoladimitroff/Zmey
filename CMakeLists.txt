@@ -11,6 +11,7 @@ set(ZmeyHeaders
     "include/Zmey/Memory/LinearAllocator.h"
     "include/Zmey/Memory/MemoryManagement.h"
     "include/Zmey/Memory/STLAllocator.h"
+    "include/Zmey/Modules.h"
     "include/Zmey/Tasks/BlockingQueue.h"
     "include/Zmey/Tasks/TaskSystem.h"
 )
@@ -19,6 +20,7 @@ set(ZmeySource
     "Source/EngineLoop.cpp"
     "Source/Logging.cpp"
     "Source/Memory/MemoryManagement.cpp"
+	"Source/Modules.cpp"
 )
 
 add_library(Zmey ${ZmeyHeaders} ${ZmeySource})
