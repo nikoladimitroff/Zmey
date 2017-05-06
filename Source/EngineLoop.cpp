@@ -67,15 +67,17 @@ void EngineLoop::Run()
 	{
 		FORMAT_LOG(Info, "from thread %d", std::this_thread::get_id());
 	};
-	while (1)
+	while (g_Run)
 	{
+		Modules::Platform->PumpMessages(windowHandle);
+
 		Modules::TaskSystem->SpawnTask("Log", lambda);
 		Modules::TaskSystem->SpawnTask("Log", lambda);
 		Modules::TaskSystem->SpawnTask("Log", lambda);
 		Modules::TaskSystem->SpawnTask("Log", lambda);
 	}
 
-	Modules::Platform->DestroyWindow(windowHandle);
+	Modules::Platform->KillWindow(windowHandle);
 }
 
 EngineLoop::~EngineLoop()
