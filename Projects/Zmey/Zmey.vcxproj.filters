@@ -1,71 +1,86 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
+    <Filter Include="Source">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Header Files">
+    <Filter Include="Source\Memory">
+      <UniqueIdentifier>{20aa6eea-4df0-42dd-81a4-5e5319c0071c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Platform">
+      <UniqueIdentifier>{c655c366-ccd2-4906-be25-b742c453d087}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
     </Filter>
-    <Filter Include="Header Files\Memory">
+    <Filter Include="include\Memory">
       <UniqueIdentifier>{68e40dfd-8c59-4055-9bd6-98cd9687bdee}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\Tasks">
+    <Filter Include="include\Tasks">
       <UniqueIdentifier>{ce5efd5e-8d37-4fbe-8abe-44bc8e7e78ad}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Memory">
-      <UniqueIdentifier>{20aa6eea-4df0-42dd-81a4-5e5319c0071c}</UniqueIdentifier>
+    <Filter Include="include\Platform">
+      <UniqueIdentifier>{153a696c-2b63-4f6f-87ab-7cd902b771da}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\Zmey\Config.h">
-      <Filter>Header Files</Filter>
+      <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\Zmey\EngineLoop.h">
-      <Filter>Header Files</Filter>
+      <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\Zmey\Logging.h">
-      <Filter>Header Files</Filter>
+      <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\Zmey\LogHandler.h">
-      <Filter>Header Files</Filter>
+      <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\Zmey\Modules.h">
-      <Filter>Header Files</Filter>
+      <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\Zmey\Memory\Allocator.h">
-      <Filter>Header Files\Memory</Filter>
+      <Filter>include\Memory</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\Zmey\Memory\LinearAllocator.h">
-      <Filter>Header Files\Memory</Filter>
+      <Filter>include\Memory</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\Zmey\Memory\MemoryManagement.h">
-      <Filter>Header Files\Memory</Filter>
+      <Filter>include\Memory</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\Zmey\Memory\StlAllocator.h">
-      <Filter>Header Files\Memory</Filter>
+      <Filter>include\Memory</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\Zmey\Tasks\BlockingQueue.h">
-      <Filter>Header Files\Tasks</Filter>
+      <Filter>include\Tasks</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\Zmey\Tasks\TaskSystem.h">
-      <Filter>Header Files\Tasks</Filter>
+      <Filter>include\Tasks</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Platform\Platform.h">
+      <Filter>include\Platform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Platform\WindowsPlatform.h">
+      <Filter>Source\Memory</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\EngineLoop.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Logging.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Modules.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Memory\MemoryManagement.cpp">
-      <Filter>Source Files\Memory</Filter>
+      <Filter>Source\Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Platform\WindowsPlatform.cpp">
+      <Filter>Source\Platform</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

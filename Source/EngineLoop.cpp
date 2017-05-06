@@ -60,6 +60,9 @@ EngineLoop::EngineLoop()
 }
 void EngineLoop::Run()
 {
+	// TODO(alex): get this params from somewhere
+	auto windowHandle = Modules::Platform->SpawnWindow(1280, 720, "Zmey");
+
 	auto lambda = []()
 	{
 		FORMAT_LOG(Info, "from thread %d", std::this_thread::get_id());
@@ -71,7 +74,10 @@ void EngineLoop::Run()
 		Modules::TaskSystem->SpawnTask("Log", lambda);
 		Modules::TaskSystem->SpawnTask("Log", lambda);
 	}
+
+	Modules::Platform->DestroyWindow(windowHandle);
 }
+
 EngineLoop::~EngineLoop()
 {}
 
