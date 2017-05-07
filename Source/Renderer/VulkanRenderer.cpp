@@ -560,7 +560,7 @@ void VulkanRenderer::ClearBackbufferSurface(float color[4])
 	vkCmdPipelineBarrier(m_CommandBuffer, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0, 0, nullptr, 0, nullptr, 1, &presentToClearBarrier);
 
 	VkClearColorValue colorValue;
-	memcpy(colorValue.float32, color, sizeof(color));
+	memcpy(colorValue.float32, color, sizeof(float) * 4);
 	vkCmdClearColorImage(m_CommandBuffer, m_SwapChainImages[imageIndex], VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, &colorValue, 1, &subResourceRange);
 
 	vkCmdPipelineBarrier(m_CommandBuffer, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, 0, 0, nullptr, 0, nullptr, 1, &clearToPresentBarrier);
