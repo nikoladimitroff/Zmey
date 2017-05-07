@@ -10,6 +10,7 @@ namespace Modules
 Zmey::TaskSystem<4>* TaskSystem;
 Zmey::IPlatform* Platform;
 Zmey::IRenderer* Renderer;
+Zmey::ResourceLoader* ResourceLoader;
 
 void Initialize()
 {
@@ -17,6 +18,8 @@ void Initialize()
 
 	Platform = StaticAlloc<Zmey::WindowsPlatform>();
 	Renderer = StaticAlloc<Zmey::Renderer::VulkanRenderer>();
+
+	ResourceLoader = StaticAlloc<Zmey::ResourceLoader>();
 }
 }
 }
