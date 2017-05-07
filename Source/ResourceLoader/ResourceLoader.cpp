@@ -36,12 +36,13 @@ ResourceLoader::~ResourceLoader()
 void OnResourceLoaded(ResourceLoader* loader, ResourceId id, const aiScene* scene)
 {
 	loader->m_Meshes.push_back(std::make_pair(id, scene));
+	FORMAT_LOG(Info, ResourceLoader, "Just loaded asset for id: %d", id);
 }
 
 ResourceId ResourceLoader::LoadResource(const stl::string& path)
 {
 	auto id = m_NextId++;
-	Modules::TaskSystem->SpawnTask("Loading file", [&path, this, id]()
+	Modules::TaskSystem->SpawnTask("Loading file", [path, this, id]()
 	{
 		const aiScene* scene = aiImportFile(path.c_str(), aiPostProcessSteps::aiProcess_ValidateDataStructure);
 		OnResourceLoaded(this, id, scene);

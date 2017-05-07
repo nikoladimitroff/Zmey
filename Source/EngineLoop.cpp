@@ -72,6 +72,7 @@ void EngineLoop::Run()
 	{
 		FORMAT_LOG(Info, Temp, "from thread %d", std::this_thread::get_id());
 	};
+	auto id = Modules::ResourceLoader->LoadResource("Content\\Meshes\\Vampire_A_Lusth\\Vampire_A_Lusth.dae");
 	while (g_Run)
 	{
 		Modules::Platform->PumpMessages(windowHandle);
@@ -83,6 +84,11 @@ void EngineLoop::Run()
 
 		float clearColor[] = {1.0f, 0.0f, 0.0f, 1.0f};
 		Modules::Renderer->ClearBackbufferSurface(clearColor);
+		if (auto resource = Modules::ResourceLoader->As<aiScene>(id))
+		{
+			volatile int x;
+			x = 5;
+		}
 	}
 
 	Modules::Platform->KillWindow(windowHandle);

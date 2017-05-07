@@ -16,10 +16,11 @@ public:
 	template<typename T>
 	const T* As(ResourceId) const
 	{
-		static_assert("Not supported type");
+		ASSERT_FATAL(false && "Not supported type");
+		return nullptr;
 	}
 	template<>
-	const aiScene* As(ResourceId id) const
+	const aiScene* As<aiScene>(ResourceId id) const
 	{
 		auto it = std::find_if(m_Meshes.begin(), m_Meshes.end(), [id](const std::pair<ResourceId, const aiScene*>& meshData)
 		{
