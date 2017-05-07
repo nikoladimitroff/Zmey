@@ -22,7 +22,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{27824334-00A5-493D-94C8-25A013BBF4FB}</ProjectGuid>
     <RootNamespace>Zmey</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -71,11 +71,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)Build\$(Configuration)_$(Platform)\bin\</OutDir>
-    <IntDir>$(SolutionDir)Build\$(Configuration)_$(Platform)\obj\</IntDir>
+    <IntDir>$(SolutionDir)Build\$(Configuration)_$(Platform)\bin\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)Build\$(Configuration)_$(Platform)\bin\</OutDir>
-    <IntDir>$(SolutionDir)Build\$(Configuration)_$(Platform)\obj\</IntDir>
+    <IntDir>$(SolutionDir)Build\$(Configuration)_$(Platform)\bin\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)Build\$(Configuration)_$(Platform)\bin\</OutDir>
+    <IntDir>$(SolutionDir)Build\$(Configuration)_$(Platform)\bin\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)Build\$(Configuration)_$(Platform)\bin\</OutDir>
+    <IntDir>$(SolutionDir)Build\$(Configuration)_$(Platform)\bin\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
