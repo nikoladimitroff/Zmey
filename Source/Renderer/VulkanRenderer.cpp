@@ -260,7 +260,7 @@ bool VulkanRenderer::CreateWindowSurface(WindowHandle handle)
 
 		if (vkCreateInstance(&createInfo, nullptr, m_Instance.Replace()) != VK_SUCCESS)
 		{
-			LOG(Fatal, "Vulkan: failed to create instance");
+			LOG(Fatal, Vulkan, "Failed to create instance");
 			return false;
 		}
 	}
@@ -276,13 +276,13 @@ bool VulkanRenderer::CreateWindowSurface(WindowHandle handle)
 		auto func = (PFN_vkCreateDebugReportCallbackEXT)vkGetInstanceProcAddr(m_Instance, "vkCreateDebugReportCallbackEXT");
 		if (!func)
 		{
-			LOG(Fatal, "Vulkan: No vkCreateDebugReportCallbackEXT function");
+			LOG(Fatal, Vulkan, "No vkCreateDebugReportCallbackEXT function");
 			return false;
 		}
 
 		if (func(m_Instance, &createInfo, nullptr, m_Callback.Replace()) != VK_SUCCESS)
 		{
-			LOG(Fatal, "Vulkan: failed to set up vulkan debug callback");
+			LOG(Fatal, Vulkan, "Failed to set up vulkan debug callback");
 			return false;
 		}
 	}
@@ -297,7 +297,7 @@ bool VulkanRenderer::CreateWindowSurface(WindowHandle handle)
 
 		if (vkCreateWin32SurfaceKHR(m_Instance, &createInfo, nullptr, m_Surface.Replace()) != VK_SUCCESS)
 		{
-			LOG(Fatal, "Vulkan: failed to create win32 surface");
+			LOG(Fatal, Vulkan, "Failed to create win32 surface");
 			return false;
 		}
 	}
@@ -310,7 +310,7 @@ bool VulkanRenderer::CreateWindowSurface(WindowHandle handle)
 
 		if (deviceCount == 0)
 		{
-			LOG(Fatal, "Vulkan: failed to find GPU with Vulkan support");
+			LOG(Fatal, Vulkan, "Failed to find GPU with Vulkan support");
 			return false;
 		}
 
@@ -329,7 +329,7 @@ bool VulkanRenderer::CreateWindowSurface(WindowHandle handle)
 
 		if (m_PhysicalDevice == VK_NULL_HANDLE)
 		{
-			LOG(Fatal, "Vulkan: failed to find suitable GPU");
+			LOG(Fatal, Vulkan, "Failed to find suitable GPU");
 			return false;
 		}
 	}
@@ -380,7 +380,7 @@ bool VulkanRenderer::CreateWindowSurface(WindowHandle handle)
 
 		if (vkCreateDevice(m_PhysicalDevice, &createInfo, NULL, m_Device.Replace()) != VK_SUCCESS)
 		{
-			LOG(Fatal, "Vulkan: failed to create logical device");
+			LOG(Fatal, Vulkan, "Failed to create logical device");
 			return false;
 		}
 
@@ -438,7 +438,7 @@ bool VulkanRenderer::CreateWindowSurface(WindowHandle handle)
 		VkSwapchainKHR newSwapChain;
 		if (vkCreateSwapchainKHR(m_Device, &createInfo, nullptr, &newSwapChain) != VK_SUCCESS)
 		{
-			LOG(Fatal, "Vulkan: failed to create swap chain");
+			LOG(Fatal, Vulkan, "Failed to create swap chain");
 			return false;
 		}
 
@@ -463,7 +463,7 @@ bool VulkanRenderer::CreateWindowSurface(WindowHandle handle)
 
 		if (vkCreateCommandPool(m_Device, &poolInfo, nullptr, m_CommandPool.Replace()) != VK_SUCCESS)
 		{
-			LOG(Fatal, "Vulkan: failed to create command pool!");
+			LOG(Fatal, Vulkan, "Failed to create command pool!");
 			return false;
 		}
 	}
@@ -478,7 +478,7 @@ bool VulkanRenderer::CreateWindowSurface(WindowHandle handle)
 
 		if (vkAllocateCommandBuffers(m_Device, &allocInfo, &m_CommandBuffer) != VK_SUCCESS)
 		{
-			LOG(Fatal, "Vulkan: Cannot allocate command buffer");
+			LOG(Fatal, Vulkan, "Cannot allocate command buffer");
 			return false;
 		}
 	}
@@ -491,7 +491,7 @@ bool VulkanRenderer::CreateWindowSurface(WindowHandle handle)
 		if (vkCreateSemaphore(m_Device, &semaphoreInfo, nullptr, m_ImageAvailableSemaphore.Replace()) != VK_SUCCESS
 			|| vkCreateSemaphore(m_Device, &semaphoreInfo, nullptr, m_renderFinishedSemaphore.Replace()) != VK_SUCCESS)
 		{
-			LOG(Fatal, "Vulkan: failed to create semaphores!");
+			LOG(Fatal, Vulkan, "Failed to create semaphores!");
 			return false;
 		}
 	}
@@ -504,7 +504,7 @@ bool VulkanRenderer::CreateWindowSurface(WindowHandle handle)
 
 		if (vkCreateFence(m_Device, &createInfo, nullptr, m_LastFrameFinishedFence.Replace()))
 		{
-			LOG(Fatal, "Vulkan: failed to create fence");
+			LOG(Fatal, Vulkan, "Failed to create fence");
 			return false;
 		}
 	}
@@ -567,7 +567,7 @@ void VulkanRenderer::ClearBackbufferSurface(float color[4])
 
 	if (vkEndCommandBuffer(m_CommandBuffer) != VK_SUCCESS)
 	{
-		LOG(Fatal, "Vulkan: failed to record command buffer!");
+		LOG(Fatal, Vulkan, "Failed to record command buffer!");
 	}
 
 	VkSubmitInfo submitInfo = {};
@@ -587,7 +587,7 @@ void VulkanRenderer::ClearBackbufferSurface(float color[4])
 
 	if (vkQueueSubmit(m_GraphicsQueue, 1, &submitInfo, m_LastFrameFinishedFence) != VK_SUCCESS)
 	{
-		LOG(Fatal, "Vulkan: failed to submit draw command buffer!");
+		LOG(Fatal, Vulkan, "Failed to submit draw command buffer!");
 	}
 
 	VkPresentInfoKHR presentInfo = {};
@@ -604,7 +604,7 @@ void VulkanRenderer::ClearBackbufferSurface(float color[4])
 	result = vkQueuePresentKHR(m_PresentQueue, &presentInfo);
 	if (result != VK_SUCCESS)
 	{
-		LOG(Fatal, "Vulkan: failed to present swap chain image!");
+		LOG(Fatal, Vulkan, "Failed to present swap chain image!");
 	}
 
 	vkWaitForFences(m_Device, 1, &m_LastFrameFinishedFence, true, 160000000);

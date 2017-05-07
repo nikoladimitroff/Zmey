@@ -8,20 +8,20 @@ namespace Zmey
 extern Zmey::ILogHandler* GLogHandler;
 }
 
-#define LOG(Severity, Message) \
+#define LOG(Severity, Channel, Message) \
 	do \
 	{ \
-		GLogHandler->WriteLog(Zmey::LogSeverity::##Severity, Message); \
+		GLogHandler->WriteLog(Zmey::LogSeverity::##Severity, #Channel, Message); \
 	} \
 	while(0, 0)
 
-#define FORMAT_LOG(Severity, Message, ...) \
+#define FORMAT_LOG(Severity, Channel, Message, ...) \
 	do \
 	{ \
 		auto scope = TempAllocator::GetTlsAllocator().ScopeNow(); \
 		tmp::string buffer(sizeof(Message) * 2, '\0'); \
 		sprintf_s(&buffer[0], sizeof(Message) * 2, Message, __VA_ARGS__); \
-		GLogHandler->WriteLog(Zmey::LogSeverity::##Severity, buffer.c_str()); \
+		GLogHandler->WriteLog(Zmey::LogSeverity::##Severity, #Channel, buffer.c_str()); \
 	}\
 	while(0, 0)
 
@@ -39,7 +39,7 @@ inline void ForceCrash()
 	{ \
 		if (!(expression)) \
 		{ \
-			LOG(Error, "Assert failed: " #expression " at " __FILE__ ":" STRINGIFY_MACRO(__LINE__)); \
+			LOG(Error, Assert, "Assert failed: " #expression " at " __FILE__ ":" STRINGIFY_MACRO(__LINE__)); \
 			return; \
 		} \
 	} while(0, 0)
@@ -49,7 +49,7 @@ inline void ForceCrash()
 	{ \
 		if (!(expression)) \
 		{ \
-			LOG(Error, "Assert failed: " #expression " at " __FILE__ ":" STRINGIFY_MACRO(__LINE__)); \
+			LOG(Error, Assert, "Assert failed: " #expression " at " __FILE__ ":" STRINGIFY_MACRO(__LINE__)); \
 			return defaultValue; \
 		} \
 	} while(0, 0)
@@ -59,7 +59,7 @@ inline void ForceCrash()
 	{ \
 		if (!(expression)) \
 		{ \
-			LOG(Fatal, "Fatal assert failed: " #expression " at " __FILE__ ":" STRINGIFY_MACRO(__LINE__)); \
+			LOG(Fatal, Assert, "Fatal assert failed: " #expression " at " __FILE__ ":" STRINGIFY_MACRO(__LINE__)); \
 			ForceCrash(); \
 		} \
 	} while(0, 0)

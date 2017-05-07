@@ -46,9 +46,9 @@ private:
 	}
 
 public:
-	virtual void WriteLog(LogSeverity severity, const char* message)
+	virtual void WriteLog(LogSeverity severity, const char* channel, const char* message)
 	{
-		printf("Zmey [%s]: %s\r\n", StringifySeverity(severity), message);
+		printf("%s [%s]: %s\r\n", channel, StringifySeverity(severity), message);
 	}
 };
 
@@ -70,7 +70,7 @@ void EngineLoop::Run()
 
 	auto lambda = []()
 	{
-		FORMAT_LOG(Info, "from thread %d", std::this_thread::get_id());
+		FORMAT_LOG(Info, Temp, "from thread %d", std::this_thread::get_id());
 	};
 	while (g_Run)
 	{

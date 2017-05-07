@@ -16,7 +16,7 @@ class ILogHandler
 {
 public:
 	virtual ~ILogHandler() {}
-	virtual void WriteLog(LogSeverity severity, const char* message) = 0;
+	virtual void WriteLog(LogSeverity severity, const char* channel, const char* message) = 0;
 };
 
 }
