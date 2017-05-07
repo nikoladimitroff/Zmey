@@ -30,6 +30,12 @@
     <Filter Include="Source\Renderer">
       <UniqueIdentifier>{5bec6814-93b9-4420-9d18-494d10907021}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\ResourceLoader">
+      <UniqueIdentifier>{7cddd9e1-96c0-4041-ba4d-acc2f7a481d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\ResourceLoader">
+      <UniqueIdentifier>{bb476c33-dd08-42bd-9abd-686d15a51b1c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\Zmey\Config.h">
@@ -80,6 +86,9 @@
     <ClInclude Include="..\..\Source\Renderer\VulkanHelpers.h">
       <Filter>Source\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\ResourceLoader\ResourceLoader.h">
+      <Filter>include\ResourceLoader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\EngineLoop.cpp">
@@ -99,6 +108,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\Renderer\VulkanRenderer.cpp">
       <Filter>Source\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\ResourceLoader\ResourceLoader.cpp">
+      <Filter>Source\ResourceLoader</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
