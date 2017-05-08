@@ -98,6 +98,12 @@
     <ClInclude Include="..\..\Source\Scripting\ChakraScriptEngine.h">
       <Filter>Source\Scripting</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Scripting\Tasks.h">
+      <Filter>Source\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Scripting\Binding.h">
+      <Filter>Source\Scripting</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\EngineLoop.cpp">
@@ -122,6 +128,12 @@
       <Filter>Source\ResourceLoader</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Scripting\ChakraScriptEngine.cpp">
+      <Filter>Source\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Scripting\Tasks.cpp">
+      <Filter>Source\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Scripting\Binding.cpp">
       <Filter>Source\Scripting</Filter>
     </ClCompile>
   </ItemGroup>

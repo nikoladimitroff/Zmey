@@ -56,9 +56,10 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)ThirdParty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>ZMEY_EXPORTS;_HAS_EXCEPTIONS=0;_DEBUG%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ZMEY_EXPORTS;_HAS_EXCEPTIONS=0;_CRT_SECURE_NO_WARNINGS;_DEBUG%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)ThirdParty\libx64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -79,9 +80,10 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)ThirdParty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>ZMEY_EXPORTS;_HAS_EXCEPTIONS=0;NDEBUG%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ZMEY_EXPORTS;_HAS_EXCEPTIONS=0;_CRT_SECURE_NO_WARNINGS;NDEBUG%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -115,7 +117,9 @@
     <ClInclude Include="..\..\Source\Platform\WindowsPlatform.h" />
     <ClInclude Include="..\..\Source\Renderer\VulkanHelpers.h" />
     <ClInclude Include="..\..\Source\Renderer\VulkanRenderer.h" />
+    <ClInclude Include="..\..\Source\Scripting\Binding.h" />
     <ClInclude Include="..\..\Source\Scripting\ChakraScriptEngine.h" />
+    <ClInclude Include="..\..\Source\Scripting\Tasks.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\EngineLoop.cpp" />
@@ -125,7 +129,9 @@
     <ClCompile Include="..\..\Source\Platform\WindowsPlatform.cpp" />
     <ClCompile Include="..\..\Source\Renderer\VulkanRenderer.cpp" />
     <ClCompile Include="..\..\Source\ResourceLoader\ResourceLoader.cpp" />
+    <ClCompile Include="..\..\Source\Scripting\Binding.cpp" />
     <ClCompile Include="..\..\Source\Scripting\ChakraScriptEngine.cpp" />
+    <ClCompile Include="..\..\Source\Scripting\Tasks.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
