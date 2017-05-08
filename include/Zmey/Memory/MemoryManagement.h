@@ -112,6 +112,7 @@ namespace tmp
 	template<typename T>
 	using small_vector = vector<T>;
 	using string = std::basic_string<char, std::char_traits<char>, StlAllocatorTemplate<TempAllocator, char>>;
+	using wstring = std::basic_string<wchar_t, std::char_traits<wchar_t>, StlAllocatorTemplate<TempAllocator, wchar_t>>;
 	using small_string = string;
 	template<typename T>
 	using unique_ptr = std::unique_ptr<T, TempDeleter<T>>;
@@ -203,6 +204,7 @@ namespace stl
 	template<typename T>
 	using deque = std::deque<T, StlAllocatorTemplate<DefaultAllocator, T>>;
 	using string = std::basic_string<char, std::char_traits<char>, StlAllocatorTemplate<DefaultAllocator, char>>;
+	using wstring = std::basic_string<wchar_t, std::char_traits<wchar_t>, StlAllocatorTemplate<DefaultAllocator, wchar_t>>;
 	using small_string = string;
 	template<typename T>
 	using unique_ptr = std::unique_ptr<T, StdDeleter<T>>;
