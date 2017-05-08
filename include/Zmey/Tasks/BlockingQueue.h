@@ -29,6 +29,12 @@ public:
 		m_Queue.pop_front();
 		return first;
 	}
+
+	unsigned Size() const
+	{
+		// TODO: do we need a lock here?
+		return static_cast<unsigned>(m_Queue.size());
+	}
 };
 
 }
