@@ -1,5 +1,6 @@
 #include <Zmey/ResourceLoader/ResourceLoader.h>
 
+#include <fstream>
 // Use the C interface as the CPP interface at let's us destroy the aiScene when we decide we want to
 // and is also thread-safe
 #include <assimp/cimport.h>
@@ -38,10 +39,34 @@ void OnResourceLoaded(ResourceLoader* loader, ResourceId id, const aiScene* scen
 	loader->m_Meshes.push_back(std::make_pair(id, scene));
 	FORMAT_LOG(Info, ResourceLoader, "Just loaded asset for id: %d", id);
 }
+void OnResourceLoaded(ResourceLoader* loader, ResourceId id, const tmp::string& text)
+{
+	loader->m_TextContents.push_back(std::make_pair(id, text.c_str()));
+	FORMAT_LOG(Info, ResourceLoader, "Just loaded asset for id: %d", id);
+}
+
+inline bool EndsWith(const stl::string& value, const stl::string&ending)
+{
+	if (ending.size() > value.size()) return false;
+	return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
+}
 
 ResourceId ResourceLoader::LoadResource(const stl::string& path)
 {
 	auto id = m_NextId++;
+	if (EndsWith(path, ".js"))
+	{
+		Modules::TaskSystem->SpawnTask("Loading file", [path, this, id]()
+		{
+			std::ifstream stream(path.c_str());
+			stream.seekg(0, std::ios::end);
+			size_t size = stream.tellg();
+			tmp::string buffer(size, '\0');
+			stream.seekg(0);
+			stream.read(&buffer[0], size);
+			OnResourceLoaded(this, id, buffer);
+		});
+	}
 	Modules::TaskSystem->SpawnTask("Loading file", [path, this, id]()
 	{
 		const aiScene* scene = aiImportFile(path.c_str(), aiPostProcessSteps::aiProcess_ValidateDataStructure);
