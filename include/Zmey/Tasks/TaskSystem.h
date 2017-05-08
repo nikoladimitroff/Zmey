@@ -8,10 +8,6 @@
 
 namespace Zmey
 {
-namespace Modules
-{
-void Initialize();
-}
 
 struct Task
 {
