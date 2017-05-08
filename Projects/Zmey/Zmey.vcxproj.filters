@@ -36,6 +36,9 @@
     <Filter Include="include\ResourceLoader">
       <UniqueIdentifier>{bb476c33-dd08-42bd-9abd-686d15a51b1c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Scripting">
+      <UniqueIdentifier>{43a597f5-d4cb-413b-8f0f-2187f7a0b39e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\Zmey\Config.h">
@@ -89,6 +92,12 @@
     <ClInclude Include="..\..\include\Zmey\ResourceLoader\ResourceLoader.h">
       <Filter>include\ResourceLoader</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\ScriptEngine.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Scripting\ChakraScriptEngine.h">
+      <Filter>Source\Scripting</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\EngineLoop.cpp">
@@ -111,6 +120,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\ResourceLoader\ResourceLoader.cpp">
       <Filter>Source\ResourceLoader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Scripting\ChakraScriptEngine.cpp">
+      <Filter>Source\Scripting</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
