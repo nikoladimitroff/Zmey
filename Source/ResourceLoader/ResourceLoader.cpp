@@ -34,6 +34,22 @@ ResourceLoader::~ResourceLoader()
 	Assimp::DefaultLogger::kill();
 }
 
+bool ResourceLoader::IsResourceReady(ResourceId id)
+{
+	bool found = false;
+	auto it = std::find_if(m_Meshes.begin(), m_Meshes.end(), [id](const std::pair<ResourceId, const aiScene*>& meshData)
+	{
+		return meshData.first == id;
+	});
+	found |= it != m_Meshes.end();
+	auto it2 = std::find_if(m_TextContents.begin(), m_TextContents.end(), [id](const std::pair<ResourceId, const stl::string>& meshData)
+	{
+		return meshData.first == id;
+	});
+	found |= it2 != m_TextContents.end();
+	return found;
+}
+
 void OnResourceLoaded(ResourceLoader* loader, ResourceId id, const aiScene* scene)
 {
 	loader->m_Meshes.push_back(std::make_pair(id, scene));
@@ -66,6 +82,7 @@ ResourceId ResourceLoader::LoadResource(const stl::string& path)
 			stream.read(&buffer[0], size);
 			OnResourceLoaded(this, id, buffer);
 		});
+		return id;
 	}
 	Modules::TaskSystem->SpawnTask("Loading file", [path, this, id]()
 	{

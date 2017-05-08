@@ -12,6 +12,7 @@ public:
 	ResourceLoader();
 	~ResourceLoader();
 	ResourceId LoadResource(const stl::string&);
+	bool IsResourceReady(ResourceId);
 
 	template<typename T>
 	const T* As(ResourceId) const
