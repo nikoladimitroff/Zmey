@@ -1,10 +1,13 @@
 #pragma once
+#include <ChakraCore/ChakraCore.h>
+
+#include <Zmey/Memory/MemoryManagement.h>
 
 namespace Zmey
 {
 namespace Chakra
 {
-// Used for repeatable execution
+// Used for repeatable execution of scripts; e.g. from setTimeout / setInterval
 struct ExecutionTask
 {
 	ExecutionTask(JsValueRef func, int delay, JsValueRef thisArg, JsValueRef extraArgs, bool repeat = false);
@@ -20,6 +23,22 @@ struct ExecutionTask
 	int Delay;
 	bool ShouldRepeat;
 	int Time;
+};
+
+struct ScriptTask
+{
+	ScriptTask(const stl::string& script)
+		: Script(script)
+	{}
+	const stl::string Script;
+};
+
+struct FrameTask
+{
+	FrameTask(float delta)
+		: DeltaMs(delta)
+	{}
+	float DeltaMs;
 };
 
 }

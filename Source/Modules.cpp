@@ -22,7 +22,7 @@ void Initialize()
 	Renderer = StaticAlloc<Zmey::Renderer::VulkanRenderer>();
 
 	ResourceLoader = StaticAlloc<Zmey::ResourceLoader>();
-	ScriptEngine = StaticAlloc<Zmey::ChakraScriptEngine>();
+	ScriptEngine = StaticAlloc<Zmey::Chakra::ChakraScriptEngine>();
 }
 }
 }
