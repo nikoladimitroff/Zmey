@@ -5,6 +5,8 @@
 #include <Zmey/Logging.h>
 #include <Zmey/Modules.h>
 
+#include "Binding.h"
+
 namespace Zmey
 {
 namespace Chakra
@@ -31,6 +33,7 @@ void ChakraScriptEngine::Run()
 	ASSERT_FATAL(JsCreateContext(m_Runtime, &m_Context) == JsNoError);
 	ASSERT_FATAL(JsSetCurrentContext(m_Context) == JsNoError);
 
+	Binding::Initialize();
 	while (m_KeepRunning)
 	{
 		RunOneLoopIteration();
@@ -50,7 +53,7 @@ void ChakraScriptEngine::RunOneLoopIteration()
 	// Store the sizes of all 3 queues so that we don't execute tasks that have been added after the iteration has begun
 	unsigned scriptTasksCount = m_ScriptTasks.Size();
 	unsigned frameTaskCount = m_FrameTasks.Size();
-	unsigned executionTasksCount = m_ExecutionTasks.size();
+	unsigned executionTasksCount = static_cast<unsigned>(m_ExecutionTasks.size());
 	auto totalTaskCount = scriptTasksCount + frameTaskCount + executionTasksCount;
 	if (totalTaskCount == 0)
 	{
@@ -59,9 +62,12 @@ void ChakraScriptEngine::RunOneLoopIteration()
 	for (unsigned i = 0u; i < scriptTasksCount; ++i)
 	{
 		auto scriptTask = std::move(m_ScriptTasks.Dequeue());
-		// Assume nonascii characters
-		auto source = reinterpret_cast<const wchar_t*>(scriptTask.Script.c_str());
-		JsRunScript(source, m_CurrentSourceContext++, L"", nullptr);
+		auto source = scriptTask.Script.c_str();
+		JsErrorCode error = JsRunScript(source, m_CurrentSourceContext++, L"", nullptr);
+		if (error != JsNoError)
+		{
+			FORMAT_LOG(Error, Script, "Script execution resulted in error: %d", error);
+		}
 	}
 	for (unsigned i = 0; i < frameTaskCount; ++i)
 	{
@@ -75,7 +81,7 @@ void ChakraScriptEngine::RunOneLoopIteration()
 		stl::unique_ptr<ExecutionTask> task = std::move(m_ExecutionTasks.front());
 		m_ExecutionTasks.pop_front();
 
-		int currentTime = clock() / (double)(CLOCKS_PER_SEC / 1000);
+		int currentTime = static_cast<int>(clock() / (double)(CLOCKS_PER_SEC / 1000));
 		if (currentTime - task->Time > task->Delay)
 		{
 			task->Invoke();

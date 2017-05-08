@@ -28,9 +28,11 @@ struct ExecutionTask
 struct ScriptTask
 {
 	ScriptTask(const stl::string& script)
-		: Script(script)
-	{}
-	const stl::string Script;
+		: Script(script.size(), L' ')
+	{
+		mbstowcs(const_cast<wchar_t*>(&Script[0]), script.c_str(), Script.size());
+	}
+	const stl::wstring Script;
 };
 
 struct FrameTask

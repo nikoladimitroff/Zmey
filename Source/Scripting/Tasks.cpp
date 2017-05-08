@@ -12,7 +12,7 @@ ExecutionTask::ExecutionTask(JsValueRef func, int delay, JsValueRef thisArg, JsV
 	Args[0] = thisArg;
 	Args[1] = extraArgs;
 	ShouldRepeat = repeat;
-	Time = clock() / (double)(CLOCKS_PER_SEC / 1000);
+	Time = static_cast<int>(clock() / (double)(CLOCKS_PER_SEC / 1000));
 	JsAddRef(Func, nullptr);
 	JsAddRef(Args[0], nullptr);
 	if (extraArgs != JS_INVALID_REFERENCE) {
@@ -25,6 +25,7 @@ JsValueRef ExecutionTask::Invoke()
 {
 	JsValueRef ret = JS_INVALID_REFERENCE;
 	JsCallFunction(Func, Args, ArgCount, &ret);
+	Time = static_cast<int>(clock() / (double)(CLOCKS_PER_SEC / 1000));
 	return ret;
 }
 

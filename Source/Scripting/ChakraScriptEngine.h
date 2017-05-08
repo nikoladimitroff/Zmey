@@ -7,6 +7,7 @@
 
 #include <Zmey/Tasks/BlockingQueue.h>
 #include "Tasks.h"
+#include "Binding.h"
 
 namespace Zmey
 {
@@ -23,6 +24,8 @@ public:
 private:
 	void Run();
 	void RunOneLoopIteration();
+	friend JsValueRef CALLBACK Zmey::Chakra::Binding::JSSetTimeout(JsValueRef callee, bool isConstructCall, JsValueRef *arguments, unsigned short argumentCount, void *callbackState);
+	friend JsValueRef CALLBACK Zmey::Chakra::Binding::JSSetInterval(JsValueRef callee, bool isConstructCall, JsValueRef *arguments, unsigned short argumentCount, void *callbackState);
 
 	std::thread m_ScriptingThread;
 	std::atomic_bool m_KeepRunning;
