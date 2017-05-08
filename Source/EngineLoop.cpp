@@ -68,27 +68,25 @@ void EngineLoop::Run()
 		return;
 	}
 
-	auto lambda = []()
-	{
-		FORMAT_LOG(Info, Temp, "from thread %d", std::this_thread::get_id());
-	};
 	auto id = Modules::ResourceLoader->LoadResource("Content\\Meshes\\Vampire_A_Lusth\\Vampire_A_Lusth.dae");
+	auto scriptId = Modules::ResourceLoader->LoadResource("Content\\Scripts\\main.js");
 	while (g_Run)
 	{
 		Modules::Platform->PumpMessages(windowHandle);
 
-		Modules::TaskSystem->SpawnTask("Log", lambda);
-		Modules::TaskSystem->SpawnTask("Log", lambda);
-		Modules::TaskSystem->SpawnTask("Log", lambda);
-		Modules::TaskSystem->SpawnTask("Log", lambda);
-
 		float clearColor[] = {1.0f, 0.0f, 0.0f, 1.0f};
 		Modules::Renderer->ClearBackbufferSurface(clearColor);
-		if (auto resource = Modules::ResourceLoader->As<aiScene>(id))
+		if (Modules::ResourceLoader->IsResourceReady(id))
 		{
 			volatile int x;
 			x = 5;
 		}
+		if (Modules::ResourceLoader->IsResourceReady(scriptId))
+		{
+			Modules::ScriptEngine->ExecuteFromFile(scriptId);
+			scriptId = -1;
+		}
+		Modules::ScriptEngine->ExecuteNextFrame(0.f);
 	}
 
 	Modules::Platform->KillWindow(windowHandle);
