@@ -104,6 +104,9 @@
     <ClInclude Include="..\..\Source\Scripting\Binding.h">
       <Filter>Source\Scripting</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Memory\PoolAllocator.h">
+      <Filter>include\Memory</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\EngineLoop.cpp">

@@ -8,6 +8,7 @@
 #include <Zmey/Memory/Allocator.h>
 #include "StlAllocator.h"
 #include "LinearAllocator.h"
+#include "PoolAllocator.h"
 
 namespace Zmey
 {
@@ -232,4 +233,9 @@ namespace stl
 	}
 }
 
+namespace pool
+{
+	template<typename T, unsigned short ObjectCount = 256>
+	using vector = std::vector<T, StlAllocatorTemplate<PoolAllocator<T, ObjectCount>, T>>;
+}
 }

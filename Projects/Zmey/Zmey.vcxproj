@@ -106,6 +106,7 @@
     <ClInclude Include="..\..\include\Zmey\Memory\Allocator.h" />
     <ClInclude Include="..\..\include\Zmey\Memory\LinearAllocator.h" />
     <ClInclude Include="..\..\include\Zmey\Memory\MemoryManagement.h" />
+    <ClInclude Include="..\..\include\Zmey\Memory\PoolAllocator.h" />
     <ClInclude Include="..\..\include\Zmey\Memory\StlAllocator.h" />
     <ClInclude Include="..\..\include\Zmey\Modules.h" />
     <ClInclude Include="..\..\include\Zmey\Platform\Platform.h" />
