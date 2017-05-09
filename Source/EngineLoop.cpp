@@ -76,6 +76,7 @@ void EngineLoop::Run()
 
 		float clearColor[] = {1.0f, 0.0f, 0.0f, 1.0f};
 		Modules::Renderer->ClearBackbufferSurface(clearColor);
+		Modules::Renderer->DrawScene();
 		if (Modules::ResourceLoader->IsResourceReady(id))
 		{
 			volatile int x;
