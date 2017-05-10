@@ -24,12 +24,6 @@
     <Filter Include="include\Platform">
       <UniqueIdentifier>{153a696c-2b63-4f6f-87ab-7cd902b771da}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\Renderer">
-      <UniqueIdentifier>{dad92acd-a865-44ab-ae9e-f15830e3ad2d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source\Renderer">
-      <UniqueIdentifier>{5bec6814-93b9-4420-9d18-494d10907021}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\ResourceLoader">
       <UniqueIdentifier>{7cddd9e1-96c0-4041-ba4d-acc2f7a481d8}</UniqueIdentifier>
     </Filter>
@@ -38,6 +32,15 @@
     </Filter>
     <Filter Include="Source\Scripting">
       <UniqueIdentifier>{43a597f5-d4cb-413b-8f0f-2187f7a0b39e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\Graphics">
+      <UniqueIdentifier>{dad92acd-a865-44ab-ae9e-f15830e3ad2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Graphics">
+      <UniqueIdentifier>{5bec6814-93b9-4420-9d18-494d10907021}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\Math">
+      <UniqueIdentifier>{7bc7cd7c-e7de-48eb-9278-b1655ac432fd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -80,15 +83,6 @@
     <ClInclude Include="..\..\Source\Platform\WindowsPlatform.h">
       <Filter>Source\Memory</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Renderer\Renderer.h">
-      <Filter>include\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Renderer\VulkanRenderer.h">
-      <Filter>Source\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Renderer\VulkanHelpers.h">
-      <Filter>Source\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\Zmey\ResourceLoader\ResourceLoader.h">
       <Filter>include\ResourceLoader</Filter>
     </ClInclude>
@@ -107,6 +101,24 @@
     <ClInclude Include="..\..\include\Zmey\Memory\PoolAllocator.h">
       <Filter>include\Memory</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Graphics\Renderer.h">
+      <Filter>include\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\VulkanHelpers.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Graphics\FrameData.h">
+      <Filter>include\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Graphics\ResourceHandles.h">
+      <Filter>include\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Math\Math.h">
+      <Filter>include\Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Graphics\RendererData.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\EngineLoop.cpp">
@@ -124,9 +136,6 @@
     <ClCompile Include="..\..\Source\Platform\WindowsPlatform.cpp">
       <Filter>Source\Platform</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Renderer\VulkanRenderer.cpp">
-      <Filter>Source\Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Source\ResourceLoader\ResourceLoader.cpp">
       <Filter>Source\ResourceLoader</Filter>
     </ClCompile>
@@ -138,6 +147,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\Scripting\Binding.cpp">
       <Filter>Source\Scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Renderer.cpp">
+      <Filter>Source\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

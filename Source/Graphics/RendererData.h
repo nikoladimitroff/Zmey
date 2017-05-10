@@ -1,14 +1,12 @@
 #pragma once
 
-#include <Zmey/Renderer/Renderer.h>
-
 #include "VulkanHelpers.h"
 
 #include <vector>
 
 namespace Zmey
 {
-namespace Renderer
+namespace Graphics
 {
 
 inline void DestroyDebugReportCallbackEXT(VkInstance instance, VkDebugReportCallbackEXT callback, const VkAllocationCallbacks* pAllocator)
@@ -20,16 +18,11 @@ inline void DestroyDebugReportCallbackEXT(VkInstance instance, VkDebugReportCall
 	}
 }
 
-class VulkanRenderer : public IRenderer
+struct RendererData
 {
-public:
-	virtual bool CreateWindowSurface(WindowHandle handle) override;
+	// TODO: atomic
+	uint64_t LastCompletedFrame = 0;
 
-	virtual void ClearBackbufferSurface(float color[4]) override;
-
-	virtual void DrawScene() override;
-
-private:
 	float m_ClearColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 
 	VDeleter<VkInstance> m_Instance{ vkDestroyInstance };
@@ -67,7 +60,7 @@ private:
 
 	VDeleter<VkCommandPool> m_CommandPool{ m_Device, vkDestroyCommandPool };
 
-	VkCommandBuffer m_CommandBuffer;
+	std::vector<VkCommandBuffer> m_CommandBuffers;
 
 	VDeleter<VkSemaphore> m_ImageAvailableSemaphore{ m_Device, vkDestroySemaphore };
 	VDeleter<VkSemaphore> m_renderFinishedSemaphore{ m_Device, vkDestroySemaphore };

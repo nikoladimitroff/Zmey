@@ -7,6 +7,8 @@
 #include <Zmey/Logging.h>
 #include <Zmey/Modules.h>
 
+#include <Zmey/Graphics/FrameData.h>
+
 namespace Zmey
 {
 
@@ -70,13 +72,16 @@ void EngineLoop::Run()
 
 	auto id = Modules::ResourceLoader->LoadResource("Content\\Meshes\\Vampire_A_Lusth\\Vampire_A_Lusth.dae");
 	auto scriptId = Modules::ResourceLoader->LoadResource("Content\\Scripts\\main.js");
+	uint64_t frameIndex = 0;
 	while (g_Run)
 	{
 		Modules::Platform->PumpMessages(windowHandle);
+		while (frameIndex >= 2 && !Modules::Renderer->CheckIfFrameCompleted(frameIndex - 2))
+		{
+			// Wait for renderer to catch up
+			Modules::Platform->PumpMessages(windowHandle);
+		}
 
-		float clearColor[] = {1.0f, 0.0f, 0.0f, 1.0f};
-		Modules::Renderer->ClearBackbufferSurface(clearColor);
-		Modules::Renderer->DrawScene();
 		if (Modules::ResourceLoader->IsResourceReady(id))
 		{
 			volatile int x;
@@ -88,6 +93,23 @@ void EngineLoop::Run()
 			scriptId = -1;
 		}
 		Modules::ScriptEngine->ExecuteNextFrame(0.f);
+
+
+		// Rendering stuff
+
+		// TODO: Compute visibility
+
+		// Gather render data
+		Graphics::FrameData frameData;
+
+		frameData.FrameIndex = frameIndex++;
+
+		// TODO: Test code
+		frameData.MeshHandles.push_back(0);
+		frameData.MeshPositions.push_back(Vector3(0.0f, 0.0f, 0.0f));
+
+		// TODO: From this point graphics stuff should be on render thread
+		Modules::Renderer->RenderFrame(frameData);
 	}
 
 	Modules::Platform->KillWindow(windowHandle);

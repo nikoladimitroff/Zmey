@@ -8,7 +8,7 @@
 
 namespace Zmey
 {
-namespace Renderer
+namespace Graphics
 {
 
 template <typename T>

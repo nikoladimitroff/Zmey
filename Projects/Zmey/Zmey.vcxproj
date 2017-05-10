@@ -101,8 +101,12 @@
   <ItemGroup>
     <ClInclude Include="..\..\include\Zmey\Config.h" />
     <ClInclude Include="..\..\include\Zmey\EngineLoop.h" />
+    <ClInclude Include="..\..\include\Zmey\Graphics\FrameData.h" />
+    <ClInclude Include="..\..\include\Zmey\Graphics\Renderer.h" />
+    <ClInclude Include="..\..\include\Zmey\Graphics\ResourceHandles.h" />
     <ClInclude Include="..\..\include\Zmey\Logging.h" />
     <ClInclude Include="..\..\include\Zmey\LogHandler.h" />
+    <ClInclude Include="..\..\include\Zmey\Math\Math.h" />
     <ClInclude Include="..\..\include\Zmey\Memory\Allocator.h" />
     <ClInclude Include="..\..\include\Zmey\Memory\LinearAllocator.h" />
     <ClInclude Include="..\..\include\Zmey\Memory\MemoryManagement.h" />
@@ -110,25 +114,24 @@
     <ClInclude Include="..\..\include\Zmey\Memory\StlAllocator.h" />
     <ClInclude Include="..\..\include\Zmey\Modules.h" />
     <ClInclude Include="..\..\include\Zmey\Platform\Platform.h" />
-    <ClInclude Include="..\..\include\Zmey\Renderer\Renderer.h" />
     <ClInclude Include="..\..\include\Zmey\ResourceLoader\ResourceLoader.h" />
     <ClInclude Include="..\..\include\Zmey\ScriptEngine.h" />
     <ClInclude Include="..\..\include\Zmey\Tasks\BlockingQueue.h" />
     <ClInclude Include="..\..\include\Zmey\Tasks\TaskSystem.h" />
+    <ClInclude Include="..\..\Source\Graphics\VulkanHelpers.h" />
+    <ClInclude Include="..\..\Source\Graphics\RendererData.h" />
     <ClInclude Include="..\..\Source\Platform\WindowsPlatform.h" />
-    <ClInclude Include="..\..\Source\Renderer\VulkanHelpers.h" />
-    <ClInclude Include="..\..\Source\Renderer\VulkanRenderer.h" />
     <ClInclude Include="..\..\Source\Scripting\Binding.h" />
     <ClInclude Include="..\..\Source\Scripting\ChakraScriptEngine.h" />
     <ClInclude Include="..\..\Source\Scripting\Tasks.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\EngineLoop.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Renderer.cpp" />
     <ClCompile Include="..\..\Source\Logging.cpp" />
     <ClCompile Include="..\..\Source\Memory\MemoryManagement.cpp" />
     <ClCompile Include="..\..\Source\Modules.cpp" />
     <ClCompile Include="..\..\Source\Platform\WindowsPlatform.cpp" />
-    <ClCompile Include="..\..\Source\Renderer\VulkanRenderer.cpp" />
     <ClCompile Include="..\..\Source\ResourceLoader\ResourceLoader.cpp" />
     <ClCompile Include="..\..\Source\Scripting\Binding.cpp" />
     <ClCompile Include="..\..\Source\Scripting\ChakraScriptEngine.cpp" />
