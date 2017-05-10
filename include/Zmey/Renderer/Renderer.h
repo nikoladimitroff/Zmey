@@ -12,6 +12,8 @@ public:
 
 	virtual bool CreateWindowSurface(WindowHandle handle) = 0;
 	virtual void ClearBackbufferSurface(float color[4]) = 0;
+
+	virtual void DrawScene() = 0;
 };
 
 };
