@@ -42,6 +42,12 @@
     <Filter Include="include\Math">
       <UniqueIdentifier>{7bc7cd7c-e7de-48eb-9278-b1655ac432fd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\Graphics\Features">
+      <UniqueIdentifier>{26b58d7d-487a-4d67-a453-7cb4b06bbfe9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Graphics\Features">
+      <UniqueIdentifier>{f51dca22-c95a-4c61-8918-2de823829188}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\Zmey\Config.h">
@@ -119,6 +125,18 @@
     <ClInclude Include="..\..\Source\Graphics\RendererData.h">
       <Filter>Source\Graphics</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Graphics\RenderPasses.h">
+      <Filter>include\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Graphics\View.h">
+      <Filter>include\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Graphics\Features.h">
+      <Filter>include\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Graphics\Features\MeshRenderer.h">
+      <Filter>include\Graphics\Features</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\EngineLoop.cpp">
@@ -150,6 +168,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\Graphics\Renderer.cpp">
       <Filter>Source\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Features\MeshRenderer.cpp">
+      <Filter>Source\Graphics\Features</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

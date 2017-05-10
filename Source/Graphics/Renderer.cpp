@@ -4,6 +4,8 @@
 #include <Zmey/Graphics/FrameData.h>
 #include <Zmey/Graphics/Renderer.h>
 
+#include <Zmey/Graphics/Features.h>
+
 #include <fstream>
 
 namespace Zmey
@@ -947,6 +949,7 @@ namespace
 void PrepareData(FrameData& frameData, RendererData& data)
 {
 	// TODO: Prepare graphics data
+	Features::MeshRenderer::PrepareData(frameData);
 }
 
 void GenerateCommands(FrameData& frameData, RendererData& data, uint32_t imageIndex)
@@ -961,6 +964,7 @@ void GenerateCommands(FrameData& frameData, RendererData& data, uint32_t imageIn
 	// This will implicitly reset the buffer
 	vkBeginCommandBuffer(data.m_CommandBuffers[imageIndex], &beginInfo);
 
+	// Begin Main pass on PlayerView
 	VkRenderPassBeginInfo renderPassInfo = {};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 	renderPassInfo.renderPass = data.m_RenderPass;
@@ -974,15 +978,14 @@ void GenerateCommands(FrameData& frameData, RendererData& data, uint32_t imageIn
 
 	vkCmdBeginRenderPass(data.m_CommandBuffers[imageIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
-	vkCmdBindPipeline(data.m_CommandBuffers[imageIndex], VK_PIPELINE_BIND_POINT_GRAPHICS, data.m_GraphicsPipeline);
-
-	VkBuffer vertexBuffers[] = { data.m_VertexBuffer };
-	VkDeviceSize offsets[] = { 0 };
-	vkCmdBindVertexBuffers(data.m_CommandBuffers[imageIndex], 0, 1, vertexBuffers, offsets);
-
-	vkCmdDraw(data.m_CommandBuffers[imageIndex], 4, 1, 0, 0);
+	Features::MeshRenderer::GenerateCommands(frameData,
+		RenderPass::Main,
+		ViewType::PlayerView,
+		reinterpret_cast<void*>(data.m_CommandBuffers[imageIndex]),
+		data);
 
 	vkCmdEndRenderPass(data.m_CommandBuffers[imageIndex]);
+	// End Main pass on PlayerView
 
 	if (vkEndCommandBuffer(data.m_CommandBuffers[imageIndex]) != VK_SUCCESS)
 	{

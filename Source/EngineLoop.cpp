@@ -8,6 +8,7 @@
 #include <Zmey/Modules.h>
 
 #include <Zmey/Graphics/FrameData.h>
+#include <Zmey/Graphics/Features.h>
 
 namespace Zmey
 {
@@ -103,10 +104,7 @@ void EngineLoop::Run()
 		Graphics::FrameData frameData;
 
 		frameData.FrameIndex = frameIndex++;
-
-		// TODO: Test code
-		frameData.MeshHandles.push_back(0);
-		frameData.MeshPositions.push_back(Vector3(0.0f, 0.0f, 0.0f));
+		Graphics::Features::MeshRenderer::GatherData(frameData);
 
 		// TODO: From this point graphics stuff should be on render thread
 		Modules::Renderer->RenderFrame(frameData);
