@@ -140,6 +140,9 @@
     <ClInclude Include="..\..\include\Zmey\Graphics\Features\RectRenderer.h">
       <Filter>include\Graphics\Features</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\EntityManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\EngineLoop.cpp">
@@ -177,6 +180,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\Graphics\Features\RectRenderer.cpp">
       <Filter>Source\Graphics\Features</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\EntityManager.cpp">
+      <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
