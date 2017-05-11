@@ -25,27 +25,28 @@ void MeshRenderer::PrepareData(FrameData& frameData)
 
 void MeshRenderer::GenerateCommands(FrameData& frameData, RenderPass pass, ViewType view, void* cmdBuffer, RendererData& data)
 {
-	auto cmd = reinterpret_cast<VkCommandBuffer>(cmdBuffer);
-	
-	if (view == ViewType::PlayerView
-		&& pass == RenderPass::Main)
-	{
-		vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, data.m_GraphicsPipeline);
-	}
-	else
-	{
-		assert(false);
-	}
+	// TODO: implement me
+	//auto cmd = reinterpret_cast<VkCommandBuffer>(cmdBuffer);
+	//
+	//if (view == ViewType::PlayerView
+	//	&& pass == RenderPass::Main)
+	//{
+	//	vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, data.m_GraphicsPipeline);
+	//}
+	//else
+	//{
+	//	assert(false);
+	//}
 
-	for (auto i = 0u; i < frameData.MeshHandles.size(); ++i)
-	{
-		// TODO: use real handle and real position
-		VkBuffer vertexBuffers[] = { data.m_VertexBuffer };
-		VkDeviceSize offsets[] = { 0 };
-		vkCmdBindVertexBuffers(cmd, 0, 1, vertexBuffers, offsets);
+	//for (auto i = 0u; i < frameData.MeshHandles.size(); ++i)
+	//{
+	//	// TODO: use real handle and real position
+	//	VkBuffer vertexBuffers[] = { data.m_VertexBuffer };
+	//	VkDeviceSize offsets[] = { 0 };
+	//	vkCmdBindVertexBuffers(cmd, 0, 1, vertexBuffers, offsets);
 
-		vkCmdDraw(cmd, 4, 1, 0, 0);
-	}
+	//	vkCmdDraw(cmd, 4, 1, 0, 0);
+	//}
 }
 
 }

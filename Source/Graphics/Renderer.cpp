@@ -625,26 +625,26 @@ bool RendererInterface::CreateWindowSurface(WindowHandle handle)
 
 		VkVertexInputBindingDescription bindingDescription = {};
 		bindingDescription.binding = 0;
-		bindingDescription.stride = sizeof(Vertex);
+		bindingDescription.stride = 0;
 		bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
 
-		std::array<VkVertexInputAttributeDescription, 1> attributeDescription = {};
+		//std::array<VkVertexInputAttributeDescription, 1> attributeDescription = {};
 
-		attributeDescription[0].binding = 0;
-		attributeDescription[0].location = 0;
-		attributeDescription[0].format = VK_FORMAT_R32G32_SFLOAT;
-		attributeDescription[0].offset = offsetof(Vertex, pos);
+		//attributeDescription[0].binding = 0;
+		//attributeDescription[0].location = 0;
+		//attributeDescription[0].format = VK_FORMAT_R32G32_SFLOAT;
+		//attributeDescription[0].offset = offsetof(Vertex, pos);
 
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
 		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-		vertexInputInfo.vertexBindingDescriptionCount = 1;
-		vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
-		vertexInputInfo.vertexAttributeDescriptionCount = uint32_t(attributeDescription.size());
-		vertexInputInfo.pVertexAttributeDescriptions = attributeDescription.data();
+		vertexInputInfo.vertexBindingDescriptionCount = 0;
+		vertexInputInfo.pVertexBindingDescriptions = nullptr;
+		vertexInputInfo.vertexAttributeDescriptionCount = 0;
+		vertexInputInfo.pVertexAttributeDescriptions = nullptr;
 
 		VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
 		inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-		inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_FAN;
+		inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP;
 		inputAssembly.primitiveRestartEnable = VK_FALSE;
 
 		VkViewport viewport = {};
@@ -690,12 +690,12 @@ bool RendererInterface::CreateWindowSurface(WindowHandle handle)
 
 		VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
 		colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-		colorBlendAttachment.blendEnable = VK_FALSE;
+		colorBlendAttachment.blendEnable = VK_TRUE;
 		colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
-		colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ZERO;
+		colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
 		colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
 		colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
-		colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
+		colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
 		colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
 
 		VkPipelineColorBlendStateCreateInfo colorBlending = {};
@@ -710,12 +710,19 @@ bool RendererInterface::CreateWindowSurface(WindowHandle handle)
 		colorBlending.blendConstants[3] = 0.0f;
 
 		VkDescriptorSetLayout setLayout[] = { m_Data->m_DescriptorSetLayout };
+		VkPushConstantRange ranges[2];
+		ranges[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+		ranges[0].size = 4 * sizeof(float);
+		ranges[0].offset = 0;
+		ranges[1].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+		ranges[1].size = 4 * sizeof(float);
+		ranges[1].offset = ranges[0].size;
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 		pipelineLayoutInfo.setLayoutCount = 0;
 		pipelineLayoutInfo.pSetLayouts = nullptr; // TODO:
-		pipelineLayoutInfo.pushConstantRangeCount = 0;
-		pipelineLayoutInfo.pPushConstantRanges = 0;
+		pipelineLayoutInfo.pushConstantRangeCount = 2;
+		pipelineLayoutInfo.pPushConstantRanges = ranges;
 
 		if (vkCreatePipelineLayout(m_Data->m_Device, &pipelineLayoutInfo, nullptr, m_Data->m_PipelineLayout.Replace()) != VK_SUCCESS)
 		{
@@ -950,6 +957,7 @@ void PrepareData(FrameData& frameData, RendererData& data)
 {
 	// TODO: Prepare graphics data
 	Features::MeshRenderer::PrepareData(frameData);
+	Features::RectRenderer::PrepareData(frameData);
 }
 
 void GenerateCommands(FrameData& frameData, RendererData& data, uint32_t imageIndex)
@@ -979,6 +987,12 @@ void GenerateCommands(FrameData& frameData, RendererData& data, uint32_t imageIn
 	vkCmdBeginRenderPass(data.m_CommandBuffers[imageIndex], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
 	Features::MeshRenderer::GenerateCommands(frameData,
+		RenderPass::Main,
+		ViewType::PlayerView,
+		reinterpret_cast<void*>(data.m_CommandBuffers[imageIndex]),
+		data);
+
+	Features::RectRenderer::GenerateCommands(frameData,
 		RenderPass::Main,
 		ViewType::PlayerView,
 		reinterpret_cast<void*>(data.m_CommandBuffers[imageIndex]),

@@ -1,3 +1,3 @@
-C:/VulkanSDK/1.0.42.0/Bin/glslangValidator.exe -V shader.vert
-C:/VulkanSDK/1.0.42.0/Bin/glslangValidator.exe -V shader.frag
+C:/VulkanSDK/1.0.46.0/Bin/glslangValidator.exe -V rect.vert
+C:/VulkanSDK/1.0.46.0/Bin/glslangValidator.exe -V rect.frag
 pause

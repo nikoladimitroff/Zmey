@@ -64,7 +64,9 @@ EngineLoop::EngineLoop()
 void EngineLoop::Run()
 {
 	// TODO(alex): get this params from somewhere
-	auto windowHandle = Modules::Platform->SpawnWindow(1280, 720, "Zmey");
+	auto width = 1280u;
+	auto height = 720u;
+	auto windowHandle = Modules::Platform->SpawnWindow(width, height, "Zmey");
 
 	if (!Modules::Renderer->CreateWindowSurface(windowHandle))
 	{
@@ -74,6 +76,12 @@ void EngineLoop::Run()
 	auto id = Modules::ResourceLoader->LoadResource("Content\\Meshes\\Vampire_A_Lusth\\Vampire_A_Lusth.dae");
 	auto scriptId = Modules::ResourceLoader->LoadResource("Content\\Scripts\\main.js");
 	uint64_t frameIndex = 0;
+
+	stl::vector<Graphics::Rect> rectsToDraw;
+
+	rectsToDraw.push_back(Graphics::Rect{ 0.0f, 0.0f, 0.1f, 0.1f,{ 1.0f, 0.0f, 0.0f, 1.0f } });
+	rectsToDraw.push_back(Graphics::Rect{ 0.5f, 0.5f, 0.2f, 0.1f, {0.0f, 0.0f, 1.0f, 0.5f} });
+
 	while (g_Run)
 	{
 		Modules::Platform->PumpMessages(windowHandle);
@@ -96,6 +104,13 @@ void EngineLoop::Run()
 		Modules::ScriptEngine->ExecuteNextFrame(0.f);
 
 
+		// TODO: remove this
+		// Animation code ^^
+		rectsToDraw[0].width += 0.0001f;
+		if (rectsToDraw[0].width > 0.5f)
+			rectsToDraw[0].width = 0.0f;
+
+
 		// Rendering stuff
 
 		// TODO: Compute visibility
@@ -105,6 +120,7 @@ void EngineLoop::Run()
 
 		frameData.FrameIndex = frameIndex++;
 		Graphics::Features::MeshRenderer::GatherData(frameData);
+		Graphics::Features::RectRenderer::GatherData(frameData, rectsToDraw.data(), unsigned(rectsToDraw.size()));
 
 		// TODO: From this point graphics stuff should be on render thread
 		Modules::Renderer->RenderFrame(frameData);

@@ -103,6 +103,7 @@
     <ClInclude Include="..\..\include\Zmey\EngineLoop.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\Features.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\Features\MeshRenderer.h" />
+    <ClInclude Include="..\..\include\Zmey\Graphics\Features\RectRenderer.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\FrameData.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\Renderer.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\RenderPasses.h" />
@@ -132,6 +133,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\Source\EngineLoop.cpp" />
     <ClCompile Include="..\..\Source\Graphics\Features\MeshRenderer.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Features\RectRenderer.cpp" />
     <ClCompile Include="..\..\Source\Graphics\Renderer.cpp" />
     <ClCompile Include="..\..\Source\Logging.cpp" />
     <ClCompile Include="..\..\Source\Memory\MemoryManagement.cpp" />

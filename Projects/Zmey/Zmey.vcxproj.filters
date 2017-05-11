@@ -137,6 +137,9 @@
     <ClInclude Include="..\..\include\Zmey\Graphics\Features\MeshRenderer.h">
       <Filter>include\Graphics\Features</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Graphics\Features\RectRenderer.h">
+      <Filter>include\Graphics\Features</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\EngineLoop.cpp">
@@ -170,6 +173,9 @@
       <Filter>Source\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Graphics\Features\MeshRenderer.cpp">
+      <Filter>Source\Graphics\Features</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Features\RectRenderer.cpp">
       <Filter>Source\Graphics\Features</Filter>
     </ClCompile>
   </ItemGroup>
