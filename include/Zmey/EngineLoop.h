@@ -11,6 +11,8 @@ public:
 	EngineLoop();
 	void Run();
 	~EngineLoop();
+private:
+	class World* m_World;
 };
 
 }

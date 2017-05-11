@@ -6,6 +6,7 @@
 #include <Zmey/Memory/MemoryManagement.h>
 #include <Zmey/Logging.h>
 #include <Zmey/Modules.h>
+#include <Zmey/World.h>
 
 #include <Zmey/Graphics/FrameData.h>
 #include <Zmey/Graphics/Features.h>
@@ -60,6 +61,7 @@ EngineLoop::EngineLoop()
 	Zmey::GAllocator = StaticAlloc<MallocAllocator>();
 	Zmey::GLogHandler = StaticAlloc<StdOutLogHandler>();
 	Zmey::Modules::Initialize();
+	m_World = StaticAlloc<World>();
 }
 void EngineLoop::Run()
 {

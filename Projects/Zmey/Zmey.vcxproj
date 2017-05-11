@@ -124,6 +124,7 @@
     <ClInclude Include="..\..\include\Zmey\ScriptEngine.h" />
     <ClInclude Include="..\..\include\Zmey\Tasks\BlockingQueue.h" />
     <ClInclude Include="..\..\include\Zmey\Tasks\TaskSystem.h" />
+    <ClInclude Include="..\..\include\Zmey\World.h" />
     <ClInclude Include="..\..\Source\Graphics\VulkanHelpers.h" />
     <ClInclude Include="..\..\Source\Graphics\RendererData.h" />
     <ClInclude Include="..\..\Source\Platform\WindowsPlatform.h" />

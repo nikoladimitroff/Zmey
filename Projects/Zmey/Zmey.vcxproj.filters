@@ -143,6 +143,9 @@
     <ClInclude Include="..\..\include\Zmey\EntityManager.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\World.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\EngineLoop.cpp">
