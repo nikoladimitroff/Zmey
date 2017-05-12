@@ -6,12 +6,21 @@
 
 #include <Zmey/Graphics/Features.h>
 
-#include <fstream>
-
 namespace Zmey
 {
 namespace Graphics
 {
+
+namespace Shaders
+{
+static const uint32_t g_RectsVS[] = {
+#include "Shaders/Compiled/RectsVS.h"
+};
+
+static const uint32_t g_RectsPS[] = {
+#include "Shaders/Compiled/RectsPS.h"
+};
+}
 namespace
 {
 VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(
@@ -223,25 +232,6 @@ struct Vertex
 {
 	Vector2 pos;
 };
-
-static std::vector<char> ReadFile(const std::string& filename)
-{
-	std::ifstream file(filename, std::ios::ate | std::ios::binary);
-
-	if (!file.is_open())
-	{
-		LOG(Fatal, Vulkan, "failed to open file");
-	}
-
-	size_t fileSize = (size_t)file.tellg();
-	std::vector<char> buffer(fileSize);
-	file.seekg(0);
-	file.read(buffer.data(), fileSize);
-
-	file.close();
-
-	return buffer;
-}
 
 // TODO(alex): remove end
 }
@@ -577,17 +567,14 @@ bool RendererInterface::CreateWindowSurface(WindowHandle handle)
 
 	// Create graphics pipeline
 	{
-		auto vertShaderCode = ReadFile("vert.spv");
-		auto fragShaderCode = ReadFile("frag.spv");
-
 		VDeleter<VkShaderModule> vertShaderModule{ m_Data->m_Device, vkDestroyShaderModule };
 		VDeleter<VkShaderModule> fragShaderModule{ m_Data->m_Device, vkDestroyShaderModule };
 
 		{
 			VkShaderModuleCreateInfo createInfo = {};
 			createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-			createInfo.codeSize = vertShaderCode.size();
-			createInfo.pCode = (uint32_t*)vertShaderCode.data();
+			createInfo.codeSize = sizeof(Shaders::g_RectsVS);
+			createInfo.pCode = Shaders::g_RectsVS;
 
 			if (vkCreateShaderModule(m_Data->m_Device, &createInfo, nullptr, vertShaderModule.Replace()) != VK_SUCCESS)
 			{
@@ -599,8 +586,8 @@ bool RendererInterface::CreateWindowSurface(WindowHandle handle)
 		{
 			VkShaderModuleCreateInfo createInfo = {};
 			createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-			createInfo.codeSize = fragShaderCode.size();
-			createInfo.pCode = (uint32_t*)fragShaderCode.data();
+			createInfo.codeSize = sizeof(Shaders::g_RectsPS);
+			createInfo.pCode = Shaders::g_RectsPS;
 
 			if (vkCreateShaderModule(m_Data->m_Device, &createInfo, nullptr, fragShaderModule.Replace()) != VK_SUCCESS)
 			{
@@ -613,13 +600,13 @@ bool RendererInterface::CreateWindowSurface(WindowHandle handle)
 		vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 		vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
 		vertShaderStageInfo.module = vertShaderModule;
-		vertShaderStageInfo.pName = "main";
+		vertShaderStageInfo.pName = "VertexShaderMain";
 
 		VkPipelineShaderStageCreateInfo fragShaderStageInfo = {};
 		fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 		fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
 		fragShaderStageInfo.module = fragShaderModule;
-		fragShaderStageInfo.pName = "main";
+		fragShaderStageInfo.pName = "PixelShaderMain";
 
 		VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
 
