@@ -1,9 +1,10 @@
 #pragma once
+#include <array>
 #include <deque>
 #include <memory>
-#include <vector>
 #include <string>
-#include <array>
+#include <vector>
+#include <queue>
 
 #include <Zmey/Memory/Allocator.h>
 #include "StlAllocator.h"
@@ -204,6 +205,8 @@ namespace stl
 	using small_vector = vector<T>;
 	template<typename T>
 	using deque = std::deque<T, StlAllocatorTemplate<DefaultAllocator, T>>;
+	template<typename T>
+	using queue = std::queue<T, stl::deque<T>>;
 	using string = std::basic_string<char, std::char_traits<char>, StlAllocatorTemplate<DefaultAllocator, char>>;
 	using wstring = std::basic_string<wchar_t, std::char_traits<wchar_t>, StlAllocatorTemplate<DefaultAllocator, wchar_t>>;
 	using small_string = string;
