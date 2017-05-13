@@ -1,3 +1,4 @@
+#include <cassert>
 #include <string>
 #include <vector>
 #include <iostream>
@@ -36,6 +37,8 @@ int main()
 	FindClose(hFind);
 
 	std::cout << "Found " << fileList.size() << " files." << std::endl;
+	auto mkdirResult = ::CreateDirectory(sOutputFolder.c_str(), NULL);
+	assert(mkdirResult != ERROR_PATH_NOT_FOUND);
 
 	for (auto& shader : fileList) {
 		const auto filename = sSourceFolder + shader + ".hlsl";
