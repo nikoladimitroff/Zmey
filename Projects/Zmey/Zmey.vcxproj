@@ -99,6 +99,8 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\include\Zmey\Components\ComponentRegistry.h" />
+    <ClInclude Include="..\..\include\Zmey\Components\TransformManager.h" />
     <ClInclude Include="..\..\include\Zmey\Config.h" />
     <ClInclude Include="..\..\include\Zmey\EngineLoop.h" />
     <ClInclude Include="..\..\include\Zmey\EntityManager.h" />
@@ -110,6 +112,7 @@
     <ClInclude Include="..\..\include\Zmey\Graphics\RenderPasses.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\ResourceHandles.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\View.h" />
+    <ClInclude Include="..\..\include\Zmey\Hash.h" />
     <ClInclude Include="..\..\include\Zmey\Logging.h" />
     <ClInclude Include="..\..\include\Zmey\LogHandler.h" />
     <ClInclude Include="..\..\include\Zmey\Math\Math.h" />
@@ -133,6 +136,8 @@
     <ClInclude Include="..\..\Source\Scripting\Tasks.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\Components\ComponentRegistry.cpp" />
+    <ClCompile Include="..\..\Source\Components\TransformManager.cpp" />
     <ClCompile Include="..\..\Source\EngineLoop.cpp" />
     <ClCompile Include="..\..\Source\EntityManager.cpp" />
     <ClCompile Include="..\..\Source\Graphics\Features\MeshRenderer.cpp" />

@@ -48,6 +48,12 @@
     <Filter Include="Source\Graphics\Features">
       <UniqueIdentifier>{f51dca22-c95a-4c61-8918-2de823829188}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\Components">
+      <UniqueIdentifier>{86f30f91-cbec-49a8-9728-8debfbda1adc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Components">
+      <UniqueIdentifier>{f2ece02b-9daa-457e-acc3-131512ef5f46}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\Zmey\Config.h">
@@ -146,6 +152,15 @@
     <ClInclude Include="..\..\include\Zmey\World.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Components\TransformManager.h">
+      <Filter>include\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Hash.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Components\ComponentRegistry.h">
+      <Filter>include\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\EngineLoop.cpp">
@@ -186,6 +201,12 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\EntityManager.cpp">
       <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Components\TransformManager.cpp">
+      <Filter>Source\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Components\ComponentRegistry.cpp">
+      <Filter>Source\Components</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
