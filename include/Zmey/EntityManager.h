@@ -30,6 +30,7 @@ public:
 	bool IsAlive(EntityId);
 private:
 	stl::vector<uint16_t> m_Generation;
+	stl::queue<uint_fast32_t> m_FreeIndices;
 };
 
 }
