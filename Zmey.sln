@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Games", "Games", "{E1BDAB0B
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ShaderCompiler", "Tools\ShaderCompiler\ShaderCompiler.vcxproj", "{D072EB4F-0C6A-4EC1-816E-D2066108DFC9}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Incinerator", "Tools\Incinerator\Incinerator.vcxproj", "{3CB0BF94-211B-46B7-B0AE-7E417FB17928}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -39,6 +41,12 @@ Global
 		{D072EB4F-0C6A-4EC1-816E-D2066108DFC9}.Release|x64.ActiveCfg = Release|x64
 		{D072EB4F-0C6A-4EC1-816E-D2066108DFC9}.Release|x64.Build.0 = Release|x64
 		{D072EB4F-0C6A-4EC1-816E-D2066108DFC9}.Release|x86.ActiveCfg = Release|x64
+		{3CB0BF94-211B-46B7-B0AE-7E417FB17928}.Debug|x64.ActiveCfg = Debug|x64
+		{3CB0BF94-211B-46B7-B0AE-7E417FB17928}.Debug|x64.Build.0 = Debug|x64
+		{3CB0BF94-211B-46B7-B0AE-7E417FB17928}.Debug|x86.ActiveCfg = Debug|x64
+		{3CB0BF94-211B-46B7-B0AE-7E417FB17928}.Release|x64.ActiveCfg = Release|x64
+		{3CB0BF94-211B-46B7-B0AE-7E417FB17928}.Release|x64.Build.0 = Release|x64
+		{3CB0BF94-211B-46B7-B0AE-7E417FB17928}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -46,5 +54,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{803712C8-987A-461A-A8FA-F7D6282AB6D3} = {E1BDAB0B-C8AC-400A-91E4-1D51CE4144DD}
 		{D072EB4F-0C6A-4EC1-816E-D2066108DFC9} = {EB8EB1DF-937D-4172-A707-AF31A9A7D7ED}
+		{3CB0BF94-211B-46B7-B0AE-7E417FB17928} = {EB8EB1DF-937D-4172-A707-AF31A9A7D7ED}
 	EndGlobalSection
 EndGlobal
