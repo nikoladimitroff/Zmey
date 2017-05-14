@@ -9,9 +9,15 @@ namespace Zmey
 
 namespace Components
 {
+	class IDataBlob
+	{
+	public:
+		virtual ~IDataBlob() {}
+		virtual void WriteData(const char* dataName, const uint8_t* data, uint16_t dataSize) = 0;
+	};
 	struct ComponentCompiler
 	{
-		using ToBlobDelegate = void (*)(json&, char* blob);
+		using ToBlobDelegate = void (*)(json&, IDataBlob& blob);
 		using FromBlobDelegate = void (*)(const tmp::vector<EntityId>& entities, const char* blob);
 
 		ComponentCompiler(HashType nameHash, ToBlobDelegate toBlob, FromBlobDelegate fromBlob);
