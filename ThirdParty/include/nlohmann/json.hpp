@@ -1,3 +1,7 @@
+// ZMEY: disable 4577 by hand as VS doesn't do that from the project files
+#pragma warning(push)
+#pragma warning(disable: 4577)
+
 /*
     __ _____ _____ _____
  __|  |   __|     |   | |  JSON for Modern C++
@@ -13001,3 +13005,6 @@ inline nlohmann::json::json_pointer operator "" _json_pointer(const char* s, std
 #undef JSON_TRY
 
 #endif
+
+// Zmey
+#pragma warning(pop)

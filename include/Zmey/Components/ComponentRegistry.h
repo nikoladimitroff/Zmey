@@ -1,9 +1,11 @@
 #pragma once
+#include <Zmey/Config.h>
 #include <Zmey/EntityManager.h>
 #include <Zmey/Memory/MemoryManagement.h>
 #include <Zmey/Hash.h>
 
-class json;
+#include <nlohmann/json.hpp> // TODO: remove this include as it will clutter everything
+
 namespace Zmey
 {
 
@@ -13,15 +15,15 @@ namespace Components
 	{
 	public:
 		virtual ~IDataBlob() {}
-		virtual void WriteData(const char* dataName, const uint8_t* data, uint16_t dataSize) = 0;
+		virtual void WriteData(Hash dataName, const uint8_t* data, uint16_t dataSize) = 0;
 	};
 	struct ComponentCompiler
 	{
-		using ToBlobDelegate = void (*)(json&, IDataBlob& blob);
+		using ToBlobDelegate = void (*)(const nlohmann::json&, IDataBlob& blob);
 		using FromBlobDelegate = void (*)(const tmp::vector<EntityId>& entities, const char* blob);
 
-		ComponentCompiler(HashType nameHash, ToBlobDelegate toBlob, FromBlobDelegate fromBlob);
-		const uint64_t NameHash;
+		ComponentCompiler(Hash name, ToBlobDelegate toBlob, FromBlobDelegate fromBlob);
+		const Hash Name;
 		const ToBlobDelegate ToBlob;
 		const FromBlobDelegate FromBlob;
 	};
@@ -29,8 +31,7 @@ namespace Components
 #define REGISTER_COMPONENT_MANAGER(Name, ToBlob, FromBlob) \
 	static Zmey::Components::ComponentCompiler G##Name_ComponentManagerRegistration(Zmey::Hash(#Name), ToBlob, FromBlob)
 
-	const ComponentCompiler& GetComponentCompiler(uint64_t nameHash);
-
+	ZMEY_API const ComponentCompiler& GetComponentCompiler(Hash nameHash);
 }
 
 }

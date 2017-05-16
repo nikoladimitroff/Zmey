@@ -14,8 +14,8 @@ uint16_t GCurrentComponentIndex = 0u;
 stl::array<ComponentCompiler*, 256u> GComponentRegistry;
 }
 
-ComponentCompiler::ComponentCompiler(HashType nameHash, ToBlobDelegate toBlob, FromBlobDelegate fromBlob)
-	: NameHash(nameHash)
+ComponentCompiler::ComponentCompiler(Hash nameHash, ToBlobDelegate toBlob, FromBlobDelegate fromBlob)
+	: Name(nameHash)
 	, ToBlob(toBlob)
 	, FromBlob(fromBlob)
 {
@@ -23,11 +23,11 @@ ComponentCompiler::ComponentCompiler(HashType nameHash, ToBlobDelegate toBlob, F
 	GComponentRegistry[GCurrentComponentIndex++] = this;
 }
 
-const ComponentCompiler& GetComponentCompiler(uint64_t nameHash)
+const ComponentCompiler& GetComponentCompiler(Hash nameHash)
 {
 	auto it = std::find_if(GComponentRegistry.begin(), GComponentRegistry.end(), [nameHash](const ComponentCompiler* compiler)
 	{
-		return compiler->NameHash == nameHash;
+		return compiler->Name == nameHash;
 	});
 	ASSERT_FATAL(it != GComponentRegistry.end());
 	return **it;
