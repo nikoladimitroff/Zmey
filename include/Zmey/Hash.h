@@ -3,7 +3,6 @@
 
 namespace Zmey
 {
-struct Hash;
 
 struct Hash
 {
@@ -15,6 +14,10 @@ struct Hash
 	bool operator==(const Hash& other) const
 	{
 		return m_Value == other.m_Value;
+	}
+	bool operator<(const Hash& other) const
+	{
+		return m_Value < other.m_Value;
 	}
 
 private:
@@ -31,13 +34,40 @@ constexpr uint64_t HashFor(T input)
 }
 
 template<>
-inline constexpr uint64_t HashFor(const char* input)
+inline constexpr uint64_t HashFor<const char*>(const char* input)
 {
 	uint64_t hash = 0xcbf29ce484222325;
 	const uint64_t prime = 0x00000100000001b3;
 
 	while (*input) {
 		hash ^= static_cast<uint64_t>(*input);
+		hash *= prime;
+		++input;
+	}
+
+	return hash;
+}
+
+namespace HashHelpers
+{
+struct CaseInsensitiveStringWrapper
+{
+	constexpr CaseInsensitiveStringWrapper(const char* input)
+		: Input(input)
+	{}
+	const char* Input;
+};
+}
+
+template<>
+inline constexpr uint64_t HashFor<HashHelpers::CaseInsensitiveStringWrapper>(HashHelpers::CaseInsensitiveStringWrapper caseInsenstiveString)
+{
+	uint64_t hash = 0xcbf29ce484222325;
+	const uint64_t prime = 0x00000100000001b3;
+
+	const char* input = caseInsenstiveString.Input;
+	while (*input) {
+		hash ^= static_cast<uint64_t>(tolower(*input));
 		hash *= prime;
 		++input;
 	}
