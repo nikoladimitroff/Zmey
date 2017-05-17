@@ -22,14 +22,14 @@ namespace Components
 		using ToBlobDelegate = void (*)(const nlohmann::json&, IDataBlob& blob);
 		using FromBlobDelegate = void (*)(const tmp::vector<EntityId>& entities, const char* blob);
 
-		ComponentCompiler(Hash name, ToBlobDelegate toBlob, FromBlobDelegate fromBlob);
+		ComponentCompiler(const char* name, ToBlobDelegate toBlob, FromBlobDelegate fromBlob);
 		const Hash Name;
 		const ToBlobDelegate ToBlob;
 		const FromBlobDelegate FromBlob;
 	};
 
 #define REGISTER_COMPONENT_MANAGER(Name, ToBlob, FromBlob) \
-	static Zmey::Components::ComponentCompiler G##Name_ComponentManagerRegistration(Zmey::Hash(#Name), ToBlob, FromBlob)
+	static Zmey::Components::ComponentCompiler G##Name_ComponentManagerRegistration(#Name, ToBlob, FromBlob)
 
 	ZMEY_API const ComponentCompiler& GetComponentCompiler(Hash nameHash);
 }

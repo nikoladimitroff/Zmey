@@ -8,6 +8,7 @@ struct EntityId
 {
 	EntityId(const EntityId&) = default;
 	EntityId& operator=(const EntityId&) = default;
+	using IndexType = uint32_t;
 private:
 	EntityId(uint32_t index, uint16_t generation)
 		: Index(index)

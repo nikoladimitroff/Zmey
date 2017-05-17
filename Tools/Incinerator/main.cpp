@@ -1,5 +1,7 @@
 #include <string>
 
+#include <Zmey/EngineLoop.h>
+
 #include "Incinerator.h"
 
 
@@ -13,6 +15,7 @@ int main(int argc, char** argv)
 			options.GameDirectory = argv[++i];
 		}
 	}
+	Zmey::EngineLoop loop; // Neccessary to initialize the engine TODO: change the api to something not as ugly
 	Incinerator incinerator;
 	incinerator.Incinerate(options);
 

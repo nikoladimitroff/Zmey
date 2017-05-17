@@ -63,14 +63,14 @@ void Incinerator::Incinerate(const Options& options)
 
 void Incinerator::BuildClassIndex(const std::vector<std::string>& classFiles)
 {
-	std::for_each(classFiles.begin(), classFiles.end(), [](const std::string& filePath)
+	for(const std::string& filePath : classFiles)
 	{
 		nlohmann::json rawJson;
 		std::ifstream file(filePath);
 		file >> rawJson;
 
 		std::string version = rawJson["version"];
-		assert(std::strcmp(version.c_str(), "1.0"));
+		assert(std::strcmp(version.c_str(), "1.0") == 0);
 
 		std::string className = rawJson["name"];
 		std::string parentClass = rawJson["extends"];
@@ -85,8 +85,11 @@ void Incinerator::BuildClassIndex(const std::vector<std::string>& classFiles)
 			Zmey::Hash nameHash(name.c_str());
 			auto compiler = Zmey::Components::GetComponentCompiler(nameHash);
 			compiler.ToBlob(rawComponentData, binaryComponentData);
+
+			classEntry.Components.push_back(binaryComponentData);
 		}
-	});
+		m_ClassIndex[className] = classEntry;
+	}
 }
 
 void Incinerator::ComponentEntry::WriteData(Zmey::Hash nameHash, const uint8_t* data, uint16_t dataSize)
@@ -104,12 +107,67 @@ void Incinerator::IncinerateWorld(const std::string& destinationFolder, const st
 	nlohmann::json rawData;
 	worldFile >> rawData;
 
-	std::stringstream memBuffer;
-	memBuffer << "1.0"; // Version
+	std::stringstream membuffer;
+	membuffer << "1.0"; // Version
 						// Go through all entities
 	assert(rawData.count("entities") != 0);
+	struct EntityDataPerComponent
+	{
+		Zmey::EntityId::IndexType EntityIndex;
+		ComponentEntry Data;
+	};
+	std::unordered_map<std::string, std::vector<EntityDataPerComponent>> entitiesForComponent;
+	Zmey::EntityId::IndexType maxEntityIndex = 0u;
+
 	for (const auto& entityData : rawData["entities"])
 	{
-		std::cout << entityData;
+		// Go through each entity and serialize their components
+		const std::string entityClass = entityData["type"];
+		const auto entityIndex = maxEntityIndex++;
+		auto& classEntry = m_ClassIndex[entityClass];
+		for (const auto& inheritedComponent : classEntry.Components)
+		{
+			auto& entities = entitiesForComponent[inheritedComponent.ComponentName];
+			entities.push_back({ entityIndex, inheritedComponent });
+		}
+		for (const auto& newComponent : entityData["components"])
+		{
+			const std::string componentName = newComponent["name"];
+			auto& entities = entitiesForComponent[componentName];
+			// If this overrides an inherited components, this entity must be the last one added
+			bool overridesInherited = entities[entities.size() - 1].EntityIndex == entityIndex;
+			if (!overridesInherited)
+			{
+				entities.push_back({ entityIndex, ComponentEntry(componentName) });
+			}
+			auto& componentEntry = entities[entities.size() - 1].Data;
+
+			Zmey::Hash componentNameHash(componentName.c_str());
+			auto compiler = Zmey::Components::GetComponentCompiler(componentNameHash);
+			compiler.ToBlob(newComponent, componentEntry);
+		}
 	}
+
+	membuffer << maxEntityIndex;
+	for (const auto& it : entitiesForComponent)
+	{
+		membuffer << it.first.c_str();
+		membuffer << it.second.size();
+		for (const auto& entityData : it.second)
+		{
+			membuffer << entityData.EntityIndex;
+		}
+		for (const auto& entityData : it.second)
+		{
+			for (const auto& entityDataPiece : entityData.Data.Data)
+			{
+				auto dataPtr = reinterpret_cast<const char*>(entityDataPiece.second.data());
+				auto dataSize = entityDataPiece.second.size();
+				membuffer.write(dataPtr, dataSize);
+			}
+		}
+	}
+
+	std::ofstream outputFile(destinationFolder + "/testworld.bin", std::ios::binary | std::ios::out);
+	outputFile << membuffer.rdbuf();
 }

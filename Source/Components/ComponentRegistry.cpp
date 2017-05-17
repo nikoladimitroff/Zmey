@@ -14,8 +14,8 @@ uint16_t GCurrentComponentIndex = 0u;
 stl::array<ComponentCompiler*, 256u> GComponentRegistry;
 }
 
-ComponentCompiler::ComponentCompiler(Hash nameHash, ToBlobDelegate toBlob, FromBlobDelegate fromBlob)
-	: Name(nameHash)
+ComponentCompiler::ComponentCompiler(const char* nameHash, ToBlobDelegate toBlob, FromBlobDelegate fromBlob)
+	: Name(Zmey::Hash(Zmey::HashHelpers::CaseInsensitiveStringWrapper(nameHash)))
 	, ToBlob(toBlob)
 	, FromBlob(fromBlob)
 {
@@ -25,7 +25,7 @@ ComponentCompiler::ComponentCompiler(Hash nameHash, ToBlobDelegate toBlob, FromB
 
 const ComponentCompiler& GetComponentCompiler(Hash nameHash)
 {
-	auto it = std::find_if(GComponentRegistry.begin(), GComponentRegistry.end(), [nameHash](const ComponentCompiler* compiler)
+	auto it = std::find_if(GComponentRegistry.begin(), GComponentRegistry.begin() + GCurrentComponentIndex, [nameHash](const ComponentCompiler* compiler)
 	{
 		return compiler->Name == nameHash;
 	});
