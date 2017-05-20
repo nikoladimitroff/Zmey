@@ -10,11 +10,10 @@ namespace Zmey
 namespace Components
 {
 	
-class TransformManager : public IComponentManager
+class TransformManager : public ComponentManager
 {
-	DECLARE_COMPONENT_MANAGER();
+	DECLARE_COMPONENT_MANAGER(TransformManager);
 public:
-	TransformManager();
 
 	struct TransformInstance Lookup(EntityId);
 

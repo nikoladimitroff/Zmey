@@ -22,7 +22,7 @@ public:
 	void InitializeFromBuffer(const uint8_t* buffer, size_t size);
 private:
 	EntityManager m_EntityManager;
-	std::vector<Components::IComponentManager*> m_ComponentManagers;
+	std::vector<Components::ComponentManager*> m_ComponentManagers;
 };
 
 }

@@ -9,11 +9,6 @@ namespace Zmey
 {
 namespace Components
 {
-TransformManager::TransformManager()
-{
-	
-}
-
 TransformInstance TransformManager::Lookup(EntityId id)
 {
 	return TransformInstance(*this, id);

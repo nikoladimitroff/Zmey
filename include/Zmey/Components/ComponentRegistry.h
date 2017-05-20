@@ -10,7 +10,7 @@
 
 namespace Zmey
 {
-
+class World;
 namespace Components
 {
 	class IDataBlob
@@ -21,7 +21,7 @@ namespace Components
 	};
 	struct ComponentManagerEntry
 	{
-		using InstantiateDelegate = IComponentManager* (*)();
+		using InstantiateDelegate = ComponentManager* (*)(World&);
 		using ToBlobDelegate = void (*)(const nlohmann::json&, IDataBlob& blob);
 
 		ComponentManagerEntry(const char* name, ComponentIndex componentManagerIndex, InstantiateDelegate, ToBlobDelegate);
@@ -36,9 +36,9 @@ namespace Components
 	ZMEY_API const ComponentManagerEntry* GetComponentManagerAtIndex(ComponentIndex);
 
 	template<typename T>
-	IComponentManager* InstantiateManager()
+	ComponentManager* InstantiateManager(World& world)
 	{
-		return new T();
+		return new T(world);
 	}
 #define DEFINE_COMPONENT_MANAGER(Class, ShortName, ToBlob) \
 	const ComponentIndex Class##::SZmeyComponentManagerIndex = GetNextComponentManagerIndex(); \

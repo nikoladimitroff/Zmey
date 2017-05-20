@@ -13,7 +13,7 @@ World::World()
 	ComponentIndex i = 0u;
 	for (const ComponentManagerEntry* entry = GetComponentManagerAtIndex(0); entry; entry = GetComponentManagerAtIndex(++i))
 	{
-		m_ComponentManagers.push_back(entry->Instantiate());
+		m_ComponentManagers.push_back(entry->Instantiate(*this));
 	}
 }
 
