@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <queue>
+#include <unordered_map>
 
 #include <Zmey/Memory/Allocator.h>
 #include "StlAllocator.h"
@@ -207,6 +208,8 @@ namespace stl
 	using deque = std::deque<T, StlAllocatorTemplate<DefaultAllocator, T>>;
 	template<typename T>
 	using queue = std::queue<T, stl::deque<T>>;
+	template<typename K, typename V>
+	using unordered_map = std::unordered_map<K, V, std::hash<K>, std::equal_to<K>, StlAllocatorTemplate<DefaultAllocator, std::pair<const K, V>>>;
 	using string = std::basic_string<char, std::char_traits<char>, StlAllocatorTemplate<DefaultAllocator, char>>;
 	using wstring = std::basic_string<wchar_t, std::char_traits<wchar_t>, StlAllocatorTemplate<DefaultAllocator, wchar_t>>;
 	using small_string = string;
