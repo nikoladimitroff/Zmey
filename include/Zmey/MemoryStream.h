@@ -88,14 +88,14 @@ public:
 
 	void Read(uint8_t* bufferToFill, size_t bytesToRead)
 	{
-		ASSERT_FATAL(m_ReaderPosition + bytesToRead < m_BufferSize);
+		ASSERT_FATAL(m_ReaderPosition + bytesToRead <= m_BufferSize);
 		std::memcpy(bufferToFill, m_Buffer + m_ReaderPosition, bytesToRead);
 		m_ReaderPosition += bytesToRead;
 	}
 
 	bool IsEOF() const
 	{
-		return m_ReaderPosition < m_BufferSize;
+		return m_ReaderPosition >= m_BufferSize;
 	}
 
 	template<typename T>

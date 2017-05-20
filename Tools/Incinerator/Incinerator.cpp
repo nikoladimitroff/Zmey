@@ -108,9 +108,6 @@ void Incinerator::IncinerateWorld(const std::string& destinationFolder, const st
 	nlohmann::json rawData;
 	worldFile >> rawData;
 
-	Zmey::MemoryOutputStream memstream;
-	memstream << "1.0"; // Version
-
 	// Go through all entities
 	assert(rawData.count("entities") != 0);
 	struct EntityDataPerComponent
@@ -150,12 +147,14 @@ void Incinerator::IncinerateWorld(const std::string& destinationFolder, const st
 		}
 	}
 
+	Zmey::MemoryOutputStream memstream;
+	memstream << "1.0"; // Version
 	memstream << maxEntityIndex;
 	for (const auto& it : entitiesForComponent)
 	{
 		Zmey::Hash componentNameHash(it.first.c_str());
 		memstream << static_cast<uint64_t>(componentNameHash);
-		memstream << it.second.size();
+		memstream << static_cast<Zmey::EntityId::IndexType>(it.second.size());
 		for (const auto& entityData : it.second)
 		{
 			memstream << entityData.EntityIndex;

@@ -17,7 +17,7 @@ public:
 	template<typename T>
 	T& GetManager()
 	{
-		return *reinterpret_cast<T*>(m_ComponentManagers[T::SZmeyComponentIndex]);
+		return *reinterpret_cast<T*>(m_ComponentManagers[T::SZmeyComponentManagerIndex]);
 	}
 	void InitializeFromBuffer(const uint8_t* buffer, size_t size);
 private:
