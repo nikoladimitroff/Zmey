@@ -59,8 +59,7 @@ void TransformManager::InitializeFromBlob(const tmp::vector<EntityId>& entities,
 	stream.Read(reinterpret_cast<uint8_t*>(&m_Scales[0]), scaleBufferLength);
 }
 
-DEFINE_COMPONENT_MANAGER(TransformManager, Transform,
-	&Zmey::Components::TransformComponentToBlob);
+DEFINE_COMPONENT_MANAGER(TransformManager, Transform, &Zmey::Components::TransformComponentToBlob);
 
 }
 }

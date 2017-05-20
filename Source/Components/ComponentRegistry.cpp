@@ -31,8 +31,15 @@ ComponentManagerEntry::ComponentManagerEntry(const char* nameHash, ComponentInde
 	GComponentRegistry[ComponentIndex] = this;
 }
 
+void EmptyToBlobImplementation(const nlohmann::json&, IDataBlob& blob)
+{}
+
 const ComponentManagerEntry& GetComponentManager(Hash nameHash)
 {
+	for (size_t i = 0; i < GCurrentComponentIndex; i++)
+	{
+		FORMAT_LOG(Warning, Temp, "Soo comp hash is %llu", (uint64_t)GComponentRegistry[i]);
+	}
 	auto it = std::find_if(GComponentRegistry.begin(), GComponentRegistry.begin() + GCurrentComponentIndex, [nameHash](const ComponentManagerEntry* compiler)
 	{
 		return compiler->Name == nameHash;

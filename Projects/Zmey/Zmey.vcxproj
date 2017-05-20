@@ -102,6 +102,7 @@
     <ClInclude Include="..\..\include\Zmey\Components\ComponentManager.h" />
     <ClInclude Include="..\..\include\Zmey\Components\ComponentRegistry.h" />
     <ClInclude Include="..\..\include\Zmey\Components\ComponentRegistryCommon.h" />
+    <ClInclude Include="..\..\include\Zmey\Components\RectangleManager.h" />
     <ClInclude Include="..\..\include\Zmey\Components\TransformManager.h" />
     <ClInclude Include="..\..\include\Zmey\Config.h" />
     <ClInclude Include="..\..\include\Zmey\EngineLoop.h" />
@@ -140,6 +141,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\Components\ComponentRegistry.cpp" />
+    <ClCompile Include="..\..\Source\Components\RectangleManager.cpp" />
     <ClCompile Include="..\..\Source\Components\TransformManager.cpp" />
     <ClCompile Include="..\..\Source\EngineLoop.cpp" />
     <ClCompile Include="..\..\Source\EntityManager.cpp" />

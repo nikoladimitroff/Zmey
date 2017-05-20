@@ -30,6 +30,7 @@ namespace Components
 		InstantiateDelegate Instantiate;
 		const ToBlobDelegate ToBlob;
 	};
+	void EmptyToBlobImplementation(const nlohmann::json&, IDataBlob& blob);
 
 	ZMEY_API ComponentIndex GetNextComponentManagerIndex();
 	ZMEY_API const ComponentManagerEntry& GetComponentManager(Hash nameHash);
