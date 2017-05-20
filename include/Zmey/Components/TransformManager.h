@@ -18,7 +18,7 @@ public:
 	struct TransformInstance Lookup(EntityId);
 
 	virtual void InitializeFromBlob(const tmp::vector<EntityId>&, Zmey::MemoryInputStream&) override;
-	virtual void Simulate(float deltaMs) override;
+	virtual void Simulate(float deltaTime) override;
 private:
 	// TODO: Store all 3 vectors in sequential memory
 	stl::vector<Vector3> m_Positions;

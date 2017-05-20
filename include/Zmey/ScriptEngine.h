@@ -10,7 +10,7 @@ class IScriptEngine
 public:
 	virtual ~IScriptEngine() {}
 	virtual void ExecuteFromFile(ResourceId id) = 0;
-	virtual void ExecuteNextFrame(float deltams) = 0;
+	virtual void ExecuteNextFrame(float deltaTime) = 0;
 };
 
 }

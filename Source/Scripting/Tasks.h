@@ -38,7 +38,7 @@ struct ScriptTask
 struct FrameTask
 {
 	FrameTask(float delta)
-		: DeltaMs(delta)
+		: DeltaMs(delta / 1000.f)
 	{}
 	float DeltaMs;
 };

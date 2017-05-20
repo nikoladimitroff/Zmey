@@ -17,7 +17,7 @@ class RectangleManager : public ComponentManager
 public:
 
 	virtual void InitializeFromBlob(const tmp::vector<EntityId>&, Zmey::MemoryInputStream&) override;
-	virtual void Simulate(float deltaMs) override;
+	virtual void Simulate(float deltaTime) override;
 
 	tmp::vector<Graphics::Rect> GetRectsToRender() const;
 private:

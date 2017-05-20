@@ -103,9 +103,9 @@ void ChakraScriptEngine::ExecuteFromFile(ResourceId id)
 	m_ScriptTasks.Enqueue(std::move(ScriptTask(scriptSource)));
 }
 
-void ChakraScriptEngine::ExecuteNextFrame(float deltams)
+void ChakraScriptEngine::ExecuteNextFrame(float deltaTime)
 {
-	m_FrameTasks.Enqueue(std::move(FrameTask(deltams)));
+	m_FrameTasks.Enqueue(std::move(FrameTask(deltaTime)));
 }
 
 }

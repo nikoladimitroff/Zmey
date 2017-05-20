@@ -20,7 +20,7 @@ public:
 	~ChakraScriptEngine();
 
 	virtual void ExecuteFromFile(ResourceId) override;
-	virtual void ExecuteNextFrame(float deltams) override;
+	virtual void ExecuteNextFrame(float deltaTime) override;
 private:
 	void Run();
 	void RunOneLoopIteration();

@@ -19,7 +19,7 @@ public:
 	virtual ~ComponentManager() {}
 
 	virtual void InitializeFromBlob(const tmp::vector<EntityId>& entities, MemoryInputStream& blob) = 0;
-	virtual void Simulate(float deltaMs) = 0;
+	virtual void Simulate(float deltaTime) = 0;
 protected:
 	World& m_World;
 };

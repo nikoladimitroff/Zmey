@@ -22,7 +22,7 @@ void RectangleManager::InitializeFromBlob(const tmp::vector<EntityId>& entities,
 		m_Rects.push_back(std::move(rect));
 	}
 }
-void RectangleManager::Simulate(float deltaMs)
+void RectangleManager::Simulate(float deltaTime)
 {
 	auto& transformManager = m_World.GetManager<TransformManager>();
 	for (EntityId::IndexType i = 0u; i < m_Entities.size(); i++)

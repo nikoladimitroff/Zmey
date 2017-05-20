@@ -19,8 +19,8 @@ extern Zmey::ILogHandler* GLogHandler;
 	do \
 	{ \
 		auto scope = TempAllocator::GetTlsAllocator().ScopeNow(); \
-		tmp::string buffer(sizeof(Message) * 2, '\0'); \
-		sprintf_s(&buffer[0], sizeof(Message) * 2, Message, __VA_ARGS__); \
+		tmp::string buffer(sizeof(Message) * 5, '\0'); \
+		sprintf_s(&buffer[0], sizeof(Message) * 5, Message, __VA_ARGS__); \
 		GLogHandler->WriteLog(Zmey::LogSeverity::##Severity, #Channel, buffer.c_str()); \
 	}\
 	while(0, 0)

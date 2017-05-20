@@ -82,7 +82,7 @@ void EngineLoop::Run()
 	uint64_t frameIndex = 0;
 
 	using clock = std::chrono::high_resolution_clock;
-	clock::time_point start = clock::now();
+	clock::time_point lastFrameTmestamp = clock::now();
 
 	while (g_Run)
 	{
@@ -100,18 +100,16 @@ void EngineLoop::Run()
 			m_World = Modules::ResourceLoader->TakeOwnershipOver<World>(m_WorldResourceId);
 		}
 
-		clock::duration timeSinceLastFrame = std::chrono::duration_cast<std::chrono::microseconds>(clock::now() - start);
-		float deltams = timeSinceLastFrame.count() / 1000.f;
+		clock::time_point currentFrameTimestamp = clock::now();
+		clock::duration timeSinceLastFrame = currentFrameTimestamp - lastFrameTmestamp;
+		float deltaTime = timeSinceLastFrame.count() * 1e-9f;
 
-		Modules::ScriptEngine->ExecuteNextFrame(deltams);
+		Modules::ScriptEngine->ExecuteNextFrame(deltaTime);
 
 		tmp::vector<Graphics::Rect> rectsToDraw;
 		if (m_World)
 		{
-			m_World->Simulate(deltams);
-			//auto& transformManager = m_World->GetManager<Zmey::Components::TransformManager>();
-			//m_World->GetEntityManager().
-			//auto transform = transformManager.Lookup()
+			m_World->Simulate(deltaTime);
 			rectsToDraw = m_World->GetManager<Zmey::Components::RectangleManager>().GetRectsToRender();
 		}
 		// Rendering stuff
@@ -127,6 +125,7 @@ void EngineLoop::Run()
 
 		// TODO: From this point graphics stuff should be on render thread
 		Modules::Renderer->RenderFrame(frameData);
+		lastFrameTmestamp = currentFrameTimestamp;
 	}
 
 	Modules::Platform->KillWindow(windowHandle);

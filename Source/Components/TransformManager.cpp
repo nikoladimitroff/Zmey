@@ -14,11 +14,11 @@ TransformInstance TransformManager::Lookup(EntityId id)
 	return TransformInstance(*this, id);
 }
 
-void TransformManager::Simulate(float deltaMs)
+void TransformManager::Simulate(float deltaTime)
 {
 	for (auto& pos : m_Positions)
 	{
-		pos += Vector3(0.0001f, 0.0001f, 0.0001f);
+		pos += Vector3(0.05f, 0.05f, 0.05f) * deltaTime;
 	}
 }
 

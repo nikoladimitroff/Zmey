@@ -20,7 +20,7 @@ public:
 		return *reinterpret_cast<T*>(m_ComponentManagers[T::SZmeyComponentManagerIndex]);
 	}
 	void InitializeFromBuffer(const uint8_t* buffer, size_t size);
-	void Simulate(float deltaMs);
+	void Simulate(float deltaTime);
 private:
 	EntityManager m_EntityManager;
 	std::vector<Components::ComponentManager*> m_ComponentManagers;
