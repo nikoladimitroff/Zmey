@@ -161,6 +161,9 @@
     <ClInclude Include="..\..\include\Zmey\Components\ComponentRegistry.h">
       <Filter>include\Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Components\ComponentRegistryCommon.h">
+      <Filter>include\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\EngineLoop.cpp">
@@ -207,6 +210,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\Components\ComponentRegistry.cpp">
       <Filter>Source\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\World.cpp">
+      <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

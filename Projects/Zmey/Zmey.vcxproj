@@ -100,6 +100,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\Zmey\Components\ComponentRegistry.h" />
+    <ClInclude Include="..\..\include\Zmey\Components\ComponentRegistryCommon.h" />
     <ClInclude Include="..\..\include\Zmey\Components\TransformManager.h" />
     <ClInclude Include="..\..\include\Zmey\Config.h" />
     <ClInclude Include="..\..\include\Zmey\EngineLoop.h" />
@@ -151,6 +152,7 @@
     <ClCompile Include="..\..\Source\Scripting\Binding.cpp" />
     <ClCompile Include="..\..\Source\Scripting\ChakraScriptEngine.cpp" />
     <ClCompile Include="..\..\Source\Scripting\Tasks.cpp" />
+    <ClCompile Include="..\..\Source\World.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
