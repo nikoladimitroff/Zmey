@@ -21,7 +21,7 @@ std::vector<std::string> FindAllFiles(const std::string& directory, const std::s
 	auto findHandle = ::FindFirstFile(searchString.c_str(), &ffd);
 	if (INVALID_HANDLE_VALUE == findHandle)
 	{
-		std::cerr << "Failed to find shaders to compile!" << std::endl;
+		std::cerr << "Failed to find " << extension << " files to compile!" << std::endl;
 		return {};
 	}
 
@@ -54,6 +54,9 @@ void Incinerator::Incinerate(const Options& options)
 
 	auto classDescriptors = FindAllFiles(contentDir, classExtension);
 	BuildClassIndex(classDescriptors);
+
+	auto mkdirResult = ::CreateDirectory(compiledDir.c_str(), NULL);
+	assert(mkdirResult != ERROR_PATH_NOT_FOUND);
 
 	auto worlds = FindAllFiles(contentDir, worldExtension);
 	for (const auto& worldSectionFile : worlds)
