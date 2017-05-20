@@ -57,4 +57,12 @@ void World::InitializeFromBuffer(const uint8_t* buffer, size_t size)
 	}
 }
 
+void World::Simulate(float deltaMs)
+{
+	for (ComponentIndex i = 0u; i < m_ComponentManagers.size(); ++i)
+	{
+		m_ComponentManagers[i]->Simulate(deltaMs);
+	}
+}
+
 }

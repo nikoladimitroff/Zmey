@@ -18,7 +18,7 @@ void TransformManager::Simulate(float deltaMs)
 {
 	for (auto& pos : m_Positions)
 	{
-		pos += Vector3(1.f, 1.f, 1.f);
+		pos += Vector3(0.0001f, 0.0001f, 0.0001f);
 	}
 }
 

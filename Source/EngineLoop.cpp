@@ -1,5 +1,6 @@
 #include <Zmey/EngineLoop.h>
 
+#include <chrono>
 #include <iostream>
 
 #include <Zmey/Memory/Allocator.h>
@@ -7,6 +8,8 @@
 #include <Zmey/Logging.h>
 #include <Zmey/Modules.h>
 #include <Zmey/World.h>
+#include <Zmey/Components/TransformManager.h>
+#include <Zmey/Components/RectangleManager.h>
 
 #include <Zmey/Graphics/FrameData.h>
 #include <Zmey/Graphics/Features.h>
@@ -78,13 +81,13 @@ void EngineLoop::Run()
 
 	uint64_t frameIndex = 0;
 
-	stl::vector<Graphics::Rect> rectsToDraw;
-
-	rectsToDraw.push_back(Graphics::Rect{ 0.0f, 0.0f, 0.1f, 0.1f,{ 1.0f, 0.0f, 0.0f, 1.0f } });
-	rectsToDraw.push_back(Graphics::Rect{ 0.5f, 0.5f, 0.2f, 0.1f, {0.0f, 0.0f, 1.0f, 0.5f} });
+	using clock = std::chrono::high_resolution_clock;
+	clock::time_point start = clock::now();
 
 	while (g_Run)
 	{
+		auto frameScope = TempAllocator::GetTlsAllocator().ScopeNow();
+
 		Modules::Platform->PumpMessages(windowHandle);
 		while (frameIndex >= 2 && !Modules::Renderer->CheckIfFrameCompleted(frameIndex - 2))
 		{
@@ -97,16 +100,20 @@ void EngineLoop::Run()
 			m_World = Modules::ResourceLoader->TakeOwnershipOver<World>(m_WorldResourceId);
 		}
 
-		Modules::ScriptEngine->ExecuteNextFrame(0.f);
+		clock::duration timeSinceLastFrame = std::chrono::duration_cast<std::chrono::microseconds>(clock::now() - start);
+		float deltams = timeSinceLastFrame.count() / 1000.f;
 
+		Modules::ScriptEngine->ExecuteNextFrame(deltams);
 
-		// TODO: remove this
-		// Animation code ^^
-		rectsToDraw[0].width += 0.0001f;
-		if (rectsToDraw[0].width > 0.5f)
-			rectsToDraw[0].width = 0.0f;
-
-
+		tmp::vector<Graphics::Rect> rectsToDraw;
+		if (m_World)
+		{
+			m_World->Simulate(deltams);
+			//auto& transformManager = m_World->GetManager<Zmey::Components::TransformManager>();
+			//m_World->GetEntityManager().
+			//auto transform = transformManager.Lookup()
+			rectsToDraw = m_World->GetManager<Zmey::Components::RectangleManager>().GetRectsToRender();
+		}
 		// Rendering stuff
 
 		// TODO: Compute visibility
