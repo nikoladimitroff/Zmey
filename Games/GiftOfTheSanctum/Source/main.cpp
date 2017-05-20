@@ -7,7 +7,7 @@
 
 int main()
 {
-	Zmey::EngineLoop loop;
+	Zmey::EngineLoop loop("IncineratedDataCache/testworld.bin");
 	loop.Run();
 	return 0;
 }

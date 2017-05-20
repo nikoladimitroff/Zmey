@@ -56,12 +56,12 @@ public:
 	}
 };
 
-EngineLoop::EngineLoop()
+EngineLoop::EngineLoop(const char* initialWorld)
 {
 	Zmey::GAllocator = StaticAlloc<MallocAllocator>();
 	Zmey::GLogHandler = StaticAlloc<StdOutLogHandler>();
 	Zmey::Modules::Initialize();
-	m_World = StaticAlloc<World>();
+	m_WorldResourceId = Modules::ResourceLoader->LoadResource(initialWorld);
 }
 void EngineLoop::Run()
 {
@@ -75,8 +75,6 @@ void EngineLoop::Run()
 		return;
 	}
 
-	auto id = Modules::ResourceLoader->LoadResource("Content\\Meshes\\Vampire_A_Lusth\\Vampire_A_Lusth.dae");
-	auto scriptId = Modules::ResourceLoader->LoadResource("Content\\Scripts\\main.js");
 	uint64_t frameIndex = 0;
 
 	stl::vector<Graphics::Rect> rectsToDraw;
@@ -93,16 +91,11 @@ void EngineLoop::Run()
 			Modules::Platform->PumpMessages(windowHandle);
 		}
 
-		if (Modules::ResourceLoader->IsResourceReady(id))
+		if (Modules::ResourceLoader->IsResourceReady(m_WorldResourceId))
 		{
-			volatile int x;
-			x = 5;
+			m_World = Modules::ResourceLoader->TakeOwnershipOver<World>(m_WorldResourceId);
 		}
-		if (Modules::ResourceLoader->IsResourceReady(scriptId))
-		{
-			Modules::ScriptEngine->ExecuteFromFile(scriptId);
-			scriptId = -1;
-		}
+
 		Modules::ScriptEngine->ExecuteNextFrame(0.f);
 
 
