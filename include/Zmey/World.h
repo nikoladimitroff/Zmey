@@ -19,6 +19,7 @@ public:
 	{
 		return *reinterpret_cast<T*>(m_ComponentManagers[T::SZmeyComponentIndex]);
 	}
+	void InitializeFromBuffer(const uint8_t* buffer, size_t size);
 private:
 	EntityManager m_EntityManager;
 	std::vector<void*> m_ComponentManagers;

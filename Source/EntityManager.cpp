@@ -4,7 +4,7 @@
 namespace Zmey
 {
 
-EntityId EntityManager::Spawn(const EntityDescription&)
+EntityId EntityManager::SpawnOne()
 {
 	if (m_FreeIndices.size() == 0)
 	{
@@ -18,6 +18,18 @@ EntityId EntityManager::Spawn(const EntityDescription&)
 		return EntityId(freeIndex, m_Generation[freeIndex]);
 	}
 }
+
+tmp::vector<EntityId> EntityManager::SpawnRange(EntityId::IndexType count)
+{
+	tmp::vector<EntityId> entities;
+	entities.reserve(count);
+	for (EntityId::IndexType i = 0; i < count; i++)
+	{
+		entities.push_back(SpawnOne());
+	}
+	return entities;
+}
+
 void EntityManager::Destroy(EntityId id)
 {
 	if (m_Generation[id.Index] != id.Generation)

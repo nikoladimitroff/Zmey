@@ -26,12 +26,11 @@ private:
 	friend class EntityManager;
 };
 
-// TODO To be replaced by something loaded from the resource loader
-using EntityDescription = void*;
 class EntityManager
 {
 public:
-	EntityId Spawn(const EntityDescription&);
+	EntityId SpawnOne();
+	tmp::vector<EntityId> SpawnRange(EntityId::IndexType count);
 	void Destroy(EntityId);
 	bool IsAlive(EntityId);
 private:

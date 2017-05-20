@@ -47,7 +47,7 @@ inline T* ZmeyMallocArray(unsigned count)
 {
 	const auto totalSize = sizeof(T) * count + sizeof(ArraySizeType);
 	auto ptr = ZmeyMalloc(totalSize);
-	*static_cast<ArraySizeType*>(ptr) = static_cast<ArraySizeType>(count);
+	*reinterpret_cast<ArraySizeType*>(ptr) = static_cast<ArraySizeType>(count);
 
 	auto result = reinterpret_cast<T*>(static_cast<char*>(ptr) + sizeof(ArraySizeType));
 	if (!std::is_fundamental<T>::value)
@@ -65,9 +65,9 @@ template<typename T>
 inline void ZmeyDestroyArray(const T* ptr)
 {
 	if (!ptr)
-		return nullptr;
+		return;
 
-	const ArraySizeType* counterPtr = reinterpret_cast<ArraySizeType*>(ptr);
+	const ArraySizeType* counterPtr = reinterpret_cast<const ArraySizeType*>(ptr);
 	const auto count = *counterPtr;
 
 	for (int i = int(count - 1); i >= 0; --i) {
@@ -225,10 +225,10 @@ namespace stl
 		auto ptr = new (GAllocator->Malloc(sizeof(T), alignof(T))) T(std::forward<Args>(args)...);
 		return unique_ptr<T>(ptr);
 	}
-	template<typename T, typename... Args>
-	inline unique_array<T> make_unique_array(Args&&... args)
+	template<typename T>
+	inline unique_array<T> make_unique_array(size_t size)
 	{
-		auto ptr = new (GAllocator->Malloc(sizeof(T), alignof(T))) T(std::forward<Args>(args)...);
+		auto ptr = new (GAllocator->Malloc(size * sizeof(T), alignof(T))) T[size];
 		return unique_array<T>(ptr);
 	}
 	template<typename T, typename... Args>
