@@ -6,8 +6,12 @@ namespace Zmey
 
 struct EntityId
 {
-	EntityId(const EntityId&) = default;
-	EntityId& operator=(const EntityId&) = default;
+	EntityId(const EntityId& other) = default;
+	EntityId& operator=(const EntityId& rhs)
+	{
+		std::memcpy(this, &rhs, sizeof(EntityId));
+		return *this;
+	}
 	using IndexType = uint32_t;
 
 	friend bool operator==(const EntityId& lhs, const EntityId& rhs)
