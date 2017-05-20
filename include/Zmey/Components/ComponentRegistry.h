@@ -23,7 +23,7 @@ namespace Components
 		using InstantiateDelegate = void* (*)();
 		using DestroyDelegate = void (*)(void*);
 		using ToBlobDelegate = void (*)(const nlohmann::json&, IDataBlob& blob);
-		using FromBlobDelegate = void (*)(const tmp::vector<EntityId>& entities, const char* blob);
+		using FromBlobDelegate = void (*)(void* manager, const tmp::vector<EntityId>& entities, const uint8_t* blob);
 
 		ComponentManagerEntry(const char* name, ComponentIndex ComponentManagerIndex, InstantiateDelegate, DestroyDelegate, ToBlobDelegate, FromBlobDelegate);
 		const Hash Name;

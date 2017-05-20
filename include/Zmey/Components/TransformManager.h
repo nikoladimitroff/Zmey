@@ -13,19 +13,29 @@ class TransformManager
 {
 	DECLARE_COMPONENT_MANAGER();
 public:
-	void SpawnComponents(const tmp::vector<EntityId>&);
+	TransformManager();
+
+	struct TransformInstance Lookup(EntityId);
 private:
-	Vector3* m_Positions;
-	float* m_Scales;
-	Quaternion* m_Rotations;
+	// TODO: Store all 3 vectors in sequential memory
+	stl::vector<Vector3> m_Positions;
+	stl::vector<Quaternion> m_Rotations;
+	stl::vector<Vector3> m_Scales;
+	stl::unordered_map<EntityId, size_t> m_EntityToIndex;
 	friend struct TransformInstance;
+	friend void TransformComponentFromBlob(void*, const tmp::vector<EntityId>&, const uint8_t*);
 };
 
 struct TransformInstance
 {
-	const Vector3& Position() const;
-	const float Scale() const;
-	const Quaternion& Rotation() const;
+	inline TransformInstance(TransformManager& manager, EntityId id)
+		: m_Manager(manager)
+		, m_Entity(id)
+	{
+	}
+	inline Vector3& Position() const { return m_Manager.m_Positions[m_Manager.m_EntityToIndex[m_Entity]]; }
+	inline Vector3& Scale() const { return m_Manager.m_Scales[m_Manager.m_EntityToIndex[m_Entity]]; }
+	inline Quaternion& Rotation() const { return m_Manager.m_Rotations[m_Manager.m_EntityToIndex[m_Entity]]; }
 private:
 	TransformManager& m_Manager;
 	EntityId m_Entity;
