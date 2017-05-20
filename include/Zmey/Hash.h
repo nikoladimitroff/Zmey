@@ -19,7 +19,10 @@ struct Hash
 	{
 		return m_Value < other.m_Value;
 	}
-
+	explicit operator uint64_t() const
+	{
+		return m_Value;
+	}
 private:
 	uint64_t m_Value;
 	friend struct std::hash<Zmey::Hash>;
