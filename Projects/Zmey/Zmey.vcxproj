@@ -118,6 +118,7 @@
     <ClInclude Include="..\..\include\Zmey\Logging.h" />
     <ClInclude Include="..\..\include\Zmey\LogHandler.h" />
     <ClInclude Include="..\..\include\Zmey\Math\Math.h" />
+    <ClInclude Include="..\..\include\Zmey\MemoryStream.h" />
     <ClInclude Include="..\..\include\Zmey\Memory\Allocator.h" />
     <ClInclude Include="..\..\include\Zmey\Memory\LinearAllocator.h" />
     <ClInclude Include="..\..\include\Zmey\Memory\MemoryManagement.h" />
