@@ -1,6 +1,7 @@
 #pragma once
 #include <Zmey/Math/Math.h>
 #include <Zmey/EntityManager.h>
+#include <Zmey/Components/ComponentRegistryCommon.h>
 
 namespace Zmey
 {
@@ -10,6 +11,7 @@ namespace Components
 	
 class TransformManager
 {
+	DECLARE_COMPONENT_MANAGER();
 public:
 	void SpawnComponents(const tmp::vector<EntityId>&);
 private:

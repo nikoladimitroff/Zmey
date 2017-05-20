@@ -1,12 +1,8 @@
 #pragma once
 namespace Zmey
 {
-namespace Components
-{
-struct ComponentManagerEntry;
-}
+using ComponentIndex = uint16_t;
 }
 #define DECLARE_COMPONENT_MANAGER() \
-	private: \
-		const static uint32_t SZmeyComponentManagerIndex; \
-		friend class Zmey::Components::ComponentManagerEntry;
+	public: \
+		const static Zmey::ComponentIndex SZmeyComponentManagerIndex

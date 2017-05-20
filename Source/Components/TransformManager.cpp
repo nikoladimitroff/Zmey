@@ -31,6 +31,9 @@ void TransformComponentToBlob(const nlohmann::json& rawJson, IDataBlob& blob)
 	blob.WriteData("scale", reinterpret_cast<uint8_t*>(scale), sizeof(scale));
 }
 
+DEFINE_COMPONENT_MANAGER(TransformManager, Transform,
+	&Zmey::Components::TransformComponentToBlob,
+	nullptr); // Replace with correct implementations
+
 }
 }
-REGISTER_COMPONENT_MANAGER(Transform, &Zmey::Components::TransformComponentToBlob, nullptr); // Replace with correct implementations
