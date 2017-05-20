@@ -24,6 +24,7 @@ ComponentManagerEntry::ComponentManagerEntry(const char* nameHash, ComponentInde
 	InstantiateDelegate instantiate,
 	ToBlobDelegate toBlob)
 	: Name(Zmey::Hash(Zmey::HashHelpers::CaseInsensitiveStringWrapper(nameHash)))
+	, Index(ComponentIndex)
 	, Instantiate(instantiate)
 	, ToBlob(toBlob)
 {

@@ -24,8 +24,9 @@ namespace Components
 		using InstantiateDelegate = IComponentManager* (*)();
 		using ToBlobDelegate = void (*)(const nlohmann::json&, IDataBlob& blob);
 
-		ComponentManagerEntry(const char* name, ComponentIndex ComponentManagerIndex, InstantiateDelegate, ToBlobDelegate);
+		ComponentManagerEntry(const char* name, ComponentIndex componentManagerIndex, InstantiateDelegate, ToBlobDelegate);
 		const Hash Name;
+		const ComponentIndex Index;
 		InstantiateDelegate Instantiate;
 		const ToBlobDelegate ToBlob;
 	};

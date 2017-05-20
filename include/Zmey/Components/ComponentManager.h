@@ -5,6 +5,7 @@
 
 namespace Zmey
 {
+class MemoryInputStream;
 namespace Components
 {
 
@@ -13,7 +14,7 @@ class IComponentManager
 public:
 	virtual ~IComponentManager() {}
 
-	virtual size_t InitializeFromBlob(const tmp::vector<EntityId>& entities, const uint8_t* blob) = 0;
+	virtual void InitializeFromBlob(const tmp::vector<EntityId>& entities, MemoryInputStream& blob) = 0;
 	virtual void Simulate(float deltaMs) = 0;
 };
 

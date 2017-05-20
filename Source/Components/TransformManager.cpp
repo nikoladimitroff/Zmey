@@ -2,6 +2,7 @@
 
 #include <nlohmann/json.hpp>
 
+#include <Zmey/MemoryStream.h>
 #include <Zmey/Components/ComponentRegistry.h>
 
 namespace Zmey
@@ -20,6 +21,10 @@ TransformInstance TransformManager::Lookup(EntityId id)
 
 void TransformManager::Simulate(float deltaMs)
 {
+	for (auto& pos : m_Positions)
+	{
+		pos += Vector3(1.f, 1.f, 1.f);
+	}
 }
 
 void TransformComponentToBlob(const nlohmann::json& rawJson, IDataBlob& blob)
@@ -44,24 +49,19 @@ void TransformComponentToBlob(const nlohmann::json& rawJson, IDataBlob& blob)
 	blob.WriteData("scale", reinterpret_cast<uint8_t*>(scale), sizeof(scale));
 }
 
-size_t TransformManager::InitializeFromBlob(const tmp::vector<EntityId>& entities, const uint8_t* blob)
+void TransformManager::InitializeFromBlob(const tmp::vector<EntityId>& entities, Zmey::MemoryInputStream& stream)
 {
 	m_Positions.resize(entities.size());
 	size_t positionBufferLength = sizeof(Vector3) * entities.size();
-	std::memcpy(&m_Positions[0], blob, positionBufferLength);
-	blob += positionBufferLength;
+	stream.Read(reinterpret_cast<uint8_t*>(&m_Positions[0]), positionBufferLength);
 
 	m_Rotations.resize(entities.size());
 	size_t rotationBufferLength = sizeof(Quaternion) * entities.size();
-	std::memcpy(&m_Rotations[0], blob, rotationBufferLength);
-	blob += rotationBufferLength;
+	stream.Read(reinterpret_cast<uint8_t*>(&m_Rotations[0]), rotationBufferLength);
 
 	m_Scales.resize(entities.size());
 	size_t scaleBufferLength = sizeof(Vector3) * entities.size();
-	std::memcpy(&m_Scales[0], blob, scaleBufferLength);
-	blob += scaleBufferLength;
-
-	return positionBufferLength + rotationBufferLength + scaleBufferLength;
+	stream.Read(reinterpret_cast<uint8_t*>(&m_Scales[0]), scaleBufferLength);
 }
 
 DEFINE_COMPONENT_MANAGER(TransformManager, Transform,
