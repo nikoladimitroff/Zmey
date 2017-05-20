@@ -8,6 +8,7 @@
 #include <Windows.h>
 
 #include <Zmey/Components/ComponentRegistry.h>
+#include <Zmey/MemoryStream.h>
 #include <nlohmann/json.hpp>
 
 
@@ -107,9 +108,10 @@ void Incinerator::IncinerateWorld(const std::string& destinationFolder, const st
 	nlohmann::json rawData;
 	worldFile >> rawData;
 
-	std::stringstream membuffer;
-	membuffer << "1.0"; // Version
-						// Go through all entities
+	Zmey::MemoryOutputStream memstream;
+	memstream << "1.0"; // Version
+
+	// Go through all entities
 	assert(rawData.count("entities") != 0);
 	struct EntityDataPerComponent
 	{
@@ -148,26 +150,27 @@ void Incinerator::IncinerateWorld(const std::string& destinationFolder, const st
 		}
 	}
 
-	membuffer << maxEntityIndex;
+	memstream << maxEntityIndex;
 	for (const auto& it : entitiesForComponent)
 	{
-		membuffer << it.first.c_str();
-		membuffer << it.second.size();
+		Zmey::Hash componentNameHash(it.first.c_str());
+		memstream << static_cast<uint64_t>(componentNameHash);
+		memstream << it.second.size();
 		for (const auto& entityData : it.second)
 		{
-			membuffer << entityData.EntityIndex;
+			memstream << entityData.EntityIndex;
 		}
 		for (const auto& entityData : it.second)
 		{
 			for (const auto& entityDataPiece : entityData.Data.Data)
 			{
-				auto dataPtr = reinterpret_cast<const char*>(entityDataPiece.second.data());
+				auto dataPtr = entityDataPiece.second.data();
 				auto dataSize = entityDataPiece.second.size();
-				membuffer.write(dataPtr, dataSize);
+				memstream.Write(dataPtr, dataSize);
 			}
 		}
 	}
 
 	std::ofstream outputFile(destinationFolder + "/testworld.bin", std::ios::binary | std::ios::out);
-	outputFile << membuffer.rdbuf();
+	outputFile.write(reinterpret_cast<const char*>(memstream.GetData()), memstream.GetDataSize());
 }

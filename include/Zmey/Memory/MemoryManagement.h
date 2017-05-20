@@ -7,6 +7,7 @@
 #include <queue>
 #include <unordered_map>
 
+#include <Zmey/Config.h>
 #include <Zmey/Memory/Allocator.h>
 #include "StlAllocator.h"
 #include "LinearAllocator.h"
@@ -14,7 +15,7 @@
 
 namespace Zmey
 {
-extern Zmey::IAllocator* GAllocator;
+extern ZMEY_API Zmey::IAllocator* GAllocator;
 
 inline void* ZmeyMalloc(size_t size)
 {
