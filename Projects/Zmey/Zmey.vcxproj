@@ -107,6 +107,13 @@
     <ClInclude Include="..\..\include\Zmey\Config.h" />
     <ClInclude Include="..\..\include\Zmey\EngineLoop.h" />
     <ClInclude Include="..\..\include\Zmey\EntityManager.h" />
+    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Backend.h" />
+    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\BackendDeclarations.h" />
+    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\CommandList.h" />
+    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Vulkan\VulkanBackend.h" />
+    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Vulkan\VulkanCommandList.h" />
+    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Vulkan\VulkanHelpers.h" />
+    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Vulkan\VulkanShaders.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\Features.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\Features\MeshRenderer.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\Features\RectRenderer.h" />
@@ -132,8 +139,6 @@
     <ClInclude Include="..\..\include\Zmey\Tasks\BlockingQueue.h" />
     <ClInclude Include="..\..\include\Zmey\Tasks\TaskSystem.h" />
     <ClInclude Include="..\..\include\Zmey\World.h" />
-    <ClInclude Include="..\..\Source\Graphics\VulkanHelpers.h" />
-    <ClInclude Include="..\..\Source\Graphics\RendererData.h" />
     <ClInclude Include="..\..\Source\Platform\WindowsPlatform.h" />
     <ClInclude Include="..\..\Source\Scripting\Binding.h" />
     <ClInclude Include="..\..\Source\Scripting\ChakraScriptEngine.h" />
@@ -145,6 +150,9 @@
     <ClCompile Include="..\..\Source\Components\TransformManager.cpp" />
     <ClCompile Include="..\..\Source\EngineLoop.cpp" />
     <ClCompile Include="..\..\Source\EntityManager.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Backend\Vulkan\VulkanBackend.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Backend\Vulkan\VulkanCommandList.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Backend\Vulkan\VulkanShaders.cpp" />
     <ClCompile Include="..\..\Source\Graphics\Features\MeshRenderer.cpp" />
     <ClCompile Include="..\..\Source\Graphics\Features\RectRenderer.cpp" />
     <ClCompile Include="..\..\Source\Graphics\Renderer.cpp" />

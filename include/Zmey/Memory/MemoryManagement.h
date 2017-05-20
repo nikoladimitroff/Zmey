@@ -61,7 +61,6 @@ inline T* ZmeyMallocArray(unsigned count)
 	return result;
 }
 
-
 template<typename T>
 inline void ZmeyDestroyArray(const T* ptr)
 {
@@ -75,7 +74,7 @@ inline void ZmeyDestroyArray(const T* ptr)
 		(ptr + i)->~T();
 	}
 }
-	
+
 namespace tmp
 {
 

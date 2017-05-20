@@ -54,6 +54,18 @@
     <Filter Include="Source\Components">
       <UniqueIdentifier>{f2ece02b-9daa-457e-acc3-131512ef5f46}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\Graphics\Backend">
+      <UniqueIdentifier>{3fd2aeee-5fab-4f0a-bcbb-563d1e11eea9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\Graphics\Backend\Vulkan">
+      <UniqueIdentifier>{03790615-ab7b-4b74-a786-58b98e22baef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Graphics\Backend">
+      <UniqueIdentifier>{4c4ba4f0-76bc-4968-a3ef-a14bc5565267}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Graphics\Backend\Vulkan">
+      <UniqueIdentifier>{ff9155a6-0de9-44f4-8062-bf750eb84bb4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\Zmey\Config.h">
@@ -116,9 +128,6 @@
     <ClInclude Include="..\..\include\Zmey\Graphics\Renderer.h">
       <Filter>include\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\Graphics\VulkanHelpers.h">
-      <Filter>Source\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\Zmey\Graphics\FrameData.h">
       <Filter>include\Graphics</Filter>
     </ClInclude>
@@ -127,9 +136,6 @@
     </ClInclude>
     <ClInclude Include="..\..\include\Zmey\Math\Math.h">
       <Filter>include\Math</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Graphics\RendererData.h">
-      <Filter>Source\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\Zmey\Graphics\RenderPasses.h">
       <Filter>include\Graphics</Filter>
@@ -172,6 +178,27 @@
     </ClInclude>
     <ClInclude Include="..\..\include\Zmey\Components\RectangleManager.h">
       <Filter>include\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Backend.h">
+      <Filter>include\Graphics\Backend</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Vulkan\VulkanBackend.h">
+      <Filter>include\Graphics\Backend\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\BackendDeclarations.h">
+      <Filter>include\Graphics\Backend</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Vulkan\VulkanCommandList.h">
+      <Filter>include\Graphics\Backend\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\CommandList.h">
+      <Filter>include\Graphics\Backend</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Vulkan\VulkanHelpers.h">
+      <Filter>include\Graphics\Backend\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Vulkan\VulkanShaders.h">
+      <Filter>include\Graphics\Backend\Vulkan</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -225,6 +252,15 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\Components\RectangleManager.cpp">
       <Filter>Source\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Backend\Vulkan\VulkanBackend.cpp">
+      <Filter>Source\Graphics\Backend\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Backend\Vulkan\VulkanShaders.cpp">
+      <Filter>Source\Graphics\Backend\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Backend\Vulkan\VulkanCommandList.cpp">
+      <Filter>Source\Graphics\Backend\Vulkan</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

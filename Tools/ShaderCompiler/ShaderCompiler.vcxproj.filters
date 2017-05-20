@@ -4,6 +4,9 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{9fa0cf4b-30c0-4525-897a-3d841471581e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\include">
+      <UniqueIdentifier>{577eedaf-8295-456c-b36a-e1d717b3916c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -11,6 +14,9 @@
   <ItemGroup>
     <FxCompile Include="..\..\Source\Graphics\Shaders\Source\Rects.hlsl">
       <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="..\..\Source\Graphics\Shaders\Source\include\Platform.hlsl">
+      <Filter>Shaders\include</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

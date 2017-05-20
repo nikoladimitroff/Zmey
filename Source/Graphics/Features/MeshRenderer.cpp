@@ -1,8 +1,6 @@
 #pragma once
 
 #include <Zmey/Graphics/Features/MeshRenderer.h>
-#include "../RendererData.h"
-#include "../VulkanHelpers.h"
 
 namespace Zmey
 {
@@ -23,7 +21,7 @@ void MeshRenderer::PrepareData(FrameData& frameData)
 	// No prepare for now
 }
 
-void MeshRenderer::GenerateCommands(FrameData& frameData, RenderPass pass, ViewType view, void* cmdBuffer, RendererData& data)
+void MeshRenderer::GenerateCommands(FrameData& frameData, RenderPass pass, ViewType view, Backend::CommandList* cmdLIst)
 {
 	// TODO: implement me
 	//auto cmd = reinterpret_cast<VkCommandBuffer>(cmdBuffer);
