@@ -4,6 +4,7 @@
 #include <Zmey/Memory/MemoryManagement.h>
 #include <Zmey/Hash.h>
 #include <Zmey/Components/ComponentRegistryCommon.h>
+#include <Zmey/Components/ComponentManager.h>
 
 #include <nlohmann/json.hpp> // TODO: remove this include as it will clutter everything
 
@@ -20,17 +21,13 @@ namespace Components
 	};
 	struct ComponentManagerEntry
 	{
-		using InstantiateDelegate = void* (*)();
-		using DestroyDelegate = void (*)(void*);
+		using InstantiateDelegate = IComponentManager* (*)();
 		using ToBlobDelegate = void (*)(const nlohmann::json&, IDataBlob& blob);
-		using FromBlobDelegate = size_t (*)(void* manager, const tmp::vector<EntityId>& entities, const uint8_t* blob);
 
-		ComponentManagerEntry(const char* name, ComponentIndex ComponentManagerIndex, InstantiateDelegate, DestroyDelegate, ToBlobDelegate, FromBlobDelegate);
+		ComponentManagerEntry(const char* name, ComponentIndex ComponentManagerIndex, InstantiateDelegate, ToBlobDelegate);
 		const Hash Name;
 		InstantiateDelegate Instantiate;
-		DestroyDelegate Destroy;
 		const ToBlobDelegate ToBlob;
-		const FromBlobDelegate FromBlob;
 	};
 
 	ZMEY_API ComponentIndex GetNextComponentManagerIndex();
@@ -38,21 +35,16 @@ namespace Components
 	ZMEY_API const ComponentManagerEntry* GetComponentManagerAtIndex(ComponentIndex);
 
 	template<typename T>
-	void* InstantiateManager()
+	IComponentManager* InstantiateManager()
 	{
 		return new T();
 	}
-	template<typename T>
-	void DestroyManager(void* ptr)
-	{
-		delete ptr;
-	}
-#define DEFINE_COMPONENT_MANAGER(Class, ShortName, ToBlob, FromBlob) \
+#define DEFINE_COMPONENT_MANAGER(Class, ShortName, ToBlob) \
 	const ComponentIndex Class##::SZmeyComponentManagerIndex = GetNextComponentManagerIndex(); \
 	static Zmey::Components::ComponentManagerEntry G##ShortName##ComponentManagerRegistration(#ShortName, \
 		Class##::SZmeyComponentManagerIndex, \
-		&InstantiateManager<##Class##>, &DestroyManager<##Class##>, \
-		ToBlob, FromBlob)
+		&InstantiateManager<##Class##>, \
+		ToBlob)
 }
 
 }

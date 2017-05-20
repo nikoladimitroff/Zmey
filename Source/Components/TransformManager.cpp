@@ -18,6 +18,10 @@ TransformInstance TransformManager::Lookup(EntityId id)
 	return TransformInstance(*this, id);
 }
 
+void TransformManager::Simulate(float deltaMs)
+{
+}
+
 void TransformComponentToBlob(const nlohmann::json& rawJson, IDataBlob& blob)
 {
 	float position[3];
@@ -40,30 +44,28 @@ void TransformComponentToBlob(const nlohmann::json& rawJson, IDataBlob& blob)
 	blob.WriteData("scale", reinterpret_cast<uint8_t*>(scale), sizeof(scale));
 }
 
-size_t TransformComponentFromBlob(void* managerPtr, const tmp::vector<EntityId>& entities, const uint8_t* blob)
+size_t TransformManager::InitializeFromBlob(const tmp::vector<EntityId>& entities, const uint8_t* blob)
 {
-	TransformManager& manager = *reinterpret_cast<TransformManager*>(managerPtr);
-	manager.m_Positions.resize(entities.size());
+	m_Positions.resize(entities.size());
 	size_t positionBufferLength = sizeof(Vector3) * entities.size();
-	std::memcpy(&manager.m_Positions[0], blob, positionBufferLength);
+	std::memcpy(&m_Positions[0], blob, positionBufferLength);
 	blob += positionBufferLength;
 
-	manager.m_Rotations.resize(entities.size());
+	m_Rotations.resize(entities.size());
 	size_t rotationBufferLength = sizeof(Quaternion) * entities.size();
-	std::memcpy(&manager.m_Rotations[0], blob, rotationBufferLength);
+	std::memcpy(&m_Rotations[0], blob, rotationBufferLength);
 	blob += rotationBufferLength;
 
-	manager.m_Scales.resize(entities.size());
+	m_Scales.resize(entities.size());
 	size_t scaleBufferLength = sizeof(Vector3) * entities.size();
-	std::memcpy(&manager.m_Scales[0], blob, scaleBufferLength);
+	std::memcpy(&m_Scales[0], blob, scaleBufferLength);
 	blob += scaleBufferLength;
 
 	return positionBufferLength + rotationBufferLength + scaleBufferLength;
 }
 
 DEFINE_COMPONENT_MANAGER(TransformManager, Transform,
-	&Zmey::Components::TransformComponentToBlob,
-	&Zmey::Components::TransformComponentFromBlob);
+	&Zmey::Components::TransformComponentToBlob);
 
 }
 }

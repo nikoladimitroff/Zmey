@@ -99,6 +99,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\include\Zmey\Components\ComponentManager.h" />
     <ClInclude Include="..\..\include\Zmey\Components\ComponentRegistry.h" />
     <ClInclude Include="..\..\include\Zmey\Components\ComponentRegistryCommon.h" />
     <ClInclude Include="..\..\include\Zmey\Components\TransformManager.h" />

@@ -21,13 +21,11 @@ uint16_t GetNextComponentManagerIndex()
 }
 
 ComponentManagerEntry::ComponentManagerEntry(const char* nameHash, ComponentIndex ComponentIndex,
-	InstantiateDelegate instantiate, DestroyDelegate destroy,
-	ToBlobDelegate toBlob, FromBlobDelegate fromBlob)
+	InstantiateDelegate instantiate,
+	ToBlobDelegate toBlob)
 	: Name(Zmey::Hash(Zmey::HashHelpers::CaseInsensitiveStringWrapper(nameHash)))
 	, Instantiate(instantiate)
-	, Destroy(destroy)
 	, ToBlob(toBlob)
-	, FromBlob(fromBlob)
 {
 	GComponentRegistry[ComponentIndex] = this;
 }

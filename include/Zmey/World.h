@@ -1,6 +1,7 @@
 #pragma once
 #include <Zmey/Memory/MemoryManagement.h>
 #include <Zmey/EntityManager.h>
+#include <Zmey/Components/ComponentManager.h>
 
 namespace Zmey
 {
@@ -9,7 +10,6 @@ class World
 {
 public:
 	World();
-	~World();
 	EntityManager& GetEntityManager()
 	{
 		return m_EntityManager;
@@ -22,7 +22,7 @@ public:
 	void InitializeFromBuffer(const uint8_t* buffer, size_t size);
 private:
 	EntityManager m_EntityManager;
-	std::vector<void*> m_ComponentManagers;
+	std::vector<Components::IComponentManager*> m_ComponentManagers;
 };
 
 }

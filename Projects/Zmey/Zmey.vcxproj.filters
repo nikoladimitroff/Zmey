@@ -164,6 +164,9 @@
     <ClInclude Include="..\..\include\Zmey\Components\ComponentRegistryCommon.h">
       <Filter>include\Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Components\ComponentManager.h">
+      <Filter>include\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\EngineLoop.cpp">

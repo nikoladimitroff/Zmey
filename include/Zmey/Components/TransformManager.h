@@ -2,6 +2,7 @@
 #include <Zmey/Math/Math.h>
 #include <Zmey/EntityManager.h>
 #include <Zmey/Components/ComponentRegistryCommon.h>
+#include <Zmey/Components/ComponentManager.h>
 
 namespace Zmey
 {
@@ -9,13 +10,16 @@ namespace Zmey
 namespace Components
 {
 	
-class TransformManager
+class TransformManager : public IComponentManager
 {
 	DECLARE_COMPONENT_MANAGER();
 public:
 	TransformManager();
 
 	struct TransformInstance Lookup(EntityId);
+
+	virtual size_t InitializeFromBlob(const tmp::vector<EntityId>&, const uint8_t*) override;
+	virtual void Simulate(float deltaMs) override;
 private:
 	// TODO: Store all 3 vectors in sequential memory
 	stl::vector<Vector3> m_Positions;
@@ -23,7 +27,6 @@ private:
 	stl::vector<Vector3> m_Scales;
 	stl::unordered_map<EntityId, size_t> m_EntityToIndex;
 	friend struct TransformInstance;
-	friend size_t TransformComponentFromBlob(void*, const tmp::vector<EntityId>&, const uint8_t*);
 };
 
 struct TransformInstance

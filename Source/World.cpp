@@ -16,16 +16,6 @@ World::World()
 	}
 }
 
-World::~World()
-{
-	using namespace Zmey::Components;
-	ComponentIndex i = 0u;
-	for (const ComponentManagerEntry* entry = GetComponentManagerAtIndex(0); entry; entry = GetComponentManagerAtIndex(++i))
-	{
-		entry->Destroy(m_ComponentManagers[i]);
-	}
-}
-
 void World::InitializeFromBuffer(const uint8_t* buffer, size_t size)
 {
 	const uint8_t* bufferStart = buffer;
@@ -44,8 +34,7 @@ void World::InitializeFromBuffer(const uint8_t* buffer, size_t size)
 
 	for (Zmey::ComponentIndex i = 0; i < m_ComponentManagers.size(); i++)
 	{
-		auto managerEntry = Zmey::Components::GetComponentManagerAtIndex(i);
-		size_t bytesRead = managerEntry->FromBlob(m_ComponentManagers[i], entities, buffer);
+		size_t bytesRead = m_ComponentManagers[i]->InitializeFromBlob(entities, buffer);
 		buffer += bytesRead;
 		ASSERT_FATAL(static_cast<size_t>(buffer - bufferStart) >= size);
 	}
