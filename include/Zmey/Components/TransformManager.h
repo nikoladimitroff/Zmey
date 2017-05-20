@@ -23,7 +23,7 @@ private:
 	stl::vector<Vector3> m_Scales;
 	stl::unordered_map<EntityId, size_t> m_EntityToIndex;
 	friend struct TransformInstance;
-	friend void TransformComponentFromBlob(void*, const tmp::vector<EntityId>&, const uint8_t*);
+	friend size_t TransformComponentFromBlob(void*, const tmp::vector<EntityId>&, const uint8_t*);
 };
 
 struct TransformInstance

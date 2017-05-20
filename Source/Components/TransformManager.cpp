@@ -40,7 +40,7 @@ void TransformComponentToBlob(const nlohmann::json& rawJson, IDataBlob& blob)
 	blob.WriteData("scale", reinterpret_cast<uint8_t*>(scale), sizeof(scale));
 }
 
-void TransformComponentFromBlob(void* managerPtr, const tmp::vector<EntityId>& entities, const uint8_t* blob)
+size_t TransformComponentFromBlob(void* managerPtr, const tmp::vector<EntityId>& entities, const uint8_t* blob)
 {
 	TransformManager& manager = *reinterpret_cast<TransformManager*>(managerPtr);
 	manager.m_Positions.resize(entities.size());
@@ -57,6 +57,8 @@ void TransformComponentFromBlob(void* managerPtr, const tmp::vector<EntityId>& e
 	size_t scaleBufferLength = sizeof(Vector3) * entities.size();
 	std::memcpy(&manager.m_Scales[0], blob, scaleBufferLength);
 	blob += scaleBufferLength;
+
+	return positionBufferLength + rotationBufferLength + scaleBufferLength;
 }
 
 DEFINE_COMPONENT_MANAGER(TransformManager, Transform,
