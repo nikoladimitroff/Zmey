@@ -94,7 +94,7 @@ inline bool EndsWith(const stl::string& value, const stl::string&ending)
 ResourceId ResourceLoader::LoadResource(const stl::string& path)
 {
 	auto id = m_NextId++;
-	if (EndsWith(path, ".world"))
+	if (EndsWith(path, ".bin"))
 	{
 		Modules::TaskSystem->SpawnTask("Loading file", [path, this, id]()
 		{

@@ -57,6 +57,7 @@ public:
 };
 
 EngineLoop::EngineLoop(const char* initialWorld)
+	: m_World(nullptr)
 {
 	Zmey::GAllocator = StaticAlloc<MallocAllocator>();
 	Zmey::GLogHandler = StaticAlloc<StdOutLogHandler>();
@@ -91,7 +92,7 @@ void EngineLoop::Run()
 			Modules::Platform->PumpMessages(windowHandle);
 		}
 
-		if (Modules::ResourceLoader->IsResourceReady(m_WorldResourceId))
+		if (!m_World && Modules::ResourceLoader->IsResourceReady(m_WorldResourceId))
 		{
 			m_World = Modules::ResourceLoader->TakeOwnershipOver<World>(m_WorldResourceId);
 		}
