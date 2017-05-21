@@ -24,7 +24,7 @@ private:
 	stl::vector<Vector3> m_Positions;
 	stl::vector<Quaternion> m_Rotations;
 	stl::vector<Vector3> m_Scales;
-	stl::unordered_map<EntityId, size_t> m_EntityToIndex;
+	stl::unordered_map<EntityId, EntityId::IndexType> m_EntityToIndex;
 	friend struct TransformInstance;
 };
 
@@ -35,9 +35,9 @@ struct TransformInstance
 		, m_Entity(id)
 	{
 	}
-	inline Vector3& Position() const { return m_Manager.m_Positions[m_Manager.m_EntityToIndex[m_Entity]]; }
-	inline Vector3& Scale() const { return m_Manager.m_Scales[m_Manager.m_EntityToIndex[m_Entity]]; }
-	inline Quaternion& Rotation() const { return m_Manager.m_Rotations[m_Manager.m_EntityToIndex[m_Entity]]; }
+	inline Vector3& Position() const { return m_Manager.m_Positions[m_Manager.m_EntityToIndex.at(m_Entity)]; }
+	inline Vector3& Scale() const { return m_Manager.m_Scales[m_Manager.m_EntityToIndex.at(m_Entity)]; }
+	inline Quaternion& Rotation() const { return m_Manager.m_Rotations[m_Manager.m_EntityToIndex.at(m_Entity)]; }
 private:
 	TransformManager& m_Manager;
 	EntityId m_Entity;
