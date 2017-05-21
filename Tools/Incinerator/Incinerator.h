@@ -30,8 +30,9 @@ private:
 		std::string ComponentName;
 		using SingleDataValue = std::vector<uint8_t>;
 		// Map containing each value the component has (e.g. the position, rotation and scale of a transform component)
-		// Must be ordered as the component compiler will write the data in the order it needs
-		std::map<Zmey::Hash, SingleDataValue> PropertyData;
+		std::unordered_map<Zmey::Hash, SingleDataValue> PropertyData;
+		// We need the insertion order so store that in an additional vector
+		std::vector<Zmey::Hash> PropertyInsertionOrder;
 	};
 	struct ClassEntry
 	{

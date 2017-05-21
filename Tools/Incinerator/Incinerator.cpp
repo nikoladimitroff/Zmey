@@ -103,6 +103,10 @@ void Incinerator::ComponentEntry::WriteData(Zmey::Hash nameHash, const uint8_t* 
 	value.resize(dataSize);
 	std::memcpy(value.data(), data, dataSize);
 
+	if (PropertyData.find(nameHash) == PropertyData.end())
+	{
+		PropertyInsertionOrder.push_back(nameHash);
+	}
 	PropertyData.insert_or_assign(nameHash, std::move(value));
 }
 
@@ -174,13 +178,14 @@ void Incinerator::IncinerateWorld(const std::string& destinationFolder, const st
 		for (size_t i = 0; i < propertiesCountForComponent; i++)
 		{
 			// Iterate over all entities that have this component
-			for (const auto& entityData : fullComponentInfo.second)
+			for (const EntityDataPerComponent& entityData : fullComponentInfo.second)
 			{
 				// Write the data for each property, resulting in all data of the same property laid sequentially in memory
-				auto propertyIterator = entityData.DataForComponent.PropertyData.begin();
-				std::advance(propertyIterator, i);
-				auto dataPtr = propertyIterator->second.data();
-				auto dataSize = propertyIterator->second.size();
+				Zmey::Hash propertyHash = entityData.DataForComponent.PropertyInsertionOrder[i];
+				auto propertyIterator = entityData.DataForComponent.PropertyData.find(propertyHash);
+				assert(propertyIterator != entityData.DataForComponent.PropertyData.end());
+				const uint8_t* dataPtr = propertyIterator->second.data();
+				size_t dataSize = propertyIterator->second.size();
 				memstream.Write(dataPtr, dataSize);
 			}
 		}
