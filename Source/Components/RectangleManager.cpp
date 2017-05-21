@@ -24,7 +24,7 @@ void RectangleManager::InitializeFromBlob(const tmp::vector<EntityId>& entities,
 }
 void RectangleManager::Simulate(float deltaTime)
 {
-	auto& transformManager = m_World.GetManager<TransformManager>();
+	auto& transformManager = GetWorld().GetManager<TransformManager>();
 	for (EntityId::IndexType i = 0u; i < m_Entities.size(); i++)
 	{
 		auto transform = transformManager.Lookup(m_Entities[i]);
