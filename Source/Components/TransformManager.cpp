@@ -79,6 +79,12 @@ void TransformManager::InitializeFromBlob(const tmp::vector<EntityId>& entities,
 	m_Scales.resize(entities.size());
 	size_t scaleBufferLength = sizeof(Vector3) * entities.size();
 	stream.Read(reinterpret_cast<uint8_t*>(&m_Scales[0]), scaleBufferLength);
+
+	// Fill the entity map
+	for (EntityId::IndexType i = 0u; i < entities.size(); ++i)
+	{
+		m_EntityToIndex[entities[i]] = i;
+	}
 }
 
 DEFINE_COMPONENT_MANAGER(TransformManager, Transform, &Zmey::Components::TransformComponentDefaults, &Zmey::Components::TransformComponentToBlob);
