@@ -40,7 +40,7 @@ tmp::vector<Graphics::Rect> RectangleManager::GetRectsToRender() const
 }
 
 
-DEFINE_COMPONENT_MANAGER(RectangleManager, Rectangle, &Zmey::Components::EmptyToBlobImplementation);
+DEFINE_COMPONENT_MANAGER(RectangleManager, Rectangle, &Zmey::Components::EmptyDefaultsToBlobImplementation, &Zmey::Components::EmptyToBlobImplementation);
 
 }
 }

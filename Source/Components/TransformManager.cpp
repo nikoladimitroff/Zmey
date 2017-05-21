@@ -22,26 +22,48 @@ void TransformManager::Simulate(float deltaTime)
 	}
 }
 
+void TransformComponentDefaults(IDataBlob& blob)
+{
+	float position[3] = { 0.f, 0.f, 0.f };
+	blob.WriteData("position", reinterpret_cast<uint8_t*>(position), sizeof(position));
+	float rotation[4] = { 0.f, 0.f, 0.f, 1.f };
+	blob.WriteData("rotation", reinterpret_cast<uint8_t*>(rotation), sizeof(rotation));
+	float scale[3] = { 1.f, 1.f, 1.f };
+	blob.WriteData("scale", reinterpret_cast<uint8_t*>(scale), sizeof(scale));
+}
+
 void TransformComponentToBlob(const nlohmann::json& rawJson, IDataBlob& blob)
 {
-	float position[3];
-	position[0] = rawJson["position"][0];
-	position[1] = rawJson["position"][1];
-	position[2] = rawJson["position"][2];
-	blob.WriteData("position", reinterpret_cast<uint8_t*>(position), sizeof(position));
+	if (rawJson.find("position") != rawJson.end())
+	{
+		ASSERT_FATAL(rawJson["position"].is_array());
+		float position[3];
+		position[0] = rawJson["position"][0];
+		position[1] = rawJson["position"][1];
+		position[2] = rawJson["position"][2];
+		blob.WriteData("position", reinterpret_cast<uint8_t*>(position), sizeof(position));
+	}
 
-	float rotation[4];
-	rotation[0] = rawJson["rotation"][0];
-	rotation[1] = rawJson["rotation"][1];
-	rotation[2] = rawJson["rotation"][2];
-	rotation[2] = rawJson["rotation"][3];
-	blob.WriteData("rotation", reinterpret_cast<uint8_t*>(rotation), sizeof(rotation));
+	if (rawJson.find("rotation") != rawJson.end())
+	{
+		ASSERT_FATAL(rawJson["rotation"].is_array());
+		float rotation[4];
+		rotation[0] = rawJson["rotation"][0];
+		rotation[1] = rawJson["rotation"][1];
+		rotation[2] = rawJson["rotation"][2];
+		rotation[2] = rawJson["rotation"][3];
+		blob.WriteData("rotation", reinterpret_cast<uint8_t*>(rotation), sizeof(rotation));
+	}
 
-	float scale[3];
-	scale[0] = rawJson["scale"][0];
-	scale[1] = rawJson["scale"][1];
-	scale[2] = rawJson["scale"][2];
-	blob.WriteData("scale", reinterpret_cast<uint8_t*>(scale), sizeof(scale));
+	if (rawJson.find("scale") != rawJson.end())
+	{
+		ASSERT_FATAL(rawJson["scale"].is_array());
+		float scale[3];
+		scale[0] = rawJson["scale"][0];
+		scale[1] = rawJson["scale"][1];
+		scale[2] = rawJson["scale"][2];
+		blob.WriteData("scale", reinterpret_cast<uint8_t*>(scale), sizeof(scale));
+	}
 }
 
 void TransformManager::InitializeFromBlob(const tmp::vector<EntityId>& entities, Zmey::MemoryInputStream& stream)
@@ -59,7 +81,7 @@ void TransformManager::InitializeFromBlob(const tmp::vector<EntityId>& entities,
 	stream.Read(reinterpret_cast<uint8_t*>(&m_Scales[0]), scaleBufferLength);
 }
 
-DEFINE_COMPONENT_MANAGER(TransformManager, Transform, &Zmey::Components::TransformComponentToBlob);
+DEFINE_COMPONENT_MANAGER(TransformManager, Transform, &Zmey::Components::TransformComponentDefaults, &Zmey::Components::TransformComponentToBlob);
 
 }
 }

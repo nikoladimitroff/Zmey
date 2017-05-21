@@ -22,15 +22,19 @@ uint16_t GetNextComponentManagerIndex()
 
 ComponentManagerEntry::ComponentManagerEntry(const char* nameHash, ComponentIndex ComponentIndex,
 	InstantiateDelegate instantiate,
+	DefaultsToBlobDelegate defaultsToBlob,
 	ToBlobDelegate toBlob)
 	: Name(Zmey::Hash(Zmey::HashHelpers::CaseInsensitiveStringWrapper(nameHash)))
 	, Index(ComponentIndex)
 	, Instantiate(instantiate)
+	, DefaultsToBlob(defaultsToBlob)
 	, ToBlob(toBlob)
 {
 	GComponentRegistry[ComponentIndex] = this;
 }
 
+void EmptyDefaultsToBlobImplementation(IDataBlob& blob)
+{}
 void EmptyToBlobImplementation(const nlohmann::json&, IDataBlob& blob)
 {}
 
