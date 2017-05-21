@@ -88,6 +88,7 @@ void Incinerator::BuildClassIndex(const std::vector<std::string>& classFiles)
 			ComponentEntry binaryComponentData(name);
 			Zmey::Hash nameHash(name.c_str());
 			auto compiler = Zmey::Components::GetComponentManager(nameHash);
+			compiler.DefaultsToBlob(binaryComponentData);
 			compiler.ToBlob(rawComponentData, binaryComponentData);
 
 			classEntry.Components.push_back(binaryComponentData);
@@ -102,7 +103,7 @@ void Incinerator::ComponentEntry::WriteData(Zmey::Hash nameHash, const uint8_t* 
 	value.resize(dataSize);
 	std::memcpy(value.data(), data, dataSize);
 
-	Data.insert_or_assign(nameHash, std::move(value));
+	PropertyData.insert_or_assign(nameHash, std::move(value));
 }
 
 void Incinerator::IncinerateWorld(const std::string& destinationFolder, const std::string& worldSectionPath)
@@ -116,7 +117,7 @@ void Incinerator::IncinerateWorld(const std::string& destinationFolder, const st
 	struct EntityDataPerComponent
 	{
 		Zmey::EntityId::IndexType EntityIndex;
-		ComponentEntry Data;
+		ComponentEntry DataForComponent;
 	};
 	std::unordered_map<std::string, std::vector<EntityDataPerComponent>> entitiesForComponent;
 	Zmey::EntityId::IndexType maxEntityIndex = 0u;
@@ -136,16 +137,20 @@ void Incinerator::IncinerateWorld(const std::string& destinationFolder, const st
 		{
 			const std::string componentName = newComponent["name"];
 			auto& entities = entitiesForComponent[componentName];
-			// If this overrides an inherited components, this entity must be the last one added
+			// If this overrides an inherited components, this entity must be the last one added // srsly?
 			bool overridesInherited = entities[entities.size() - 1].EntityIndex == entityIndex;
 			if (!overridesInherited)
 			{
 				entities.push_back({ entityIndex, ComponentEntry(componentName) });
 			}
-			auto& componentEntry = entities[entities.size() - 1].Data;
+			auto& componentEntry = entities[entities.size() - 1].DataForComponent;
 
 			Zmey::Hash componentNameHash(componentName.c_str());
 			auto compiler = Zmey::Components::GetComponentManager(componentNameHash);
+			if (!overridesInherited)
+			{
+				compiler.DefaultsToBlob(componentEntry);
+			}
 			compiler.ToBlob(newComponent, componentEntry);
 		}
 	}
@@ -153,21 +158,29 @@ void Incinerator::IncinerateWorld(const std::string& destinationFolder, const st
 	Zmey::MemoryOutputStream memstream;
 	memstream << "1.0"; // Version
 	memstream << maxEntityIndex;
-	for (const auto& it : entitiesForComponent)
+	for (const auto& fullComponentInfo : entitiesForComponent)
 	{
-		Zmey::Hash componentNameHash(it.first.c_str());
+		Zmey::Hash componentNameHash(fullComponentInfo.first.c_str());
 		memstream << static_cast<uint64_t>(componentNameHash);
-		memstream << static_cast<Zmey::EntityId::IndexType>(it.second.size());
-		for (const auto& entityData : it.second)
+		memstream << static_cast<Zmey::EntityId::IndexType>(fullComponentInfo.second.size());
+		for (const auto& entityData : fullComponentInfo.second)
 		{
 			memstream << entityData.EntityIndex;
 		}
-		for (const auto& entityData : it.second)
+		// Assume that the data for each instance of the same component has the same structure
+		auto& firstEntityInfo = fullComponentInfo.second[0];
+		size_t propertiesCountForComponent = firstEntityInfo.DataForComponent.PropertyData.size();
+		// Iterate over all properties for this component
+		for (size_t i = 0; i < propertiesCountForComponent; i++)
 		{
-			for (const auto& entityDataPiece : entityData.Data.Data)
+			// Iterate over all entities that have this component
+			for (const auto& entityData : fullComponentInfo.second)
 			{
-				auto dataPtr = entityDataPiece.second.data();
-				auto dataSize = entityDataPiece.second.size();
+				// Write the data for each property, resulting in all data of the same property laid sequentially in memory
+				auto propertyIterator = entityData.DataForComponent.PropertyData.begin();
+				std::advance(propertyIterator, i);
+				auto dataPtr = propertyIterator->second.data();
+				auto dataSize = propertyIterator->second.size();
 				memstream.Write(dataPtr, dataSize);
 			}
 		}
