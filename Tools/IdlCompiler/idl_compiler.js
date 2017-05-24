@@ -297,7 +297,16 @@ class IdlCompiler {
             interfaceCode.push(code + propertiesSetup + prototype + this.constructorCode + projector);
         }
 
-        const finalGlueCode = extraHeaders + interfaceCode.join(os.EOL);
+        const openningBrace =
+`
+namespace
+{
+`;
+        const closingBrace =
+`
+}
+`;
+        const finalGlueCode = extraHeaders + openningBrace + interfaceCode.join(os.EOL) + closingBrace;
         console.log(`Done with file ${destinationFile}.`);
         fs.writeFile(destinationFile, finalGlueCode, { flag: "w+"}, (err) => assert(!err));
     }
