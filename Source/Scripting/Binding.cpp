@@ -149,10 +149,7 @@ JsValueRef JSConsoleMessage(Zmey::LogSeverity severity, JsValueRef callee, bool 
 		message.append(string);
 	}
 
-	tmp::string mbMessage;
-	auto mbSize = wcstombs(nullptr, message.c_str(), message.size());
-	mbMessage.assign(mbSize, L' ');
-	wcstombs(&mbMessage[0], message.c_str(), message.size());
+	tmp::string mbMessage = Zmey::ConvertWideStringToUtf8(message);
 	Zmey::GLogHandler->WriteLog(severity, "Script", mbMessage.c_str());
 	return JS_INVALID_REFERENCE;
 }

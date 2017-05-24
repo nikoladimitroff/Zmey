@@ -47,7 +47,7 @@ class ChakraGlueGenerator {
 	const wchar_t* _${arg.name}string;
 	size_t _${arg.name}Stringlength;
 	JsStringToPointer(_${arg.name}stringValue, _${arg.name}string, &_${arg.name}Stringlength);
-	stl::string _${arg.name} = WStringToUtf8(_${arg.name}String, _${arg.name}Stringlength);
+	stl::string _${arg.name} = ConvertWideStringToUtf8(_${arg.name}String, _${arg.name}Stringlength);
 `;
                 return code;
             case "long":

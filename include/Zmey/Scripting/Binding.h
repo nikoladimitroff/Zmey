@@ -5,6 +5,14 @@
 
 namespace Zmey
 {
+tmp::string ConvertWideStringToUtf8(const tmp::wstring& wString)
+{
+	tmp::string mbString;
+	auto mbSize = wcstombs(nullptr, wString.c_str(), wString.size());
+	mbString.assign(mbSize, L' ');
+	wcstombs(&mbString[0], wString.c_str(), wString.size());
+	return mbString;
+}
 namespace Chakra
 {
 
