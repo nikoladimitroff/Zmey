@@ -2,7 +2,7 @@
 
 interface Zmey::Vector3 {
     constructor(float x, float y, float z);
-    attribute float x;
-    attribute float y;
-    attribute float z;
+    nameasis attribute float x;
+    nameasis attribute float y;
+    nameasis attribute float z;
 }
