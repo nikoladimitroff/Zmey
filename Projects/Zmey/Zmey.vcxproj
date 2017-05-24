@@ -66,6 +66,8 @@
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)ThirdParty\libx64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>vulkan-1.lib;assimp-vc140-mt.lib;ChakraCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
+      <AdditionalOptions>/WHOLEARCHIVE:ScriptingGlue.lib %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <PostBuildEvent>
       <Command>postbuild.bat $(SolutionDir) $(OutDir)</Command>
@@ -93,6 +95,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(SolutionDir)ThirdParty\libx64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>vulkan-1.lib;assimp-vc140-mt.lib;ChakraCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
+      <AdditionalOptions>/WHOLEARCHIVE:ScriptingGlue.lib %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <PostBuildEvent>
       <Command>postbuild.bat $(SolutionDir) $(OutDir)</Command>
@@ -168,6 +172,11 @@
     <ClCompile Include="..\..\Source\Scripting\ChakraScriptEngine.cpp" />
     <ClCompile Include="..\..\Source\Scripting\Tasks.cpp" />
     <ClCompile Include="..\..\Source\World.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ScriptingGlue\ScriptingGlue.vcxproj">
+      <Project>{8bc68403-1284-41fa-91ec-b7b75e5d524f}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
