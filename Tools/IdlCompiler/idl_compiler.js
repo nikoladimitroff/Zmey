@@ -8,13 +8,13 @@ const RegexLibrary = {
     // Group 1 is the name of the interface
     ExtraHeaders: /#include <.+>/g,
     Interface: /\s*interface\s+([\w:]+)\s\{[\s\S]*?\}\s*/g,
-    Attribute: /(?:nameasis )?(?:readonly )?attribute\s+(\w+)\s+(\w+);/g,
+    Attribute: /^(?:nameasis )?(?:readonly )?attribute\s+(\w+)\s+(\w+);/g,
     // The following akward expression is repeated inside both method and ctor:
     // \(((:?(:?\s*\w+\s+\w+,)*(:?\s*\w+\s+\w+))?)\)
     // This matches all (type1 name1, type2 name2...) including the empty ()
-    Method: /(?:nameasis )?(\w+&?)\s+(\w+)\(((:?(:?\s*\w+\s+\w+,)*(:?\s*\w+\s+\w+))?)\);/g,
+    Method: /^(?:nameasis )?(\w+&?)\s+(\w+)\(((:?(:?\s*\w+\s+\w+,)*(:?\s*\w+\s+\w+))?)\);/g,
     // Matches constructor(args..); Group 1 is args
-    Constructor: /constructor\(((:?(:?\s*\w+\s+\w+,)*(:?\s*\w+\s+\w+))?)\);/g
+    Constructor: /^constructor\(((:?(:?\s*\w+\s+\w+,)*(:?\s*\w+\s+\w+))?)\);/g
 };
 
 class ChakraGlueGenerator {
@@ -66,7 +66,7 @@ class ChakraGlueGenerator {
         }).join(os.EOL);
     }
 
-    generateOutputForArg(type) {
+    generateOutputForType(type) {
         let code = null;
         switch (type) {
             case "float":
@@ -123,11 +123,26 @@ JsValueRef CALLBACK Js${uniqueInterfaceName}Constructor(JsValueRef callee, bool 
 `
         return cppCode;
     }
-
-    generateMethod(qualifiedName, uniqueInterfaceName, methodName, argList, attributes) {
-        const argParsingCode = this.generateParserForArgList(argList);
+    generateCallCode(returnType, methodName, argList) {
         const argListCode = this.generateListForArgList(argList);
+        const callMethod = `ptr->${methodName}(${argListCode});`;
+        if (returnType == "void") {
+            return callMethod;
+        }
+        const returnArg = {type: returnType, name: "result"};
+        const cppCode =
+`
+	${this.generateDefinitionForArg(returnArg)}
+	_result = ${callMethod}
+	${this.generateOutputForType(returnType)}
+`;
+        return cppCode;
+    }
+
+    generateMethod(qualifiedName, uniqueInterfaceName, returnType, methodName, argList, attributes) {
+        const argParsingCode = this.generateParserForArgList(argList);
         const cppMethodName = attributes.nameAsIs ? methodName : methodName[0].toUpperCase() + methodName.slice(1);
+        const callCode = this.generateCallCode(returnType, cppMethodName, argList);
         const cppCode =
 `
 JsValueRef CALLBACK Js${uniqueInterfaceName}${methodName}(JsValueRef callee, bool isConstructCall, JsValueRef *arguments, unsigned short argumentCount, void *callbackState)
@@ -140,7 +155,7 @@ JsValueRef CALLBACK Js${uniqueInterfaceName}${methodName}(JsValueRef callee, boo
 	}
 	${qualifiedName}* ptr = static_cast<${qualifiedName}*>(object);
 	${argParsingCode}
-	ptr->${cppMethodName}(${argListCode});
+	${callCode}
 
 	return output;
 }
@@ -162,7 +177,7 @@ JsValueRef CALLBACK Js${uniqueInterfaceName}${name}Getter(JsValueRef callee, boo
 	}
 	${qualifiedName}* ptr = static_cast<${qualifiedName}*>(object);
 	${type} _result = ptr->${cppPropName};
-	${this.generateOutputForArg(type)}
+	${this.generateOutputForType(type)}
 
 	return output;
 }
@@ -231,12 +246,15 @@ Zmey::Chakra::Binding::AutoNativeClassProjecter ${uniqueInterfaceName}Projector(
         const initializerListForFuncs = methodList.map(m => `&Js${uniqueInterfaceName}${m}`).join(",");
         const cppCode =
 `
+const wchar_t* ${uniqueInterfaceName}MemberNames[] = {${initializerListForNames}};
+const JsNativeFunction ${uniqueInterfaceName}MemberFuncs[] = {${initializerListForFuncs}};
 Zmey::Chakra::Binding::AutoNativeClassProjecter ${uniqueInterfaceName}Projector(
 	L"${shortName}",
 	&Js${uniqueInterfaceName}Constructor,
 	Js${uniqueInterfaceName}Prototype,
-	const wchar_t* []({${initializerListForNames}}),
-	const JsNativeFunction []({${initializerListForFuncs}})
+	${methodList.length},
+	${uniqueInterfaceName}MemberNames,
+	${uniqueInterfaceName}MemberFuncs
 );
 `;
         return cppCode
@@ -288,7 +306,7 @@ class IdlCompiler {
             const uniqueInterfaceName = qualifiedName.replace(/::/g, "");
             const interfaceBodyStart = interfaceMatch[0].indexOf("{") + 1;
             const interfaceBodyEnd = interfaceMatch[0].indexOf("}");
-            const interfaceBody = interfaceMatch[0].substring(interfaceBodyStart, interfaceBodyEnd);
+            const interfaceBody = interfaceMatch[0].substring(interfaceBodyStart, interfaceBodyEnd).trim();
 
             this.constructorCode = null;
             this.propertyList = [];
@@ -340,11 +358,11 @@ namespace
             RegexLibrary.Constructor.lastIndex = 0;
         }
         else if (match = RegexLibrary.Method.exec(body)) {
-            /* const returnType = match[1]; unused*/
+            const returnType = match[1];
             const method = match[2];
             const args = this.parseArgs(match[3]);
             let attributes = this.parseAttributes(match[0]);
-            glueCode = this.generator.generateMethod(qualifiedName, uniqueInterfaceName, method, args, attributes);
+            glueCode = this.generator.generateMethod(qualifiedName, uniqueInterfaceName, returnType, method, args, attributes);
             this.methodList.push(method);
             lastIndex = RegexLibrary.Method.lastIndex;
             RegexLibrary.Method.lastIndex = 0;
