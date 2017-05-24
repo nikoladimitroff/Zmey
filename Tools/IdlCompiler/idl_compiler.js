@@ -32,18 +32,19 @@ class ChakraGlueGenerator {
     }
     generateParserForArg(arg) {
         let code = null;
+        const actualArgIndex = arg.index + 1; // arg[0] is always this
         switch (arg.type) {
             case "float":
             case "double":
-                code = `JsNumberToDouble(arguments[${arg.index}], &_${arg.name});`;
+                code = `JsNumberToDouble(arguments[${actualArgIndex}], &_${arg.name});`;
                 return code;
             case "int":
-                code = `JsNumberToInt(arguments[${arg.index}], &_${arg.name});`;
+                code = `JsNumberToInt(arguments[${actualArgIndex}], &_${arg.name});`;
                 return code;
             case "string":
                 code = `
 	JsValueRef _${arg.name}stringValue;
-	JsConvertValueToString(arguments[${arg.index}], &_${arg.name}stringValue);
+	JsConvertValueToString(arguments[${actualArgIndex}], &_${arg.name}stringValue);
 	const wchar_t* _${arg.name}string;
 	size_t _${arg.name}Stringlength;
 	JsStringToPointer(_${arg.name}stringValue, _${arg.name}string, &_${arg.name}Stringlength);
@@ -110,7 +111,7 @@ class ChakraGlueGenerator {
 `
 JsValueRef CALLBACK Js${uniqueInterfaceName}Constructor(JsValueRef callee, bool isConstructCall, JsValueRef *arguments, unsigned short argumentCount, void *callbackState)
 {
-	assert(isConstructCall && argumentCount == ${argList.length});
+	assert(isConstructCall && argumentCount == ${argList.length + 1});
 	JsValueRef output = JS_INVALID_REFERENCE;
 	${argParsingCode}
 	${qualifiedName}* object = new ${qualifiedName}(${argConstructorCode});
@@ -131,7 +132,7 @@ JsValueRef CALLBACK Js${uniqueInterfaceName}Constructor(JsValueRef callee, bool 
 `
 JsValueRef CALLBACK Js${uniqueInterfaceName}${methodName}(JsValueRef callee, bool isConstructCall, JsValueRef *arguments, unsigned short argumentCount, void *callbackState)
 {
-	assert(!isConstructCall && argumentCount == ${argList.length});
+	assert(!isConstructCall && argumentCount == ${argList.length + 1});
 	JsValueRef output = JS_INVALID_REFERENCE;
 	void* object;
 	if (JsGetExternalData(arguments[0], &object) != JsNoError) {
@@ -153,7 +154,7 @@ JsValueRef CALLBACK Js${uniqueInterfaceName}${methodName}(JsValueRef callee, boo
 `
 JsValueRef CALLBACK Js${uniqueInterfaceName}${name}Getter(JsValueRef callee, bool isConstructCall, JsValueRef *arguments, unsigned short argumentCount, void *callbackState)
 {
-	assert(!isConstructCall && argumentCount == 0);
+	assert(!isConstructCall && argumentCount == 1);
 	JsValueRef output = JS_INVALID_REFERENCE;
 	void* object;
 	if (JsGetExternalData(arguments[0], &object) != JsNoError) {
@@ -174,7 +175,7 @@ JsValueRef CALLBACK Js${uniqueInterfaceName}${name}Getter(JsValueRef callee, boo
 `
 JsValueRef CALLBACK Js${uniqueInterfaceName}${name}Setter(JsValueRef callee, bool isConstructCall, JsValueRef *arguments, unsigned short argumentCount, void *callbackState)
 {
-	assert(!isConstructCall && argumentCount == 1);
+	assert(!isConstructCall && argumentCount == 2);
 	JsValueRef output = JS_INVALID_REFERENCE;
 	void* object;
 	if (JsGetExternalData(arguments[0], &object) != JsNoError) {
