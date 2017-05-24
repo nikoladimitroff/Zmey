@@ -66,6 +66,9 @@
     <Filter Include="Source\Graphics\Backend\Vulkan">
       <UniqueIdentifier>{ff9155a6-0de9-44f4-8062-bf750eb84bb4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\Scripting">
+      <UniqueIdentifier>{79eee9d1-5a73-43de-936b-825a5e824155}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\Zmey\Config.h">
@@ -110,16 +113,10 @@
     <ClInclude Include="..\..\include\Zmey\ResourceLoader\ResourceLoader.h">
       <Filter>include\ResourceLoader</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\ScriptEngine.h">
-      <Filter>include</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Source\Scripting\ChakraScriptEngine.h">
       <Filter>Source\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Scripting\Tasks.h">
-      <Filter>Source\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Scripting\Binding.h">
       <Filter>Source\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\Zmey\Memory\PoolAllocator.h">
@@ -199,6 +196,12 @@
     </ClInclude>
     <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Vulkan\VulkanShaders.h">
       <Filter>include\Graphics\Backend\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Scripting\Binding.h">
+      <Filter>include\Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Scripting\ScriptEngine.h">
+      <Filter>include\Scripting</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

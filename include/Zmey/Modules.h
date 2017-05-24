@@ -4,7 +4,7 @@
 #include <Zmey/Platform/Platform.h>
 #include <Zmey/Graphics/Renderer.h>
 #include <Zmey/ResourceLoader/ResourceLoader.h>
-#include <Zmey/ScriptEngine.h>
+#include <Zmey/Scripting/ScriptEngine.h>
 
 namespace Zmey
 {

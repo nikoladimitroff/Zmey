@@ -138,12 +138,12 @@
     <ClInclude Include="..\..\include\Zmey\Modules.h" />
     <ClInclude Include="..\..\include\Zmey\Platform\Platform.h" />
     <ClInclude Include="..\..\include\Zmey\ResourceLoader\ResourceLoader.h" />
-    <ClInclude Include="..\..\include\Zmey\ScriptEngine.h" />
+    <ClInclude Include="..\..\include\Zmey\Scripting\Binding.h" />
+    <ClInclude Include="..\..\include\Zmey\Scripting\ScriptEngine.h" />
     <ClInclude Include="..\..\include\Zmey\Tasks\BlockingQueue.h" />
     <ClInclude Include="..\..\include\Zmey\Tasks\TaskSystem.h" />
     <ClInclude Include="..\..\include\Zmey\World.h" />
     <ClInclude Include="..\..\Source\Platform\WindowsPlatform.h" />
-    <ClInclude Include="..\..\Source\Scripting\Binding.h" />
     <ClInclude Include="..\..\Source\Scripting\ChakraScriptEngine.h" />
     <ClInclude Include="..\..\Source\Scripting\Tasks.h" />
   </ItemGroup>
