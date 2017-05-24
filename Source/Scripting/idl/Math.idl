@@ -1,0 +1,8 @@
+#include <Zmey/Math/Math.h>
+
+interface Zmey::Vector3 {
+    constructor(float x, float y, float z);
+    attribute float x;
+    attribute float y;
+    attribute float z;
+}
