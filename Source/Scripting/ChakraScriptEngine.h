@@ -1,13 +1,13 @@
-#include <Zmey/ScriptEngine.h>
+#include <Zmey/Scripting/ScriptEngine.h>
 
 #include <atomic>
 #include <thread>
 
 #include <ChakraCore/ChakraCore.h>
 
+#include <Zmey/Scripting/Binding.h>
 #include <Zmey/Tasks/BlockingQueue.h>
 #include "Tasks.h"
-#include "Binding.h"
 
 namespace Zmey
 {
@@ -21,6 +21,7 @@ public:
 
 	virtual void ExecuteFromFile(ResourceId) override;
 	virtual void ExecuteNextFrame(float deltaTime) override;
+	virtual void ExportWorld(World& world) override;
 private:
 	void Run();
 	void RunOneLoopIteration();

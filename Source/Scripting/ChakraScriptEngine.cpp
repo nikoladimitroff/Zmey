@@ -4,8 +4,7 @@
 
 #include <Zmey/Logging.h>
 #include <Zmey/Modules.h>
-
-#include "Binding.h"
+#include <Zmey/Scripting/Binding.h>
 
 namespace Zmey
 {
@@ -106,6 +105,11 @@ void ChakraScriptEngine::ExecuteFromFile(ResourceId id)
 void ChakraScriptEngine::ExecuteNextFrame(float deltaTime)
 {
 	m_FrameTasks.Enqueue(std::move(FrameTask(deltaTime)));
+}
+
+void ChakraScriptEngine::ExportWorld(World& world)
+{
+
 }
 
 }

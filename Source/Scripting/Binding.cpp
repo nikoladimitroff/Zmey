@@ -1,6 +1,7 @@
 #pragma once
-#include "Binding.h"
+#include <Zmey/Scripting/Binding.h>
 #include <Zmey/Modules.h>
+#include <Zmey/Memory/MemoryManagement.h>
 
 #include "ChakraScriptEngine.h"
 namespace Zmey
@@ -10,6 +11,31 @@ namespace Chakra
 
 namespace Binding
 {
+
+uint32_t GCurrentPendingClassProjectionIndex = 0u;
+std::array<AutoNativeClassProjecter*, 256> GPendingClassProjections;
+
+void AutoNativeClassProjecter::RegisterForInitialization()
+{
+	JsContextRef activeContext;
+	JsGetCurrentContext(&activeContext);
+	if (!activeContext)
+	{
+		// We are still not initialized. Store this data for the initialize call
+		GPendingClassProjections[GCurrentPendingClassProjectionIndex++] = this;
+		return;
+	}
+	else
+	{
+		Project();
+	}
+}
+void AutoNativeClassProjecter::Project()
+{
+	const tmp::vector<const wchar_t *> memberNames(MemberNames, MemberNames + ActualMemberCount);
+	const tmp::vector<JsNativeFunction> memberFuncs(MemberFuncs, MemberFuncs + ActualMemberCount);
+	ProjectNativeClass(ClassName, Constructor, Prototype, memberNames, memberFuncs);
+}
 
 void Initialize()
 {
@@ -24,6 +50,14 @@ void Initialize()
 	SetCallback(console, L"error", JSConsoleError, nullptr);
 	SetCallback(globalObject, L"setTimeout", JSSetTimeout, nullptr);
 	SetCallback(globalObject, L"setInterval", JSSetInterval, nullptr);
+
+	for (uint32_t i = 0u; i < GCurrentPendingClassProjectionIndex; ++i)
+	{
+		auto projectionData = GPendingClassProjections[i];
+		projectionData->Project();
+		GPendingClassProjections[i] = nullptr;
+	}
+	GCurrentPendingClassProjectionIndex = 0u;
 }
 // The following funcs (SetCallback / SetProp / ProjectClass) were pretty much copied from Chakra's open gl sample
 void SetCallback(JsValueRef object, const wchar_t *propertyName, JsNativeFunction callback, void *callbackState)
@@ -42,7 +76,29 @@ void SetProperty(JsValueRef object, const wchar_t *propertyName, JsValueRef prop
 	JsSetProperty(object, propertyId, property, true);
 }
 
-void ProjectNativeClass(const wchar_t *className, JsNativeFunction constructor, JsValueRef &prototype, tmp::vector<const wchar_t *> memberNames, tmp::vector<JsNativeFunction> memberFuncs)
+void DefineProperty(JsValueRef object, const wchar_t* propertyName, JsNativeFunction getter)
+{
+	JsPropertyIdRef propertyId;
+	JsGetPropertyIdFromName(propertyName, &propertyId);
+	JsValueRef propertyDescriptor;
+	JsCreateObject(&propertyDescriptor);
+	SetProperty(propertyDescriptor, L"get", getter);
+	bool ignoredResult;
+	JsDefineProperty(object, propertyId, propertyDescriptor, &ignoredResult);
+}
+void DefineProperty(JsValueRef object, const wchar_t* propertyName, JsNativeFunction getter, JsNativeFunction setter)
+{
+	JsPropertyIdRef propertyId;
+	JsGetPropertyIdFromName(propertyName, &propertyId);
+	JsValueRef propertyDescriptor;
+	JsCreateObject(&propertyDescriptor);
+	SetProperty(propertyDescriptor, L"get", getter);
+	SetProperty(propertyDescriptor, L"get", setter);
+	bool ignoredResult;
+	JsDefineProperty(object, propertyId, propertyDescriptor, &ignoredResult);
+}
+
+void ProjectNativeClass(const wchar_t *className, JsNativeFunction constructor, JsValueRef &prototype, const tmp::vector<const wchar_t *>& memberNames, const tmp::vector<JsNativeFunction>& memberFuncs)
 {
 	JsValueRef globalObject;
 	JsGetGlobalObject(&globalObject);
