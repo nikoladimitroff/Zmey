@@ -8,7 +8,7 @@ const RegexLibrary = {
     // Group 1 is the name of the interface
     ExtraHeaders: /#include <.+>/g,
     Interface: /\s*interface\s+([\w:]+)\s\{[\s\S]*?\}\s*/g,
-    Attribute: /(?:readonly )?attribute\s+(\w+)\s+(\w+);/g,
+    Attribute: /(?:nameasis )?(?:readonly )?attribute\s+(\w+)\s+(\w+);/g,
     // The following akward expression is repeated inside both method and ctor:
     // \(((:?(:?\s*\w+\s+\w+,)*(:?\s*\w+\s+\w+))?)\)
     // This matches all (type1 name1, type2 name2...) including the empty ()
@@ -147,8 +147,8 @@ JsValueRef CALLBACK Js${uniqueInterfaceName}${methodName}(JsValueRef callee, boo
         return cppCode;
     }
 
-    generateProperty(qualifiedName, uniqueInterfaceName, type, name, isReadonly) {
-        const cppPropName = name[0].toUpperCase() + name.slice(1);
+    generateProperty(qualifiedName, uniqueInterfaceName, type, name, propertyAttributes) {
+        const cppPropName = propertyAttributes.nameAsIs ? name : name[0].toUpperCase() + name.slice(1);
         let cppCode =
 `
 JsValueRef CALLBACK Js${uniqueInterfaceName}${name}Getter(JsValueRef callee, bool isConstructCall, JsValueRef *arguments, unsigned short argumentCount, void *callbackState)
@@ -166,7 +166,7 @@ JsValueRef CALLBACK Js${uniqueInterfaceName}${name}Getter(JsValueRef callee, boo
 	return output;
 }
 `;
-        if (isReadonly) {
+        if (propertyAttributes.isReadonly) {
             return cppCode;
         }
         const arg = { type: type, name: name, index: 0 };
@@ -240,13 +240,15 @@ Zmey::Chakra::Binding::AutoNativeClassProjecter ${uniqueInterfaceName}Projector(
 `;
         return cppCode
     }
-
 }
 
 class IdlCompiler {
     constructor(srcDir, destDir) {
         this.srcDir = srcDir;
         this.destDir = destDir;
+        if (!fs.existsSync(destDir)){
+            fs.mkdirSync(destDir);
+        }
         this.generator = new ChakraGlueGenerator();
         // We need to save the ctor, properties and methods as we need to rearrange them in the glue code
         this.constructorCode = null;
@@ -342,9 +344,12 @@ namespace
         else if (match = RegexLibrary.Attribute.exec(body)) {
             const type = match[1];
             const name = match[2];
-            const isReadonly = /\breadonly\b/.test(match[0]);
-            glueCode = this.generator.generateProperty(qualifiedName, uniqueInterfaceName, type, name, isReadonly);
-            this.propertyList.push({name: name, isReadonly: isReadonly});
+            const propertyAttributes = {
+                isReadonly: /\breadonly\b/.test(match[0]),
+                nameAsIs: /\bnameasis\b/.test(match[0]),
+            };
+            glueCode = this.generator.generateProperty(qualifiedName, uniqueInterfaceName, type, name, propertyAttributes);
+            this.propertyList.push({name: name, isReadonly: propertyAttributes.isReadonly});
             lastIndex = RegexLibrary.Attribute.lastIndex;
             RegexLibrary.Attribute.lastIndex = 0;
         }
