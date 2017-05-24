@@ -62,18 +62,14 @@ void ChakraScriptEngine::RunOneLoopIteration()
 	{
 		auto scriptTask = std::move(m_ScriptTasks.Dequeue());
 		auto source = scriptTask.Script.c_str();
-		JsErrorCode error = JsRunScript(source, m_CurrentSourceContext++, L"", nullptr);
-		if (error != JsNoError)
-		{
-			FORMAT_LOG(Error, Script, "Script execution resulted in error: %d", error);
-		}
+		ExecuteScript(source, L"");
 	}
 	for (unsigned i = 0; i < frameTaskCount; ++i)
 	{
 		auto frameTask = m_FrameTasks.Dequeue();
 		wchar_t buffer[32];
 		wsprintfW(buffer, L"nextFrame(%d);", frameTask.DeltaMs);
-		JsRunScript(buffer, m_CurrentSourceContext++, L"", nullptr);
+		ExecuteScript(buffer, L"frameupdate");
 	}
 	for (unsigned i = 0; i < executionTasksCount; ++i)
 	{
@@ -105,6 +101,38 @@ void ChakraScriptEngine::ExecuteFromFile(ResourceId id)
 void ChakraScriptEngine::ExecuteNextFrame(float deltaTime)
 {
 	m_FrameTasks.Enqueue(std::move(FrameTask(deltaTime)));
+}
+
+
+tmp::string StringifyJsValue(JsValueRef value)
+{
+	JsPropertyIdRef toStringFuncId;
+	::JsGetPropertyIdFromName(L"toString", &toStringFuncId);
+	JsValueRef toStringFunc;
+	::JsGetProperty(value, toStringFuncId, &toStringFunc);
+	JsValueRef stringResult;
+	::JsCallFunction(toStringFunc, &value, 1, &stringResult);
+	const wchar_t* stringPtr;
+	size_t stringLength;
+	::JsStringToPointer(stringResult, &stringPtr, &stringLength);
+	tmp::wstring wideText(stringPtr, stringLength);
+	tmp::string utf8text = Zmey::ConvertWideStringToUtf8(wideText);
+	return utf8text;
+}
+
+void ChakraScriptEngine::ExecuteScript(const wchar_t* script, const wchar_t* scriptSourceUrl)
+{
+	JsErrorCode error = JsRunScript(script, m_CurrentSourceContext++, scriptSourceUrl, nullptr);
+	if (error != JsNoError)
+	{
+		FORMAT_LOG(Error, Script, "Script execution resulted in error: %d", error);
+		if (error == JsErrorScriptException || error == JsErrorScriptCompile)
+		{
+			JsValueRef exception;
+			JsGetAndClearException(&exception);
+			FORMAT_LOG(Error, Script, "Exception thrown: %s", StringifyJsValue(exception).c_str());
+		}
+	}
 }
 
 void ChakraScriptEngine::ExportWorld(World& world)

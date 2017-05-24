@@ -25,6 +25,7 @@ public:
 private:
 	void Run();
 	void RunOneLoopIteration();
+	void ExecuteScript(const wchar_t* script, const wchar_t* scriptSourceUrl);
 	friend JsValueRef CALLBACK Zmey::Chakra::Binding::JSSetTimeout(JsValueRef callee, bool isConstructCall, JsValueRef *arguments, unsigned short argumentCount, void *callbackState);
 	friend JsValueRef CALLBACK Zmey::Chakra::Binding::JSSetInterval(JsValueRef callee, bool isConstructCall, JsValueRef *arguments, unsigned short argumentCount, void *callbackState);
 

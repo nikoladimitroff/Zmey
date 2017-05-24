@@ -5,7 +5,7 @@
 
 namespace Zmey
 {
-tmp::string ConvertWideStringToUtf8(const tmp::wstring& wString)
+inline tmp::string ConvertWideStringToUtf8(const tmp::wstring& wString)
 {
 	tmp::string mbString;
 	auto mbSize = wcstombs(nullptr, wString.c_str(), wString.size());
