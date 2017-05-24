@@ -12,7 +12,7 @@ const RegexLibrary = {
     // The following akward expression is repeated inside both method and ctor:
     // \(((:?(:?\s*\w+\s+\w+,)*(:?\s*\w+\s+\w+))?)\)
     // This matches all (type1 name1, type2 name2...) including the empty ()
-    Method: /(\w+&?)\s+(\w+)\(((:?(:?\s*\w+\s+\w+,)*(:?\s*\w+\s+\w+))?)\);/g,
+    Method: /(?:nameasis )?(\w+&?)\s+(\w+)\(((:?(:?\s*\w+\s+\w+,)*(:?\s*\w+\s+\w+))?)\);/g,
     // Matches constructor(args..); Group 1 is args
     Constructor: /constructor\(((:?(:?\s*\w+\s+\w+,)*(:?\s*\w+\s+\w+))?)\);/g
 };
@@ -124,10 +124,10 @@ JsValueRef CALLBACK Js${uniqueInterfaceName}Constructor(JsValueRef callee, bool 
         return cppCode;
     }
 
-    generateMethod(qualifiedName, uniqueInterfaceName, methodName, argList) {
+    generateMethod(qualifiedName, uniqueInterfaceName, methodName, argList, attributes) {
         const argParsingCode = this.generateParserForArgList(argList);
         const argListCode = this.generateListForArgList(argList);
-        const cppMethodName = methodName[0].toUpperCase() + methodName.slice(1);
+        const cppMethodName = attributes.nameAsIs ? methodName : methodName[0].toUpperCase() + methodName.slice(1);
         const cppCode =
 `
 JsValueRef CALLBACK Js${uniqueInterfaceName}${methodName}(JsValueRef callee, bool isConstructCall, JsValueRef *arguments, unsigned short argumentCount, void *callbackState)
@@ -322,6 +322,12 @@ namespace
         }
         return finalGlueCode;
     }
+    parseAttributes(statement) {
+        return {
+            isReadonly: /\breadonly\b/.test(statement),
+            nameAsIs: /\bnameasis\b/.test(statement),
+        };
+    }
     parseFirstStatement(qualifiedName, uniqueInterfaceName, body) {
         let match = null;
         let glueCode = "";
@@ -337,7 +343,8 @@ namespace
             /* const returnType = match[1]; unused*/
             const method = match[2];
             const args = this.parseArgs(match[3]);
-            glueCode = this.generator.generateMethod(qualifiedName, uniqueInterfaceName, method, args);
+            let attributes = this.parseAttributes(match[0]);
+            glueCode = this.generator.generateMethod(qualifiedName, uniqueInterfaceName, method, args, attributes);
             this.methodList.push(method);
             lastIndex = RegexLibrary.Method.lastIndex;
             RegexLibrary.Method.lastIndex = 0;
@@ -345,10 +352,7 @@ namespace
         else if (match = RegexLibrary.Attribute.exec(body)) {
             const type = match[1];
             const name = match[2];
-            const propertyAttributes = {
-                isReadonly: /\breadonly\b/.test(match[0]),
-                nameAsIs: /\bnameasis\b/.test(match[0]),
-            };
+            let propertyAttributes = this.parseAttributes(match[0]);
             glueCode = this.generator.generateProperty(qualifiedName, uniqueInterfaceName, type, name, propertyAttributes);
             this.propertyList.push({name: name, isReadonly: propertyAttributes.isReadonly});
             lastIndex = RegexLibrary.Attribute.lastIndex;
