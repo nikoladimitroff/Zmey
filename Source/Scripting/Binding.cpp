@@ -82,7 +82,9 @@ void DefineProperty(JsValueRef object, const wchar_t* propertyName, JsNativeFunc
 	JsGetPropertyIdFromName(propertyName, &propertyId);
 	JsValueRef propertyDescriptor;
 	JsCreateObject(&propertyDescriptor);
-	SetProperty(propertyDescriptor, L"get", getter);
+	JsValueRef getterFunc;
+	JsCreateFunction(getter, nullptr, &getterFunc);
+	SetProperty(propertyDescriptor, L"get", getterFunc);
 	bool ignoredResult;
 	JsDefineProperty(object, propertyId, propertyDescriptor, &ignoredResult);
 }
@@ -92,8 +94,12 @@ void DefineProperty(JsValueRef object, const wchar_t* propertyName, JsNativeFunc
 	JsGetPropertyIdFromName(propertyName, &propertyId);
 	JsValueRef propertyDescriptor;
 	JsCreateObject(&propertyDescriptor);
-	SetProperty(propertyDescriptor, L"get", getter);
-	SetProperty(propertyDescriptor, L"get", setter);
+	JsValueRef getterFunc;
+	JsCreateFunction(getter, nullptr, &getterFunc);
+	SetProperty(propertyDescriptor, L"get", getterFunc);
+	JsValueRef setterFunc;
+	JsCreateFunction(setter, nullptr, &setterFunc);
+	SetProperty(propertyDescriptor, L"set", setterFunc);
 	bool ignoredResult;
 	JsDefineProperty(object, propertyId, propertyDescriptor, &ignoredResult);
 }

@@ -21,16 +21,15 @@ namespace Binding
 struct AutoNativeClassProjecter
 {
 	static constexpr uint16_t MaxMemberCount = 16u;
-	template<uint16_t MemberCount>
-	AutoNativeClassProjecter(const wchar_t* className, JsNativeFunction constructor, JsValueRef& prototype,
-		const wchar_t* memberNames[MemberCount], const JsNativeFunction memberFuncs[MemberCount])
+	AutoNativeClassProjecter(const wchar_t* className, JsNativeFunction constructor, JsValueRef& prototype, uint16_t MemberCount,
+		const wchar_t** memberNames, const JsNativeFunction* memberFuncs)
 		: ClassName(className)
 		, Constructor(constructor)
 		, Prototype(prototype)
 		, ActualMemberCount(MemberCount)
 	{
-		std::memcpy(MemberNames, memberNames, sizeof(memberNames));
-		std::memcpy(MemberNames, memberNames, sizeof(memberNames));
+		std::memcpy(MemberNames, memberNames, MemberCount * sizeof(const wchar_t*));
+		std::memcpy(MemberFuncs, memberFuncs, MemberCount * sizeof(JsNativeFunction));
 		RegisterForInitialization();
 	}
 
