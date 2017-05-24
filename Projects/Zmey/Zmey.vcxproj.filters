@@ -69,6 +69,15 @@
     <Filter Include="include\Scripting">
       <UniqueIdentifier>{79eee9d1-5a73-43de-936b-825a5e824155}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\Graphics\Backend\Dx12">
+      <UniqueIdentifier>{d86348d2-3ef2-4251-8148-5bf5e33cb322}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Graphics\Backend\Dx12">
+      <UniqueIdentifier>{58d019d2-840b-42ad-8832-b4fc21a16177}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Graphics\Backend\Dx12">
+      <UniqueIdentifier>{58d019d2-840b-42ad-8832-b4fc21a16177}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\Zmey\Config.h">
@@ -203,6 +212,18 @@
     <ClInclude Include="..\..\include\Zmey\Scripting\ScriptEngine.h">
       <Filter>include\Scripting</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Dx12\Dx12Backend.h">
+      <Filter>include\Graphics\Backend\Dx12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Dx12\Dx12CommandList.h">
+      <Filter>include\Graphics\Backend\Dx12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Dx12\Dx12Helpers.h">
+      <Filter>include\Graphics\Backend\Dx12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Dx12\Dx12Shaders.h">
+      <Filter>include\Graphics\Backend\Dx12</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\EngineLoop.cpp">
@@ -256,13 +277,19 @@
     <ClCompile Include="..\..\Source\Components\RectangleManager.cpp">
       <Filter>Source\Components</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Graphics\Backend\Vulkan\VulkanBackend.cpp">
-      <Filter>Source\Graphics\Backend\Vulkan</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Source\Graphics\Backend\Vulkan\VulkanShaders.cpp">
       <Filter>Source\Graphics\Backend\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Graphics\Backend\Vulkan\VulkanCommandList.cpp">
+      <Filter>Source\Graphics\Backend\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Backend\Dx12\Dx12Backend.cpp">
+      <Filter>Source\Graphics\Backend\Dx12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Backend\Dx12\Dx12CommandList.cpp">
+      <Filter>Source\Graphics\Backend\Dx12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Backend\Vulkan\VulkanBackend.cpp">
       <Filter>Source\Graphics\Backend\Vulkan</Filter>
     </ClCompile>
   </ItemGroup>

@@ -17,7 +17,7 @@ public:
 	virtual void EndRecording() = 0;
 
 	virtual void BeginRenderPass(RenderPass* pass, Framebuffer* fb) = 0;
-	virtual void EndRenderPass() = 0;
+	virtual void EndRenderPass(RenderPass* pass, Framebuffer* fb) = 0;
 
 	virtual void BindPipelineState(PipelineState* state) = 0;
 

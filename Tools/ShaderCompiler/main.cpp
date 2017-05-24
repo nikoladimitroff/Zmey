@@ -7,15 +7,33 @@
 #include <Windows.h>
 
 static const std::string sSourceFolder = "Source/Graphics/Shaders/Source/";
-static const std::string sOutputFolder = "Source/Graphics/Shaders/Compiled/";
+static const std::string sOutputCompilationFolder = "Source/Graphics/Shaders/Compiled/";
+static const std::string sOutputFolderSpirv = "Spir-V/";
+static const std::string sOutputFolderDirectx = "DirectX/";
 static const std::string sFileWildcard = "*.hlsl";
-static const std::string sCompiler = "glslc.exe";
+static const std::string sCompilerSpirv = "glslc.exe";
+static const std::string sCompilerDirectX = "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x64\\fxc.exe";
 
-#define PRINT_CMD_LINE 0
+#define PRINT_CMD_LINE 1
 #define FORCE_REBUILD 1
+
+#define DIRECTX
+//#define SPIRV
+
+#if defined(DIRECTX) && defined(SPIRV)
+#error "Cannot compile both DirectX and Spir-V"
+#endif
 
 int main()
 {
+	std::string sOutputFolder = sOutputCompilationFolder +
+#ifdef DIRECTX
+		sOutputFolderDirectx;
+#else
+		sOutputFolderSpirv;
+#endif
+
+
 	std::string shadersFolder = sSourceFolder;
 	shadersFolder.append(sFileWildcard);
 
@@ -37,7 +55,9 @@ int main()
 	FindClose(hFind);
 
 	std::cout << "Found " << fileList.size() << " files." << std::endl;
-	auto mkdirResult = ::CreateDirectory(sOutputFolder.c_str(), NULL);
+	auto mkdirResult = ::CreateDirectory(sOutputCompilationFolder.c_str(), NULL);
+	assert(mkdirResult != ERROR_PATH_NOT_FOUND);
+	mkdirResult = ::CreateDirectory(sOutputFolder.c_str(), NULL);
 	assert(mkdirResult != ERROR_PATH_NOT_FOUND);
 
 	for (auto& shader : fileList) {
@@ -52,8 +72,9 @@ int main()
 
 		std::ostringstream defines;
 
+#ifdef SPIRV
 		std::ostringstream compilCmd;
-		compilCmd << sCompiler
+		compilCmd << sCompilerSpirv
 			<< " -Werror "
 			<< "-x hlsl "
 			<< "-mfmt=num " // print hex numbers
@@ -74,6 +95,32 @@ int main()
 			<< "-fshader-stage=fragment "
 			<< "-fentry-point=PixelShaderMain "
 			<< filename;
+#endif
+
+#ifdef DIRECTX
+		defines << "/D DIRECTX ";
+
+		std::ostringstream compilCmd;
+		compilCmd << '"' << sCompilerDirectX << '"'
+			<< " /WX "
+			<< "/I " + sSourceFolder + "include "
+			<< "/nologo "
+			<< defines.str();
+
+		std::ostringstream compilCmdVS;
+		compilCmdVS << compilCmd.str()
+			<< "/Fh " << finalname + "VS.h "
+			<< "/T vs_5_0 "
+			<< "/E VertexShaderMain "
+			<< filename;
+
+		std::ostringstream compilCmdPS;
+		compilCmdPS << compilCmd.str()
+			<< "/Fh " << finalname + "PS.h "
+			<< "/T ps_5_0 "
+			<< "/E PixelShaderMain "
+			<< filename;
+#endif
 
 #if PRINT_CMD_LINE
 		std::cout << compilCmdVS.str() << std::endl;
@@ -100,5 +147,6 @@ int main()
 			}
 		}
 	}
+	system("pause");
 	return 0;
 }

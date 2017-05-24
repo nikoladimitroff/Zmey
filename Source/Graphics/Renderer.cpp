@@ -63,7 +63,7 @@ void RendererInterface::GenerateCommands(FrameData& frameData, uint32_t imageInd
 		m_CommandLists[imageIndex],
 		m_RectsPipelineState);
 
-	m_CommandLists[imageIndex]->EndRenderPass();
+	m_CommandLists[imageIndex]->EndRenderPass(m_MainRenderPass, m_SwapChainFramebuffers[imageIndex]);
 	// End Main pass on PlayerView
 
 	m_CommandLists[imageIndex]->EndRecording();

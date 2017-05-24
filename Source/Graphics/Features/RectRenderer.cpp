@@ -26,7 +26,7 @@ namespace
 void ToScreenSpace(float values[4], Rect& rect)
 {
 	values[0] = rect.x * 2.0f - 1.0f;
-	values[1] = rect.y * 2.0f - 1.0f;
+	values[1] = -(rect.y * 2.0f - 1.0f);
 	values[2] = rect.width * 2.0f;
 	values[3] = rect.height * 2.0f;
 }

@@ -13,7 +13,7 @@ cbuffer VertexPushs : register(b0) PUSH_CONSTANT
 	float height;
 };
 
-cbuffer PixelPushs : register(b1) PUSH_CONSTANT
+cbuffer PixelPushs : register(b0) PUSH_CONSTANT
 {
 	float4 color : packoffset(c1);
 };
@@ -38,7 +38,7 @@ float4 VertexShaderMain(VertexInput i) : SV_POSITION
 	}
 }
 
-float4 PixelShaderMain() : SV_TARGET
+float4 PixelShaderMain(float4 pos : SV_POSITION) : SV_TARGET
 {
 	return color;
 }

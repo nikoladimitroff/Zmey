@@ -43,7 +43,7 @@ void VulkanCommandList::BeginRenderPass(RenderPass* pass, Framebuffer* fb)
 	vkCmdBeginRenderPass(CmdBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 }
 
-void VulkanCommandList::EndRenderPass()
+void VulkanCommandList::EndRenderPass(RenderPass* pass, Framebuffer* fb)
 {
 	vkCmdEndRenderPass(CmdBuffer);
 }
