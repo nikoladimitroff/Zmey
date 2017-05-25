@@ -32,9 +32,6 @@ private:
 	// TODO: atomic
 	uint64_t LastCompletedFrame = 0;
 
-	Backend::Semaphore* m_ImageAvailableSemaphore;
-	Backend::Semaphore* m_RenderFinishedSemaphore;
-	Backend::RenderPass* m_MainRenderPass;
 	Backend::PipelineState* m_RectsPipelineState;
 	stl::vector<Backend::Framebuffer*> m_SwapChainFramebuffers;
 	stl::vector<Backend::CommandList*> m_CommandLists;

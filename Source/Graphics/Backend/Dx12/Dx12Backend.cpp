@@ -131,30 +131,6 @@ void Dx12Backend::Initialize(WindowHandle windowHandle)
 	}
 }
 
-Semaphore* Dx12Backend::CreateCommandListSemaphore()
-{
-	//VkSemaphoreCreateInfo semaphoreInfo = {};
-	//semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-
-	//VkSemaphore sem;
-	//if (vkCreateSemaphore(m_Device, &semaphoreInfo, nullptr, &sem) != VK_SUCCESS)
-	//{
-	//	LOG(Error, Dx12, "Failed to create semaphores!");
-	//	return nullptr;
-	//}
-
-	//auto result = new Dx12Semaphore;
-	//result->Semaphore = sem;
-	//return result;
-	return nullptr;
-}
-
-void Dx12Backend::DestroySemaphore(Semaphore* semaphore)
-{
-	//vkDestroySemaphore(m_Device, reinterpret_cast<Dx12Semaphore*>(semaphore)->Semaphore, nullptr);
-	//delete semaphore;
-}
-
 Shader* Dx12Backend::CreateShader()
 {
 	return nullptr;
@@ -165,16 +141,7 @@ void Dx12Backend::DestroyShader(Shader* shader)
 
 }
 
-RenderPass* Dx12Backend::CreateRenderPass()
-{
-	return nullptr;
-}
-
-void Dx12Backend::DestroyRenderPass(RenderPass* pass)
-{
-}
-
-PipelineState* Dx12Backend::CreatePipelineState(RenderPass* pass)
+PipelineState* Dx12Backend::CreatePipelineState()
 {
 	D3D12_ROOT_PARAMETER rootParam;
 	rootParam.ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
@@ -279,12 +246,12 @@ ImageView* Dx12Backend::GetSwapChainImageView(uint32_t index)
 	return reinterpret_cast<ImageView*>(&m_SwapChainImages[index]);
 }
 
-uint32_t Dx12Backend::AcquireNextSwapChainImage(Semaphore* waitSem)
+uint32_t Dx12Backend::AcquireNextSwapChainImage()
 {
 	return m_SwapChain->GetCurrentBackBufferIndex();
 }
 
-void Dx12Backend::Present(Semaphore* finishSem, uint32_t imageIndex)
+void Dx12Backend::Present(uint32_t imageIndex)
 {
 	m_SwapChain->Present(1, 0);
 
@@ -302,7 +269,7 @@ void Dx12Backend::Present(Semaphore* finishSem, uint32_t imageIndex)
 	m_CommandAllocator->Reset();
 }
 
-Framebuffer* Dx12Backend::CreateFramebuffer(ImageView* imageView, RenderPass* renderPass)
+Framebuffer* Dx12Backend::CreateFramebuffer(ImageView* imageView)
 {
 	auto view = reinterpret_cast<SwapChainImage*>(imageView);
 	auto result = new Dx12Framebuffer;
@@ -336,7 +303,7 @@ void Dx12Backend::DestroyCommandList(CommandList* list)
 	delete list;
 }
 
-void Dx12Backend::SubmitCommandList(CommandList* list, Semaphore* waitSemaphore, Semaphore* finishSemaphore)
+void Dx12Backend::SubmitCommandList(CommandList* list)
 {
 	ID3D12CommandList* l = reinterpret_cast<Dx12CommandList*>(list)->CmdList;
 	m_GraphicsQueue->ExecuteCommandLists(1, &l);

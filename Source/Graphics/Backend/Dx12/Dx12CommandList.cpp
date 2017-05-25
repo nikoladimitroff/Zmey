@@ -18,7 +18,7 @@ void Dx12CommandList::EndRecording()
 	CmdList->Close();
 }
 
-void Dx12CommandList::BeginRenderPass(RenderPass* pass, Framebuffer* fb)
+void Dx12CommandList::BeginRenderPass(Framebuffer* fb)
 {
 	D3D12_RESOURCE_BARRIER barrier;
 	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
@@ -52,7 +52,7 @@ void Dx12CommandList::BeginRenderPass(RenderPass* pass, Framebuffer* fb)
 	CmdList->RSSetScissorRects(1, &scissor);
 }
 
-void Dx12CommandList::EndRenderPass(RenderPass* pass, Framebuffer* fb)
+void Dx12CommandList::EndRenderPass(Framebuffer* fb)
 {
 	D3D12_RESOURCE_BARRIER barrier;
 	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;

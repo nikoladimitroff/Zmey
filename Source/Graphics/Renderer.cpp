@@ -17,20 +17,16 @@ bool RendererInterface::CreateWindowSurface(WindowHandle handle)
 {
 	m_Backend->Initialize(handle);
 
-	m_MainRenderPass = m_Backend->CreateRenderPass();
-	m_RectsPipelineState = m_Backend->CreatePipelineState(m_MainRenderPass);
+	m_RectsPipelineState = m_Backend->CreatePipelineState();
 
 	auto swapChainCount = m_Backend->GetSwapChainBuffers();
 	m_SwapChainFramebuffers.reserve(swapChainCount);
 	m_CommandLists.reserve(swapChainCount);
 	for (auto i = 0u; i < swapChainCount; ++i)
 	{
-		m_SwapChainFramebuffers.push_back(m_Backend->CreateFramebuffer(m_Backend->GetSwapChainImageView(i), m_MainRenderPass));
+		m_SwapChainFramebuffers.push_back(m_Backend->CreateFramebuffer(m_Backend->GetSwapChainImageView(i)));
 		m_CommandLists.push_back(m_Backend->CreateCommandList());
 	}
-
-	m_ImageAvailableSemaphore = m_Backend->CreateCommandListSemaphore();
-	m_RenderFinishedSemaphore = m_Backend->CreateCommandListSemaphore();
 
 	return true;
 }
@@ -50,7 +46,7 @@ void RendererInterface::GenerateCommands(FrameData& frameData, uint32_t imageInd
 	m_CommandLists[imageIndex]->BeginRecording();
 
 	// Begin Main pass on PlayerView
-	m_CommandLists[imageIndex]->BeginRenderPass(m_MainRenderPass, m_SwapChainFramebuffers[imageIndex]);
+	m_CommandLists[imageIndex]->BeginRenderPass(m_SwapChainFramebuffers[imageIndex]);
 
 	Features::MeshRenderer::GenerateCommands(frameData,
 		RenderPass::Main,
@@ -63,22 +59,22 @@ void RendererInterface::GenerateCommands(FrameData& frameData, uint32_t imageInd
 		m_CommandLists[imageIndex],
 		m_RectsPipelineState);
 
-	m_CommandLists[imageIndex]->EndRenderPass(m_MainRenderPass, m_SwapChainFramebuffers[imageIndex]);
+	m_CommandLists[imageIndex]->EndRenderPass(m_SwapChainFramebuffers[imageIndex]);
 	// End Main pass on PlayerView
 
 	m_CommandLists[imageIndex]->EndRecording();
 
-	m_Backend->SubmitCommandList(m_CommandLists[imageIndex], m_ImageAvailableSemaphore, m_RenderFinishedSemaphore);
+	m_Backend->SubmitCommandList(m_CommandLists[imageIndex]);
 }
 
 void RendererInterface::Present(FrameData& frameData, uint32_t imageIndex)
 {
-	m_Backend->Present(m_RenderFinishedSemaphore, imageIndex);
+	m_Backend->Present(imageIndex);
 }
 
 void RendererInterface::RenderFrame(FrameData& frameData)
 {
-	uint32_t imageIndex = m_Backend->AcquireNextSwapChainImage(m_ImageAvailableSemaphore);
+	uint32_t imageIndex = m_Backend->AcquireNextSwapChainImage();
 
 	PrepareData(frameData);
 

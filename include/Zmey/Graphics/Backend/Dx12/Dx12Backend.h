@@ -12,23 +12,11 @@ namespace Graphics
 namespace Backend
 {
 
-class Dx12Semaphore : public Semaphore
-{
-public:
-	//VkSemaphore Semaphore;
-};
-
 class Dx12PipelineState : public PipelineState
 {
 public:
 	ID3D12PipelineState* PipelineState;
 	ID3D12RootSignature* RootSignature;
-};
-
-class Dx12RenderPass : public RenderPass
-{
-public:
-	//VkRenderPass RenderPass;
 };
 
 class Dx12Framebuffer : public Framebuffer
@@ -53,20 +41,14 @@ public:
 
 	virtual Shader* CreateShader() override;
 	virtual void DestroyShader(Shader* shader) override;
-	virtual PipelineState* CreatePipelineState(RenderPass* pass) override;
+	virtual PipelineState* CreatePipelineState() override;
 	virtual void DestroyPipelineState(PipelineState* state) override;
 
 	virtual CommandList* CreateCommandList() override;
 	virtual void DestroyCommandList(CommandList* list) override;
-	virtual void SubmitCommandList(CommandList* list, Semaphore* waitSemaphore, Semaphore* finishSemaphore) override;
+	virtual void SubmitCommandList(CommandList* list) override;
 
-	virtual Semaphore* CreateCommandListSemaphore() override;
-	virtual void DestroySemaphore(Semaphore* semaphore) override;
-
-	virtual RenderPass* CreateRenderPass() override;
-	virtual void DestroyRenderPass(RenderPass* pass) override;
-
-	virtual Framebuffer* CreateFramebuffer(ImageView* imageView, RenderPass* renderPass) override;
+	virtual Framebuffer* CreateFramebuffer(ImageView* imageView) override;
 	virtual void DestroyFramebuffer(Framebuffer* framebuffer) override;
 
 	virtual ImageView* CreateImageView() override;
@@ -75,8 +57,8 @@ public:
 	virtual uint32_t GetSwapChainBuffers() override;
 	virtual ImageView* GetSwapChainImageView(uint32_t index) override;
 
-	virtual uint32_t AcquireNextSwapChainImage(Semaphore* waitSem) override;
-	virtual void Present(Semaphore* finishSem, uint32_t imageIndex) override;
+	virtual uint32_t AcquireNextSwapChainImage() override;
+	virtual void Present(uint32_t imageIndex) override;
 
 private:
 	ComPtr<IDXGIFactory4> m_Factory;
