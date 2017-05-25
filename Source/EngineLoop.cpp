@@ -128,6 +128,7 @@ void EngineLoop::Run()
 		lastFrameTmestamp = currentFrameTimestamp;
 	}
 
+	Modules::Renderer->Unitialize();
 	Modules::Platform->KillWindow(windowHandle);
 }
 

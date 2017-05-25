@@ -18,6 +18,7 @@ public:
 	RendererInterface();
 
 	bool CreateWindowSurface(WindowHandle handle);
+	void Unitialize();
 
 	void RenderFrame(FrameData& frameData);
 

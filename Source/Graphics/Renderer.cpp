@@ -31,6 +31,21 @@ bool RendererInterface::CreateWindowSurface(WindowHandle handle)
 	return true;
 }
 
+void RendererInterface::Unitialize()
+{
+	for (auto& list : m_CommandLists)
+	{
+		m_Backend->DestroyCommandList(list);
+	}
+
+	m_Backend->DestroyPipelineState(m_RectsPipelineState);
+	for (auto& rtv : m_SwapChainFramebuffers)
+	{
+		m_Backend->DestroyFramebuffer(rtv);
+	}
+
+	m_Backend.reset();
+}
 
 void RendererInterface::PrepareData(FrameData& frameData)
 {
