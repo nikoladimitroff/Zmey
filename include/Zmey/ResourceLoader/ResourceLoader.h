@@ -1,5 +1,6 @@
 #pragma once
 #include <Zmey/Memory/MemoryManagement.h>
+#include <Zmey/Graphics/GraphicsObjects.h>
 
 struct aiScene;
 
@@ -22,14 +23,14 @@ public:
 		return nullptr;
 	}
 	template<>
-	const aiScene* As<aiScene>(ResourceId id) const
+	const Graphics::MeshHandle* As<Graphics::MeshHandle>(ResourceId id) const
 	{
-		auto it = std::find_if(m_Meshes.begin(), m_Meshes.end(), [id](const std::pair<ResourceId, const aiScene*>& meshData)
+		auto it = std::find_if(m_Meshes.begin(), m_Meshes.end(), [id](const std::pair<ResourceId, Graphics::MeshHandle>& meshData)
 		{
 			return meshData.first == id;
 		});
 		ASSERT_RETURN_VALUE(it != m_Meshes.end(), nullptr);
-		return it->second;
+		return &it->second;
 	}
 	template<>
 	const char* As<char>(ResourceId id) const
@@ -66,7 +67,7 @@ private:
 	friend void OnResourceLoaded(ResourceLoader*, ResourceId, const World*);
 
 	ResourceId m_NextId;
-	stl::vector<std::pair<ResourceId, const aiScene*>> m_Meshes;
+	stl::vector<std::pair<ResourceId, Graphics::MeshHandle>> m_Meshes;
 	stl::vector<std::pair<ResourceId, const stl::string>> m_TextContents;
 	stl::vector<std::pair<ResourceId, const World*>> m_Worlds;
 };

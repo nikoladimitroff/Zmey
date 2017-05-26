@@ -18,6 +18,8 @@ class CommandList;
 
 class Backend;
 
+class Buffer;
+
 }
 }
 }

@@ -8,6 +8,8 @@
 #include <Zmey/Graphics/Backend/Backend.h>
 #include <Zmey/Graphics/Backend/CommandList.h>
 
+#include <assimp/scene.h>
+
 namespace Zmey
 {
 namespace Graphics
@@ -106,8 +108,17 @@ bool RendererInterface::CheckIfFrameCompleted(uint64_t frameIndex)
 }
 
 RendererInterface::RendererInterface()
+	: m_Backend(Backend::CreateBackend())
+	, m_Data(m_Backend.get())
 {
-	m_Backend.reset(Backend::CreateBackend());
+}
+
+MeshHandle RendererInterface::MeshLoaded(const aiScene* mesh)
+{
+	Mesh newMesh;
+	newMesh.VertexBuffer = m_Data.BufferManager.CreateBuffer(64);
+	newMesh.IndexBuffer = m_Data.BufferManager.CreateBuffer(64);
+	return m_Data.MeshManager.CreateMesh(newMesh);
 }
 }
 }

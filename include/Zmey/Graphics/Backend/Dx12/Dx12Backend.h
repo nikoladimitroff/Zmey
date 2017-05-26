@@ -32,6 +32,12 @@ public:
 	//VkImageView ImageView;
 };
 
+class Dx12Buffer : public Buffer
+{
+public:
+	ID3D12Resource* Buffer;
+};
+
 class Dx12Backend : public Backend
 {
 public:
@@ -53,6 +59,9 @@ public:
 
 	virtual ImageView* CreateImageView() override;
 	virtual void DestroyImageView(ImageView* imageView) override;
+
+	virtual Buffer* CreateBuffer(uint64_t size) override;
+	virtual void DestroyBuffer(Buffer* buffer) override;
 
 	virtual uint32_t GetSwapChainBuffers() override;
 	virtual ImageView* GetSwapChainImageView(uint32_t index) override;

@@ -21,6 +21,9 @@ class Framebuffer
 class ImageView
 {};
 
+class Buffer
+{};
+
 class Backend
 {
 public:
@@ -43,6 +46,9 @@ public:
 
 	virtual ImageView* CreateImageView() = 0;
 	virtual void DestroyImageView(ImageView* imageView) = 0;
+
+	virtual Buffer* CreateBuffer(uint64_t size) = 0;
+	virtual void DestroyBuffer(Buffer* buffer) = 0;
 
 	virtual uint32_t GetSwapChainBuffers() = 0;
 	virtual ImageView* GetSwapChainImageView(uint32_t index) = 0;

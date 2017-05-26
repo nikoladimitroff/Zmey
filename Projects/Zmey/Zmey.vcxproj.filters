@@ -78,6 +78,12 @@
     <Filter Include="Source\Graphics\Backend\Dx12">
       <UniqueIdentifier>{58d019d2-840b-42ad-8832-b4fc21a16177}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\Graphics\Managers">
+      <UniqueIdentifier>{361f81ff-c7e6-4b43-a2f5-dd2205236ed2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Graphics\Managers">
+      <UniqueIdentifier>{821632d7-a07c-4ab0-8721-79eb349be595}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\Zmey\Config.h">
@@ -224,6 +230,15 @@
     <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Dx12\Dx12Shaders.h">
       <Filter>include\Graphics\Backend\Dx12</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Graphics\GraphicsObjects.h">
+      <Filter>include\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Graphics\Managers\MeshManager.h">
+      <Filter>include\Graphics\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Graphics\Managers\BufferManager.h">
+      <Filter>include\Graphics\Managers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\EngineLoop.cpp">
@@ -291,6 +306,12 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\Graphics\Backend\Vulkan\VulkanBackend.cpp">
       <Filter>Source\Graphics\Backend\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Managers\MeshManager.cpp">
+      <Filter>Source\Graphics\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Managers\BufferManager.cpp">
+      <Filter>Source\Graphics\Managers</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -51,7 +51,7 @@ void ResourceLoader::ReleaseOwnershipOver(ResourceId id)
 bool ResourceLoader::IsResourceReady(ResourceId id)
 {
 	bool found = false;
-	auto it = std::find_if(m_Meshes.begin(), m_Meshes.end(), [id](const std::pair<ResourceId, const aiScene*>& meshData)
+	auto it = std::find_if(m_Meshes.begin(), m_Meshes.end(), [id](const std::pair<ResourceId, Graphics::MeshHandle>& meshData)
 	{
 		return meshData.first == id;
 	});
@@ -71,7 +71,8 @@ bool ResourceLoader::IsResourceReady(ResourceId id)
 
 void OnResourceLoaded(ResourceLoader* loader, ResourceId id, const aiScene* scene)
 {
-	loader->m_Meshes.push_back(std::make_pair(id, scene));
+	auto handle = Modules::Renderer->MeshLoaded(scene);
+	loader->m_Meshes.push_back(std::make_pair(id, handle));
 	FORMAT_LOG(Info, ResourceLoader, "Just loaded asset for id: %d", id);
 }
 void OnResourceLoaded(ResourceLoader* loader, ResourceId id, const tmp::string& text)

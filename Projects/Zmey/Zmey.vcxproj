@@ -141,6 +141,9 @@
     <ClInclude Include="..\..\include\Zmey\Graphics\Features\MeshRenderer.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\Features\RectRenderer.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\FrameData.h" />
+    <ClInclude Include="..\..\include\Zmey\Graphics\GraphicsObjects.h" />
+    <ClInclude Include="..\..\include\Zmey\Graphics\Managers\BufferManager.h" />
+    <ClInclude Include="..\..\include\Zmey\Graphics\Managers\MeshManager.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\Renderer.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\RenderPasses.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\ResourceHandles.h" />
@@ -189,6 +192,8 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\Graphics\Features\MeshRenderer.cpp" />
     <ClCompile Include="..\..\Source\Graphics\Features\RectRenderer.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Managers\BufferManager.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Managers\MeshManager.cpp" />
     <ClCompile Include="..\..\Source\Graphics\Renderer.cpp" />
     <ClCompile Include="..\..\Source\Logging.cpp" />
     <ClCompile Include="..\..\Source\Memory\MemoryManagement.cpp" />

@@ -236,6 +236,49 @@ void Dx12Backend::DestroyImageView(ImageView* imageView)
 
 }
 
+Buffer* Dx12Backend::CreateBuffer(uint64_t size)
+{
+	D3D12_HEAP_PROPERTIES heapProperties;
+	heapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;
+	heapProperties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+	heapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
+	heapProperties.CreationNodeMask = 0;
+	heapProperties.VisibleNodeMask = 0;
+
+	D3D12_RESOURCE_DESC desc;
+	desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+	desc.Alignment = 0;
+	desc.Width = size;
+	desc.Height = 1;
+	desc.DepthOrArraySize = 1;
+	desc.MipLevels = 1;
+	desc.Format = DXGI_FORMAT_UNKNOWN;
+	desc.SampleDesc.Count = 1;
+	desc.SampleDesc.Quality = 0;
+	desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+	desc.Flags = D3D12_RESOURCE_FLAG_NONE;
+
+	ID3D12Resource* buffer;
+	CHECK_SUCCESS(m_Device->CreateCommittedResource(
+		&heapProperties,
+		D3D12_HEAP_FLAG_NONE,
+		&desc,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(&buffer)
+	));
+
+	auto result = new Dx12Buffer;
+	result->Buffer = buffer;
+	return result;
+}
+
+void Dx12Backend::DestroyBuffer(Buffer* buffer)
+{
+	reinterpret_cast<Dx12Buffer*>(buffer)->Buffer->Release();
+	delete buffer;
+}
+
 uint32_t Dx12Backend::GetSwapChainBuffers()
 {
 	return uint32_t(m_SwapChainImages.size());
