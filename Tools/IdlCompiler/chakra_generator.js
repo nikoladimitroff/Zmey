@@ -1,12 +1,17 @@
 const os = require("os");
 
-function getTypeEnumOfAnyType(anyType) {
-    const match = /anyof<([\w:]+)>/.exec(anyType);
-    if (match) {
-        return match[1];
+const Common = {
+    convertQualifiedToUniqueTypename(qualifiedName) {
+        return qualifiedName.replace(/::/g, "");
+    },
+    getTypeEnumOfAnyType(anyType) {
+        const match = /anyof<([\w:]+)>/.exec(anyType);
+        if (match) {
+            return match[1];
+        }
+        return null;
     }
-    return null;
-}
+};
 
 class ChakraGlueGenerator {
     generateCastingOperatorForType(type) {
@@ -24,7 +29,7 @@ class ChakraGlueGenerator {
         }
     }
     generateCastingOperatorForTypeOrAny(type) {
-        const match = getTypeEnumOfAnyType(type);
+        const match = Common.getTypeEnumOfAnyType(type);
         if (match) {
             return "(void*)";
         }
@@ -44,7 +49,7 @@ class ChakraGlueGenerator {
         }
     }
     generateDefinitionForArgOrAny(arg) {
-        const typeEnumeration = getTypeEnumOfAnyType(arg.type);
+        const typeEnumeration = Common.getTypeEnumOfAnyType(arg.type);
         if (typeEnumeration) {
             return `void* _${arg.name};`;
         }
@@ -118,7 +123,7 @@ class ChakraGlueGenerator {
         }
     }
     generateOutputForTypeOrAny(type, indexArg) {
-        const typeEnumeration = getTypeEnumOfAnyType(type);
+        const typeEnumeration = Common.getTypeEnumOfAnyType(type);
         if (typeEnumeration) {
             const code = `
 	JsCreateExternalObject(_result, nullptr, &output);
