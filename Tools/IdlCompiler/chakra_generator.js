@@ -120,6 +120,7 @@ class ChakraGlueGenerator {
                 code = `
 	JsCreateExternalObject(_result, nullptr, &output);
 	JsSetPrototype(output, Js${uniqueInterfaceName}Prototype);
+	Js${uniqueInterfaceName}DefineProperties(output);
 `;
                 return code;
         }
@@ -127,6 +128,7 @@ class ChakraGlueGenerator {
     generateOutputForTypeOrAny(type, indexArg) {
         const typeEnumeration = Common.getTypeEnumOfAnyType(type);
         if (typeEnumeration) {
+            const uniqueInterfaceName = Common.convertQualifiedToUniqueTypename(typeEnumeration);
             const code = `
 	JsCreateExternalObject(_result, nullptr, &output);
 	JsSetPrototype(output, Zmey::Chakra::Binding::GetProtototypeOfAnyTypeSet(Zmey::Hash("${typeEnumeration}"), _${indexArg.name}));
