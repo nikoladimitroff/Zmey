@@ -122,7 +122,7 @@ class ChakraGlueGenerator {
         if (typeEnumeration) {
             const code = `
 	JsCreateExternalObject(_result, nullptr, &output);
-	JsSetPrototype(output, ${typeEnumeration}[_${indexArg.name}]);
+	JsSetPrototype(output, Zmey::Chakra::Binding::GetProtototypeOfAnyTypeSet(Zmey::Hash("${typeEnumeration}"), _${indexArg.name}));
 `;
             return code;
         }
@@ -136,7 +136,7 @@ class ChakraGlueGenerator {
     }
     generateHeader() {
         const cppHeaders =
-`s
+`
 #include <cassert>
 #include <ChakraCore/ChakraCore.h>
 #include <Zmey/Scripting/Binding.h>
@@ -266,15 +266,16 @@ void Js${uniqueInterfaceName}DefineProperties(JsValueRef object)
     generatePrototypeDefinition(uniqueInterfaceName) {
         return `JsValueRef Js${uniqueInterfaceName}Prototype;`;
     }
-    generateProjection(qualifiedName, uniqueInterfaceName, methodList) {
+    generateProjection(qualifiedName, uniqueInterfaceName, hasConstructor, methodList) {
         const shortName = qualifiedName.substring(qualifiedName.lastIndexOf("::") + 2);
+        const constructorName = hasConstructor ? `&Js${uniqueInterfaceName}Constructor` : "nullptr";
         if (methodList.length == 0) {
             // No methods, shortcut
                 const cppCode =
 `
 Zmey::Chakra::Binding::AutoNativeClassProjecter ${uniqueInterfaceName}Projector(
 	L"${shortName}",
-	&Js${uniqueInterfaceName}Constructor,
+	${constructorName},
 	Js${uniqueInterfaceName}Prototype
 );
 `;
@@ -289,7 +290,7 @@ const wchar_t* ${uniqueInterfaceName}MemberNames[] = {${initializerListForNames}
 const JsNativeFunction ${uniqueInterfaceName}MemberFuncs[] = {${initializerListForFuncs}};
 Zmey::Chakra::Binding::AutoNativeClassProjecter ${uniqueInterfaceName}Projector(
 	L"${shortName}",
-	&Js${uniqueInterfaceName}Constructor,
+	${constructorName},
 	Js${uniqueInterfaceName}Prototype,
 	${methodList.length},
 	${uniqueInterfaceName}MemberNames,

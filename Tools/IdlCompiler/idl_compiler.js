@@ -77,21 +77,12 @@ class IdlCompiler {
             this.methodList = [];
             const code = this.compileSingleInterface(qualifiedName, uniqueInterfaceName, interfaceBody);
             const propertiesSetup = this.generator.generatePropertiesSetup(uniqueInterfaceName, this.propertyList);
-            const projector = this.generator.generateProjection(qualifiedName, uniqueInterfaceName, this.methodList);
+            const projector = this.generator.generateProjection(qualifiedName, uniqueInterfaceName, this.constructorCode.length, this.methodList);
             const prototype = this.generator.generatePrototypeDefinition(uniqueInterfaceName);
             interfaceCode.push(code + propertiesSetup + prototype + this.constructorCode + projector);
         }
 
-        const openningBrace =
-`
-namespace
-{
-`;
-        const closingBrace =
-`
-}
-`;
-        const finalGlueCode = extraHeaders + openningBrace + interfaceCode.join(os.EOL) + closingBrace;
+        const finalGlueCode = extraHeaders + interfaceCode.join(os.EOL);
         console.log(`Done with file ${destinationFile}.`);
         fs.writeFile(destinationFile, finalGlueCode, { flag: "w+"}, (err) => assert(!err));
     }
