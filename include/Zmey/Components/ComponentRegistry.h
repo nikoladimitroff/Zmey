@@ -31,7 +31,10 @@ namespace Components
 		const InstantiateDelegate Instantiate;
 		const DefaultsToBlobDelegate DefaultsToBlob;
 		const ToBlobDelegate ToBlob;
+		void const* ScriptingPrototype;
 	};
+	void ExportComponentsToScripting();
+
 	void EmptyDefaultsToBlobImplementation(IDataBlob& blob);
 	void EmptyToBlobImplementation(const nlohmann::json&, IDataBlob& blob);
 
@@ -44,6 +47,7 @@ namespace Components
 	{
 		return new T(world);
 	}
+
 #define DEFINE_COMPONENT_MANAGER(Class, ShortName, DefaultsToBlob, ToBlob) \
 	const ComponentIndex Class##::SZmeyComponentManagerIndex = GetNextComponentManagerIndex(); \
 	static Zmey::Components::ComponentManagerEntry G##ShortName##ComponentManagerRegistration(#ShortName, \

@@ -3,6 +3,8 @@
 
 #include <algorithm>
 
+#include <Zmey/Scripting/Binding.h>
+
 namespace Zmey
 {
 
@@ -31,6 +33,17 @@ ComponentManagerEntry::ComponentManagerEntry(const char* nameHash, ComponentInde
 	, ToBlob(toBlob)
 {
 	GComponentRegistry[ComponentIndex] = this;
+}
+
+void ExportComponentsToScripting()
+{
+	ComponentIndex i = 0u;
+	stl::small_vector<JsValueRef> componentPrototypes;
+	for (const ComponentManagerEntry* entry = GetComponentManagerAtIndex(0); entry; entry = GetComponentManagerAtIndex(++i))
+	{
+		componentPrototypes.push_back((JsValueRef)entry->ScriptingPrototype);
+	}
+	Zmey::Chakra::Binding::RegisterPrototypesForAnyTypeSet(Zmey::Hash("Manager"), componentPrototypes);
 }
 
 void EmptyDefaultsToBlobImplementation(IDataBlob& blob)

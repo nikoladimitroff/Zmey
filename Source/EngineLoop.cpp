@@ -8,8 +8,10 @@
 #include <Zmey/Logging.h>
 #include <Zmey/Modules.h>
 #include <Zmey/World.h>
+#include <Zmey/Components/ComponentRegistry.h>
 #include <Zmey/Components/TransformManager.h>
 #include <Zmey/Components/RectangleManager.h>
+#include <Zmey/Scripting/Binding.h>
 
 #include <Zmey/Graphics/FrameData.h>
 #include <Zmey/Graphics/Features.h>
@@ -66,6 +68,8 @@ EngineLoop::EngineLoop(const char* initialWorld)
 	Zmey::GLogHandler = StaticAlloc<StdOutLogHandler>();
 	Zmey::Modules::Initialize();
 	m_WorldResourceId = Modules::ResourceLoader->LoadResource(initialWorld);
+
+	Zmey::Components::ExportComponentsToScripting();
 }
 void EngineLoop::Run()
 {
@@ -84,6 +88,7 @@ void EngineLoop::Run()
 	using clock = std::chrono::high_resolution_clock;
 	clock::time_point lastFrameTmestamp = clock::now();
 
+	auto scriptId = Modules::ResourceLoader->LoadResource("Content\\Scripts\\main.js");
 	while (g_Run)
 	{
 		auto frameScope = TempAllocator::GetTlsAllocator().ScopeNow();
@@ -98,11 +103,18 @@ void EngineLoop::Run()
 		if (!m_World && Modules::ResourceLoader->IsResourceReady(m_WorldResourceId))
 		{
 			m_World = Modules::ResourceLoader->TakeOwnershipOver<World>(m_WorldResourceId);
+			Zmey::Chakra::Binding::ProjectGlobal(L"world", m_World, Zmey::Hash("world"));
 		}
 
 		clock::time_point currentFrameTimestamp = clock::now();
 		clock::duration timeSinceLastFrame = currentFrameTimestamp - lastFrameTmestamp;
 		float deltaTime = timeSinceLastFrame.count() * 1e-9f;
+	
+		if (Modules::ResourceLoader->IsResourceReady(scriptId))
+		{
+			Modules::ScriptEngine->ExecuteFromFile(scriptId);
+			scriptId = -1;
+		}
 
 		Modules::ScriptEngine->ExecuteNextFrame(deltaTime);
 
