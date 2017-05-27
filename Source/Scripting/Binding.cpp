@@ -15,6 +15,29 @@ namespace Binding
 uint32_t GCurrentPendingClassProjectionIndex = 0u;
 std::array<AutoNativeClassProjecter*, 256> GPendingClassProjections;
 
+AutoNativeClassProjecter::AutoNativeClassProjecter(const wchar_t* className, JsNativeFunction constructor, JsValueRef& prototype, uint16_t MemberCount,
+	const wchar_t** memberNames, const JsNativeFunction* memberFuncs)
+	: ClassName(className)
+	, NameHash(0ull)
+	, Constructor(constructor)
+	, Prototype(prototype)
+	, ActualMemberCount(MemberCount)
+{
+	std::memcpy(MemberNames, memberNames, MemberCount * sizeof(const wchar_t*));
+	std::memcpy(MemberFuncs, memberFuncs, MemberCount * sizeof(JsNativeFunction));
+	RegisterForInitialization();
+}
+
+AutoNativeClassProjecter::AutoNativeClassProjecter(const wchar_t* className, JsNativeFunction constructor, JsValueRef& prototype)
+	: ClassName(className)
+	, NameHash(0ull)
+	, Constructor(constructor)
+	, Prototype(prototype)
+	, ActualMemberCount(0u)
+{
+	RegisterForInitialization();
+}
+
 void AutoNativeClassProjecter::RegisterForInitialization()
 {
 	JsContextRef activeContext;
@@ -32,17 +55,43 @@ void AutoNativeClassProjecter::RegisterForInitialization()
 }
 void AutoNativeClassProjecter::Project()
 {
+	tmp::string utf8Name = Zmey::ConvertWideStringToUtf8(ClassName);
+	NameHash = Zmey::Hash(Zmey::HashHelpers::CaseInsensitiveStringWrapper(utf8Name.c_str()));
+
 	const tmp::vector<const wchar_t *> memberNames(MemberNames, MemberNames + ActualMemberCount);
 	const tmp::vector<JsNativeFunction> memberFuncs(MemberFuncs, MemberFuncs + ActualMemberCount);
 	ProjectNativeClass(ClassName, Constructor, Prototype, memberNames, memberFuncs);
 }
 
+JsValueRef AutoNativeClassProjecter::GetPrototypeOf(const Zmey::Hash classNameHash)
+{
+	for (uint32_t i = 0u; i < GCurrentPendingClassProjectionIndex; ++i)
+	{
+		auto projectionData = GPendingClassProjections[i];
+		if (projectionData->NameHash == classNameHash)
+		{
+			return projectionData->Prototype;
+		}
+	}
+	return nullptr;
+}
+
+void CheckChakraCall(JsErrorCode error, const char* functionCall, const char* file, int line)
+{
+	if (error != JsNoError)
+	{
+		FORMAT_LOG(Error, Scripting, "Chakra call %s failed at %s:%d with %d", functionCall, file, line, error);
+	}
+}
+#define CHECKCHAKRA(Call) \
+	CheckChakraCall(Call, #Call, __FILE__, __LINE__)
+
 void Initialize()
 {
 	JsValueRef globalObject;
-	JsGetGlobalObject(&globalObject);
+	CHECKCHAKRA(JsGetGlobalObject(&globalObject));
 	JsValueRef console;
-	JsCreateObject(&console);
+	CHECKCHAKRA(JsCreateObject(&console));
 	SetProperty(globalObject, L"console", console);
 	SetCallback(console, L"debug", JSConsoleDebug, nullptr);
 	SetCallback(console, L"log", JSConsoleLog, nullptr);
@@ -55,9 +104,7 @@ void Initialize()
 	{
 		auto projectionData = GPendingClassProjections[i];
 		projectionData->Project();
-		GPendingClassProjections[i] = nullptr;
 	}
-	GCurrentPendingClassProjectionIndex = 0u;
 }
 // The following funcs (SetCallback / SetProp / ProjectClass) were pretty much copied from Chakra's open gl sample
 void SetCallback(JsValueRef object, const wchar_t *propertyName, JsNativeFunction callback, void *callbackState)
@@ -72,52 +119,94 @@ void SetCallback(JsValueRef object, const wchar_t *propertyName, JsNativeFunctio
 void SetProperty(JsValueRef object, const wchar_t *propertyName, JsValueRef property)
 {
 	JsPropertyIdRef propertyId;
-	JsGetPropertyIdFromName(propertyName, &propertyId);
-	JsSetProperty(object, propertyId, property, true);
+	CHECKCHAKRA(JsGetPropertyIdFromName(propertyName, &propertyId));
+	CHECKCHAKRA(JsSetProperty(object, propertyId, property, true));
 }
 
 void DefineProperty(JsValueRef object, const wchar_t* propertyName, JsNativeFunction getter)
 {
 	JsPropertyIdRef propertyId;
-	JsGetPropertyIdFromName(propertyName, &propertyId);
+	CHECKCHAKRA(JsGetPropertyIdFromName(propertyName, &propertyId));
 	JsValueRef propertyDescriptor;
-	JsCreateObject(&propertyDescriptor);
+	CHECKCHAKRA(JsCreateObject(&propertyDescriptor));
 	JsValueRef getterFunc;
-	JsCreateFunction(getter, nullptr, &getterFunc);
+	CHECKCHAKRA(JsCreateFunction(getter, nullptr, &getterFunc));
 	SetProperty(propertyDescriptor, L"get", getterFunc);
 	bool ignoredResult;
-	JsDefineProperty(object, propertyId, propertyDescriptor, &ignoredResult);
+	CHECKCHAKRA(JsDefineProperty(object, propertyId, propertyDescriptor, &ignoredResult));
 }
 void DefineProperty(JsValueRef object, const wchar_t* propertyName, JsNativeFunction getter, JsNativeFunction setter)
 {
 	JsPropertyIdRef propertyId;
-	JsGetPropertyIdFromName(propertyName, &propertyId);
+	CHECKCHAKRA(JsGetPropertyIdFromName(propertyName, &propertyId));
 	JsValueRef propertyDescriptor;
-	JsCreateObject(&propertyDescriptor);
+	CHECKCHAKRA(JsCreateObject(&propertyDescriptor));
 	JsValueRef getterFunc;
-	JsCreateFunction(getter, nullptr, &getterFunc);
+	CHECKCHAKRA(JsCreateFunction(getter, nullptr, &getterFunc));
 	SetProperty(propertyDescriptor, L"get", getterFunc);
 	JsValueRef setterFunc;
-	JsCreateFunction(setter, nullptr, &setterFunc);
+	CHECKCHAKRA(JsCreateFunction(setter, nullptr, &setterFunc));
 	SetProperty(propertyDescriptor, L"set", setterFunc);
 	bool ignoredResult;
-	JsDefineProperty(object, propertyId, propertyDescriptor, &ignoredResult);
+	CHECKCHAKRA(JsDefineProperty(object, propertyId, propertyDescriptor, &ignoredResult));
 }
 
 void ProjectNativeClass(const wchar_t *className, JsNativeFunction constructor, JsValueRef &prototype, const tmp::vector<const wchar_t *>& memberNames, const tmp::vector<JsNativeFunction>& memberFuncs)
 {
-	JsValueRef globalObject;
-	JsGetGlobalObject(&globalObject);
-	JsValueRef jsConstructor;
-	JsCreateFunction(constructor, nullptr, &jsConstructor);
-	SetProperty(globalObject, className, jsConstructor);
 	// create class's prototype and project its member functions
 	JsCreateObject(&prototype);
 	assert(memberNames.size() == memberNames.size());
 	for (int i = 0; i < memberNames.size(); ++i) {
 		SetCallback(prototype, memberNames[i], memberFuncs[i], nullptr);
 	}
-	SetProperty(jsConstructor, L"prototype", prototype);
+	if (constructor)
+	{
+		JsValueRef globalObject;
+		JsGetGlobalObject(&globalObject);
+		JsValueRef jsConstructor;
+		JsCreateFunction(constructor, nullptr, &jsConstructor);
+		SetProperty(globalObject, className, jsConstructor);
+		SetProperty(jsConstructor, L"prototype", prototype);
+	}
+}
+
+void ProjectGlobal(const wchar_t* globalName, void* objectToProject, Zmey::Hash classNameHash)
+{
+	JsValueRef globalObject;
+	CHECKCHAKRA(JsGetGlobalObject(&globalObject));
+	JsValueRef object;
+	CHECKCHAKRA(JsCreateExternalObject(objectToProject, nullptr, &object));
+	SetProperty(globalObject, globalName, object);
+	JsValueRef prototype = AutoNativeClassProjecter::GetPrototypeOf(classNameHash);
+	CHECKCHAKRA(JsSetPrototype(object, prototype));
+}
+
+struct AnyTypeData
+{
+	AnyTypeData()
+		: Name(0ull)
+	{}
+	AnyTypeData(Zmey::Hash name, const stl::small_vector<JsValueRef>& prototypes)
+		: Name(name)
+		, Prototypes(prototypes)
+	{}
+	Zmey::Hash Name;
+	stl::small_vector<JsValueRef> Prototypes;
+};
+uint32_t GCurrentAnyTypeIndex = 0u;
+std::array<stl::unique_ptr<AnyTypeData>, 256> GAnyTypeList;
+void RegisterPrototypesForAnyTypeSet(Zmey::Hash anyTypeName, stl::small_vector<JsValueRef> prototypes)
+{
+	GAnyTypeList[GCurrentAnyTypeIndex] = stl::make_unique<AnyTypeData>(anyTypeName, prototypes);
+}
+JsValueRef GetProtototypeOfAnyTypeSet(Zmey::Hash anyTypeName, int index)
+{
+	auto it = std::find_if(GAnyTypeList.begin(), GAnyTypeList.begin() + GCurrentAnyTypeIndex, [anyTypeName](const stl::unique_ptr<AnyTypeData>& data)
+	{
+		return data->Name == anyTypeName;
+	});
+	ASSERT_FATAL(it != GAnyTypeList.end());
+	return (*it)->Prototypes[index];
 }
 
 JsValueRef CALLBACK JSConsoleDebug(JsValueRef callee, bool isConstructCall, JsValueRef* arguments, unsigned short argumentCount, void *callbackState)

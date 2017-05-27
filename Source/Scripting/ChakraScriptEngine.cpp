@@ -12,17 +12,7 @@ namespace Chakra
 {
 
 ChakraScriptEngine::ChakraScriptEngine()
-	: m_ScriptingThread(&ChakraScriptEngine::Run, this)
-	, m_KeepRunning(true)
-	, m_CurrentSourceContext(0u)
-{
-}
-ChakraScriptEngine::~ChakraScriptEngine()
-{
-	m_ScriptingThread.join();
-}
-
-void ChakraScriptEngine::Run()
+	: m_CurrentSourceContext(0u)
 {
 	// Initialize chakra
 	JsRuntimeAttributes attributes = static_cast<JsRuntimeAttributes>(
@@ -33,44 +23,38 @@ void ChakraScriptEngine::Run()
 	ASSERT_FATAL(JsSetCurrentContext(m_Context) == JsNoError);
 
 	Binding::Initialize();
-	while (m_KeepRunning)
-	{
-		RunOneLoopIteration();
-	}
+}
+ChakraScriptEngine::~ChakraScriptEngine()
+{
 	JsSetCurrentContext(JS_INVALID_REFERENCE);
 	JsDisposeRuntime(m_Runtime);
 }
 
-void ChakraScriptEngine::RunOneLoopIteration()
+void ChakraScriptEngine::ExecuteNextFrame(float deltaTime)
 {
 	// Execution order is as follows:
 	// 1. If there's nothing to do, call JSIdle
 	// 2. Execute pending script requests
-	// 3. Execute pending frames
+	// 3. Execute frames
 	// 4. Execute pending time tasks
 
-	// Store the sizes of all 3 queues so that we don't execute tasks that have been added after the iteration has begun
-	unsigned scriptTasksCount = m_ScriptTasks.Size();
-	unsigned frameTaskCount = m_FrameTasks.Size();
-	unsigned executionTasksCount = static_cast<unsigned>(m_ExecutionTasks.size());
-	auto totalTaskCount = scriptTasksCount + frameTaskCount + executionTasksCount;
+	auto totalTaskCount = m_ScriptTasks.size() + m_ExecutionTasks.size();
 	if (totalTaskCount == 0)
 	{
 		JsIdle(nullptr);
 	}
-	for (unsigned i = 0u; i < scriptTasksCount; ++i)
+	while (m_ScriptTasks.size())
 	{
-		auto scriptTask = std::move(m_ScriptTasks.Dequeue());
+		auto scriptTask = std::move(m_ScriptTasks.front());
 		auto source = scriptTask.Script.c_str();
 		ExecuteScript(source, L"");
+		m_ScriptTasks.pop_front();
 	}
-	for (unsigned i = 0; i < frameTaskCount; ++i)
-	{
-		auto frameTask = m_FrameTasks.Dequeue();
-		wchar_t buffer[32];
-		wsprintfW(buffer, L"nextFrame(%d);", frameTask.DeltaMs);
-		ExecuteScript(buffer, L"frameupdate");
-	}
+	wchar_t buffer[32];
+	wsprintfW(buffer, L"nextFrame(%d);", deltaTime / 1000.f);
+	ExecuteScript(buffer, L"frameupdate");
+
+	auto executionTasksCount = m_ExecutionTasks.size();
 	for (unsigned i = 0; i < executionTasksCount; ++i)
 	{
 		stl::unique_ptr<ExecutionTask> task = std::move(m_ExecutionTasks.front());
@@ -95,14 +79,8 @@ void ChakraScriptEngine::RunOneLoopIteration()
 void ChakraScriptEngine::ExecuteFromFile(ResourceId id)
 {
 	auto scriptSource = Zmey::Modules::ResourceLoader->As<char>(id);
-	m_ScriptTasks.Enqueue(std::move(ScriptTask(scriptSource)));
+	m_ScriptTasks.push_back(std::move(ScriptTask(scriptSource)));
 }
-
-void ChakraScriptEngine::ExecuteNextFrame(float deltaTime)
-{
-	m_FrameTasks.Enqueue(std::move(FrameTask(deltaTime)));
-}
-
 
 tmp::string StringifyJsValue(JsValueRef value)
 {
@@ -125,19 +103,17 @@ void ChakraScriptEngine::ExecuteScript(const wchar_t* script, const wchar_t* scr
 	JsErrorCode error = JsRunScript(script, m_CurrentSourceContext++, scriptSourceUrl, nullptr);
 	if (error != JsNoError)
 	{
-		FORMAT_LOG(Error, Script, "Script execution resulted in error: %d", error);
 		if (error == JsErrorScriptException || error == JsErrorScriptCompile)
 		{
 			JsValueRef exception;
 			JsGetAndClearException(&exception);
 			FORMAT_LOG(Error, Script, "Exception thrown: %s", StringifyJsValue(exception).c_str());
 		}
+		else
+		{
+			FORMAT_LOG(Error, Script, "Script execution resulted in error: %d", error);
+		}
 	}
-}
-
-void ChakraScriptEngine::ExportWorld(World& world)
-{
-
 }
 
 }

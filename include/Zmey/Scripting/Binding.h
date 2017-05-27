@@ -1,5 +1,6 @@
 #pragma once
 #include <ChakraCore/ChakraCore.h>
+#include <Zmey/Hash.h>
 #include <Zmey/LogHandler.h>
 #include <Zmey/Memory/MemoryManagement.h>
 
@@ -22,32 +23,18 @@ struct AutoNativeClassProjecter
 {
 	static constexpr uint16_t MaxMemberCount = 16u;
 	AutoNativeClassProjecter(const wchar_t* className, JsNativeFunction constructor, JsValueRef& prototype, uint16_t MemberCount,
-		const wchar_t** memberNames, const JsNativeFunction* memberFuncs)
-		: ClassName(className)
-		, Constructor(constructor)
-		, Prototype(prototype)
-		, ActualMemberCount(MemberCount)
-	{
-		std::memcpy(MemberNames, memberNames, MemberCount * sizeof(const wchar_t*));
-		std::memcpy(MemberFuncs, memberFuncs, MemberCount * sizeof(JsNativeFunction));
-		RegisterForInitialization();
-	}
+		const wchar_t** memberNames, const JsNativeFunction* memberFuncs);
 
-	AutoNativeClassProjecter(const wchar_t* className, JsNativeFunction constructor, JsValueRef& prototype)
-		: ClassName(className)
-		, Constructor(constructor)
-		, Prototype(prototype)
-		, ActualMemberCount(0u)
-	{
-		RegisterForInitialization();
-	}
+	AutoNativeClassProjecter(const wchar_t* className, JsNativeFunction constructor, JsValueRef& prototype);
 
+	static JsValueRef GetPrototypeOf(const Zmey::Hash classNameHash);
 private:
 	friend void Initialize();
 	void RegisterForInitialization();
 	void Project();
 
 	const wchar_t* ClassName;
+	Zmey::Hash NameHash;
 	const JsNativeFunction Constructor;
 	JsValueRef& Prototype;
 	uint16_t ActualMemberCount;
@@ -61,6 +48,10 @@ void SetProperty(JsValueRef object, const wchar_t* propertyName, JsValueRef prop
 void DefineProperty(JsValueRef object, const wchar_t* propertyName, JsNativeFunction getter);
 void DefineProperty(JsValueRef object, const wchar_t* propertyName, JsNativeFunction getter, JsNativeFunction setter);
 void ProjectNativeClass(const wchar_t *className, JsNativeFunction constructor, JsValueRef &prototype, const tmp::vector<const wchar_t *>& memberNames, const tmp::vector<JsNativeFunction>& memberFuncs);
+void ProjectGlobal(const wchar_t* globalName, void* objectToProject, Zmey::Hash classNameHash);
+
+void RegisterPrototypesForAnyTypeSet(Zmey::Hash anyTypeName, stl::small_vector<JsValueRef> prototypes);
+JsValueRef GetProtototypeOfAnyTypeSet(Zmey::Hash anyTypeName, int index);
 
 JsValueRef CALLBACK JSConsoleDebug(JsValueRef callee, bool isConstructCall, JsValueRef *arguments, unsigned short argumentCount, void *callbackState);
 JsValueRef CALLBACK JSConsoleLog(JsValueRef callee, bool isConstructCall, JsValueRef *arguments, unsigned short argumentCount, void *callbackState);
