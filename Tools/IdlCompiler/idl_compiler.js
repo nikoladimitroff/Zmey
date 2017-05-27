@@ -26,9 +26,10 @@ const Common = {
 };
 
 class IdlCompiler {
-    constructor(srcDir, destDir) {
+    constructor(srcDir, destDir, compileAsSingleFile) {
         this.srcDir = srcDir;
         this.destDir = destDir;
+        this.compileAsSingleFile = compileAsSingleFile;
         if (!fs.existsSync(destDir)){
             fs.mkdirSync(destDir);
         }
@@ -42,13 +43,28 @@ class IdlCompiler {
         fs.readdir(this.srcDir, this.compileFiles.bind(this));
     }
     compileFiles(error, files) {
+        const singleFileCompilationDestination = path.join(this.destDir, "ScriptingGlue.cpp");
+        if (this.compileAsSingleFile) {
+            fs.truncateSync(singleFileCompilationDestination, 0);
+        }
         for (let file of files) {
             let fullPath = path.join(this.srcDir, file);
-            let destinationPath = path.join(this.destDir, file.replace(".idl", ".cpp"));
-            fs.readFile(fullPath, 'utf8', this.compileSingleFile.bind(this, destinationPath));
+            let destinationPath = null;
+            if (this.compileAsSingleFile) {
+                destinationPath = singleFileCompilationDestination;
+            }
+            else {
+                destinationPath = path.join(this.destDir, file.replace(".idl", ".cpp"));
+            }
+            let outputGlueCode = (error, fileContents) => {
+                const glueCode = this.compileSingleFile(fileContents);
+                this.writeToFile(destinationPath, glueCode);
+                console.log(`Compiled ${fullPath}.`);
+            };
+            fs.readFile(fullPath, 'utf8', outputGlueCode);
         }
     }
-    compileSingleFile(destinationFile, error, fileContents) {
+    compileSingleFile(fileContents) {
         RegexLibrary.Interface.lastIndex = 0;
         RegexLibrary.ExtraHeaders.lastIndex = 0;
 
@@ -81,10 +97,12 @@ class IdlCompiler {
             const prototype = this.generator.generatePrototypeDefinition(uniqueInterfaceName);
             interfaceCode.push(code + propertiesSetup + prototype + this.constructorCode + projector);
         }
-
         const finalGlueCode = extraHeaders + interfaceCode.join(os.EOL);
-        console.log(`Done with file ${destinationFile}.`);
-        fs.writeFile(destinationFile, finalGlueCode, { flag: "w+"}, (err) => assert(!err));
+        return finalGlueCode;
+    }
+    writeToFile(destinationFile, contents) {
+        const fileFlags = this.compileAsSingleFile ? "a" : "w+";
+        fs.writeFile(destinationFile, contents, { flag: fileFlags }, (err) => assert(!err));
     }
     compileSingleInterface(qualifiedName, uniqueInterfaceName, interfaceBody) {
         let finalGlueCode = "";
@@ -149,7 +167,8 @@ class IdlCompiler {
 let main = function () {
     const idlSourceDir = __dirname + "/../../Source/Scripting/idl";
     const idlDestDir = __dirname + "/../../Source/Scripting/ScriptingGlue/";
-    let compiler = new IdlCompiler(idlSourceDir, idlDestDir);
+    const compileAsSingleFile = true;
+    let compiler = new IdlCompiler(idlSourceDir, idlDestDir, compileAsSingleFile);
     compiler.compile();
 }
 main();
