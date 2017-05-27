@@ -15,7 +15,7 @@ class TransformManager : public ComponentManager
 	DECLARE_COMPONENT_MANAGER(TransformManager);
 public:
 
-	struct TransformInstance Lookup(EntityId);
+	struct TransformInstance& Lookup(EntityId);
 
 	virtual void InitializeFromBlob(const tmp::vector<EntityId>&, Zmey::MemoryInputStream&) override;
 	virtual void Simulate(float deltaTime) override;

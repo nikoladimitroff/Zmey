@@ -18,6 +18,19 @@ struct EntityId
 	{
 		return std::memcmp(&lhs, &rhs, sizeof(EntityId)) == 0;
 	}
+
+	// Conversion to / from double for scripting purposes
+	explicit EntityId(double bits)
+		: Index(0u)
+		, Generation(0u)
+		, UnusedBits(0u)
+	{
+		std::memcpy(const_cast<EntityId*>(this), &bits, sizeof(double));
+	}
+	operator double()
+	{
+		return *(double*)this;
+	}
 private:
 	EntityId(uint32_t index, uint16_t generation)
 		: Index(index)

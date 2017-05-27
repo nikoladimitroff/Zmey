@@ -5,4 +5,5 @@ interface Zmey::Vector3 {
     nameasis attribute float x;
     nameasis attribute float y;
     nameasis attribute float z;
+    nameasis float length();
 }

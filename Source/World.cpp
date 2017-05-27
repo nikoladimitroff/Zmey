@@ -8,6 +8,7 @@ namespace Zmey
 {
 
 World::World()
+	: m_First(0)
 {
 	using namespace Zmey::Components;
 	ComponentIndex i = 0u;
@@ -30,6 +31,7 @@ void World::InitializeFromBuffer(const uint8_t* buffer, size_t size)
 
 	auto tempScope = TempAllocator::GetTlsAllocator().ScopeNow();
 	tmp::vector<EntityId> entities = m_EntityManager.SpawnRange(entityCount);
+	m_First = entities[0];
 
 	while (!stream.IsEOF())
 	{

@@ -19,19 +19,18 @@ class ChakraGlueGenerator {
             case "string":
                 return `(stl::string);`;
             case "float":
-                return `(float)`;
             case "double":
-                return `(double)`;
+            case "Zmey::EntityId":
             case "int":
-                return `(int)`;
+                return `(${type})`;
             default:
-                return `(${type}*)`;
+                return `(${type}*)&`;
         }
     }
     generateCastingOperatorForTypeOrAny(type) {
         const match = Common.getTypeEnumOfAnyType(type);
         if (match) {
-            return "(void*)";
+            return "(void*)&";
         }
         return this.generateCastingOperatorForType(type);
     }
@@ -41,6 +40,7 @@ class ChakraGlueGenerator {
                 return `stl::string _${arg.name};`;
             case "float":
             case "double":
+            case "Zmey::EntityId":
                 return `double _${arg.name};`;
             case "int":
                 return `${arg.type} _${arg.name};`;
@@ -61,6 +61,7 @@ class ChakraGlueGenerator {
         switch (arg.type) {
             case "float":
             case "double":
+            case "Zmey::EntityId":
                 code = `JsNumberToDouble(arguments[${actualArgIndex}], &_${arg.name});`;
                 return code;
             case "int":
@@ -98,6 +99,7 @@ class ChakraGlueGenerator {
         switch (type) {
             case "float":
             case "double":
+            case "Zmey::EntityId":
                 code = `JsDoubleToNumber((double)_result, &output);`;
                 return code;
             case "int":

@@ -187,7 +187,7 @@ namespace detail
 			uuv = _mm_mul_ps(uuv, two);
 
 			tvec4<float, P> Result(uninitialize);
-			Result.data = _mm_add_ps(v.Data, _mm_add_ps(uv, uuv));
+			Result.data = _mm_add_ps(v.PropertyData, _mm_add_ps(uv, uuv));
 			return Result;
 		}
 	};

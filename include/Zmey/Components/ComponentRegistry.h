@@ -25,13 +25,14 @@ namespace Components
 		using DefaultsToBlobDelegate = void(*)(IDataBlob& blob);
 		using ToBlobDelegate = void (*)(const nlohmann::json&, IDataBlob& blob);
 
-		ComponentManagerEntry(const char* name, ComponentIndex componentManagerIndex, InstantiateDelegate, DefaultsToBlobDelegate, ToBlobDelegate);
-		const Hash Name;
+		ComponentManagerEntry(const char* fullName, const char* shortName, ComponentIndex componentManagerIndex, InstantiateDelegate, DefaultsToBlobDelegate, ToBlobDelegate);
+		const char* FullName;
+		const char* ShortName;
+		const Hash ShortNameHash;
 		const ComponentIndex Index;
 		const InstantiateDelegate Instantiate;
 		const DefaultsToBlobDelegate DefaultsToBlob;
 		const ToBlobDelegate ToBlob;
-		void const* ScriptingPrototype;
 	};
 	void ExportComponentsToScripting();
 
@@ -50,7 +51,7 @@ namespace Components
 
 #define DEFINE_COMPONENT_MANAGER(Class, ShortName, DefaultsToBlob, ToBlob) \
 	const ComponentIndex Class##::SZmeyComponentManagerIndex = GetNextComponentManagerIndex(); \
-	static Zmey::Components::ComponentManagerEntry G##ShortName##ComponentManagerRegistration(#ShortName, \
+	static Zmey::Components::ComponentManagerEntry G##ShortName##ComponentManagerRegistration(#Class, #ShortName, \
 		Class##::SZmeyComponentManagerIndex, \
 		&InstantiateManager<##Class##>, \
 		DefaultsToBlob, \

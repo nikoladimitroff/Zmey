@@ -181,29 +181,33 @@ void ProjectGlobal(const wchar_t* globalName, void* objectToProject, Zmey::Hash 
 	CHECKCHAKRA(JsSetPrototype(object, prototype));
 }
 
-struct AnyTypeData
-{
-	AnyTypeData()
-		: Name(0ull)
-	{}
-	AnyTypeData(Zmey::Hash name, const stl::small_vector<JsValueRef>& prototypes)
-		: Name(name)
-		, Prototypes(prototypes)
-	{}
-	Zmey::Hash Name;
-	stl::small_vector<JsValueRef> Prototypes;
-};
 uint32_t GCurrentAnyTypeIndex = 0u;
 std::array<stl::unique_ptr<AnyTypeData>, 256> GAnyTypeList;
-void RegisterPrototypesForAnyTypeSet(Zmey::Hash anyTypeName, stl::small_vector<JsValueRef> prototypes)
+
+void RegisterPrototypesForAnyTypeSet(AnyTypeData data)
 {
-	GAnyTypeList[GCurrentAnyTypeIndex] = stl::make_unique<AnyTypeData>(anyTypeName, prototypes);
+	GAnyTypeList[GCurrentAnyTypeIndex] = stl::make_unique<AnyTypeData>(data);
+
+	JsValueRef globalObject;
+	CHECKCHAKRA(JsGetGlobalObject(&globalObject));
+	JsValueRef enumObject;
+	CHECKCHAKRA(JsCreateObject(&enumObject));
+	auto scope = Zmey::TempAllocator::GetTlsAllocator().ScopeNow();
+	for (int i = 0; i < data.PrototypeNames.size(); ++i)
+	{
+		JsValueRef indexValue;
+		CHECKCHAKRA(JsIntToNumber(i, &indexValue));
+		tmp::wstring name = Zmey::ConvertUtf8ToWideString(data.PrototypeNames[i]);
+		SetProperty(enumObject, name.c_str(), indexValue);
+	}
+	tmp::wstring anySetName = Zmey::ConvertUtf8ToWideString(data.Name);
+	SetProperty(globalObject, anySetName.c_str(), enumObject);
 }
 JsValueRef GetProtototypeOfAnyTypeSet(Zmey::Hash anyTypeName, int index)
 {
 	auto it = std::find_if(GAnyTypeList.begin(), GAnyTypeList.begin() + GCurrentAnyTypeIndex, [anyTypeName](const stl::unique_ptr<AnyTypeData>& data)
 	{
-		return data->Name == anyTypeName;
+		return data->NameHash == anyTypeName;
 	});
 	ASSERT_FATAL(it != GAnyTypeList.end());
 	return (*it)->Prototypes[index];

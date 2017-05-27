@@ -22,11 +22,14 @@ uint16_t GetNextComponentManagerIndex()
 	return GCurrentComponentIndex++;
 }
 
-ComponentManagerEntry::ComponentManagerEntry(const char* nameHash, ComponentIndex ComponentIndex,
+ComponentManagerEntry::ComponentManagerEntry(const char* fullName, const char* shortName,
+	ComponentIndex ComponentIndex,
 	InstantiateDelegate instantiate,
 	DefaultsToBlobDelegate defaultsToBlob,
 	ToBlobDelegate toBlob)
-	: Name(Zmey::Hash(Zmey::HashHelpers::CaseInsensitiveStringWrapper(nameHash)))
+	: FullName(fullName)
+	, ShortName(shortName)
+	, ShortNameHash(Zmey::Hash(Zmey::HashHelpers::CaseInsensitiveStringWrapper(shortName)))
 	, Index(ComponentIndex)
 	, Instantiate(instantiate)
 	, DefaultsToBlob(defaultsToBlob)
@@ -39,11 +42,16 @@ void ExportComponentsToScripting()
 {
 	ComponentIndex i = 0u;
 	stl::small_vector<JsValueRef> componentPrototypes;
+	stl::small_vector<const char*> componentNames;
 	for (const ComponentManagerEntry* entry = GetComponentManagerAtIndex(0); entry; entry = GetComponentManagerAtIndex(++i))
 	{
-		componentPrototypes.push_back((JsValueRef)entry->ScriptingPrototype);
+		Zmey::Hash fullNameHash(Zmey::HashHelpers::CaseInsensitiveStringWrapper(entry->FullName));
+		JsValueRef scriptingPrototype = Zmey::Chakra::Binding::AutoNativeClassProjecter::GetPrototypeOf(fullNameHash);
+		componentPrototypes.push_back(scriptingPrototype);
+		componentNames.push_back(entry->ShortName);
 	}
-	Zmey::Chakra::Binding::RegisterPrototypesForAnyTypeSet(Zmey::Hash("Manager"), componentPrototypes);
+	Zmey::Chakra::Binding::AnyTypeData data("Manager", componentNames, componentPrototypes);
+	Zmey::Chakra::Binding::RegisterPrototypesForAnyTypeSet(data);
 }
 
 void EmptyDefaultsToBlobImplementation(IDataBlob& blob)
@@ -55,7 +63,7 @@ const ComponentManagerEntry& GetComponentManager(Hash nameHash)
 {
 	auto it = std::find_if(GComponentRegistry.begin(), GComponentRegistry.begin() + GCurrentComponentIndex, [nameHash](const ComponentManagerEntry* compiler)
 	{
-		return compiler->Name == nameHash;
+		return compiler->ShortNameHash == nameHash;
 	});
 	ASSERT_FATAL(it != GComponentRegistry.end());
 	return **it;

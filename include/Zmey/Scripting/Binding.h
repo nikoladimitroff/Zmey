@@ -8,11 +8,19 @@ namespace Zmey
 {
 inline tmp::string ConvertWideStringToUtf8(const tmp::wstring& wString)
 {
-	tmp::string mbString;
-	auto mbSize = wcstombs(nullptr, wString.c_str(), wString.size());
-	mbString.assign(mbSize, L' ');
-	wcstombs(&mbString[0], wString.c_str(), wString.size());
-	return mbString;
+	tmp::string utf8String;
+	auto utf8Size = wcstombs(nullptr, wString.c_str(), wString.size());
+	utf8String.assign(utf8Size, ' ');
+	wcstombs(&utf8String[0], wString.c_str(), wString.size());
+	return utf8String;
+}
+inline tmp::wstring ConvertUtf8ToWideString(const tmp::string& utf8String)
+{
+	tmp::wstring wideString;
+	auto wideSize = mbstowcs(nullptr, utf8String.c_str(), utf8String.size());
+	wideString.assign(wideSize, L' ');
+	mbstowcs(&wideString[0], utf8String.c_str(), utf8String.size());
+	return wideString;
 }
 namespace Chakra
 {
@@ -50,7 +58,20 @@ void DefineProperty(JsValueRef object, const wchar_t* propertyName, JsNativeFunc
 void ProjectNativeClass(const wchar_t *className, JsNativeFunction constructor, JsValueRef &prototype, const tmp::vector<const wchar_t *>& memberNames, const tmp::vector<JsNativeFunction>& memberFuncs);
 void ProjectGlobal(const wchar_t* globalName, void* objectToProject, Zmey::Hash classNameHash);
 
-void RegisterPrototypesForAnyTypeSet(Zmey::Hash anyTypeName, stl::small_vector<JsValueRef> prototypes);
+struct AnyTypeData
+{
+	AnyTypeData(const char* name, const stl::small_vector<const char*>& names, const stl::small_vector<JsValueRef>& prototypes)
+		: Name(name)
+		, NameHash(name)
+		, PrototypeNames(names)
+		, Prototypes(prototypes)
+	{}
+	const char* Name;
+	Zmey::Hash NameHash;
+	stl::small_vector<const char*> PrototypeNames;
+	stl::small_vector<JsValueRef> Prototypes;
+};
+void RegisterPrototypesForAnyTypeSet(AnyTypeData data);
 JsValueRef GetProtototypeOfAnyTypeSet(Zmey::Hash anyTypeName, int index);
 
 JsValueRef CALLBACK JSConsoleDebug(JsValueRef callee, bool isConstructCall, JsValueRef *arguments, unsigned short argumentCount, void *callbackState);

@@ -86,7 +86,7 @@ void Incinerator::BuildClassIndex(const std::vector<std::string>& classFiles)
 		{
 			auto name = rawComponentData["name"].get<std::string>();
 			ComponentEntry binaryComponentData(name);
-			Zmey::Hash nameHash(name.c_str());
+			Zmey::Hash nameHash(Zmey::HashHelpers::CaseInsensitiveStringWrapper(name.c_str()));
 			auto compiler = Zmey::Components::GetComponentManager(nameHash);
 			compiler.DefaultsToBlob(binaryComponentData);
 			compiler.ToBlob(rawComponentData, binaryComponentData);
@@ -149,7 +149,7 @@ void Incinerator::IncinerateWorld(const std::string& destinationFolder, const st
 			}
 			auto& componentEntry = entities[entities.size() - 1].DataForComponent;
 
-			Zmey::Hash componentNameHash(componentName.c_str());
+			Zmey::Hash componentNameHash(Zmey::HashHelpers::CaseInsensitiveStringWrapper(componentName.c_str()));
 			auto compiler = Zmey::Components::GetComponentManager(componentNameHash);
 			if (!overridesInherited)
 			{

@@ -1,18 +1,23 @@
 let actor = {
-    x: 10,
-    y: 20,
-    z: 30,
+    pos: new Vector3(1, 0, 0),
     interval: console.error.bind(console, "kopr")
 };
 
 let nextFrame = function (delta) {
-    actor.x += delta * 10;
-    console.log(delta, actor.x, actor.y);
-    console.error("Wazaa from nextFrame");
+    let transformManager = world.getManager(Manager.Transform);
+    let transform = transformManager.lookup(world.getFirstEntity());
+    let posy = new Vector3(0.1, 0, 0);
+    //posy.x = 0.2;
+    const pozz = transform.position();
+    pozz.x = 0.1;
+    //console.log(JSON.stringify(transform.position()));
+    //actor.pos.x++;
+    //console.log(actor.pos.x, actor.pos.length());
 };
 
-setTimeout(() => {
-    console.warn("From timeout");
-}, 5000);
-
-setInterval(actor.interval, 1000);
+class TestScriptManager {
+    constructor() {}
+    simulate(delta) {
+        console.log(world.getManager())
+    }
+}

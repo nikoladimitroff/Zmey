@@ -9,9 +9,9 @@ namespace Zmey
 {
 namespace Components
 {
-TransformInstance TransformManager::Lookup(EntityId id)
+TransformInstance& TransformManager::Lookup(EntityId id)
 {
-	return TransformInstance(*this, id);
+	return *(new TransformInstance(*this, id));
 }
 
 void TransformManager::Simulate(float deltaTime)
