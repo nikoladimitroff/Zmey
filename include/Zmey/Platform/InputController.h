@@ -2,6 +2,8 @@
 #include <stdint.h>
 #include <bitset>
 
+#include <Zmey/Hash.h>
+
 namespace Zmey
 {
 enum class KeyboardButton : uint8_t
@@ -72,9 +74,17 @@ private:
 	std::bitset<128> KeyboardButtons;
 	std::bitset<32> GamepadButtons;
 	std::bitset<4> MouseButtons;
-
 };
 
 using InputActionHandler = void(*)(const InputState&);
+
+class InputController
+{
+public:
+	void DispatchActionEventsForFrame();
+	void AddListenerForAction(Zmey::Hash actionName, InputActionHandler actionHandler);
+	void RemoveListenerForAction(Zmey::Hash actionName, InputActionHandler actionHandler);
+
+};
 
 }
