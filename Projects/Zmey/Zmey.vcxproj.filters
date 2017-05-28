@@ -239,6 +239,9 @@
     <ClInclude Include="..\..\include\Zmey\Graphics\Managers\BufferManager.h">
       <Filter>include\Graphics\Managers</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Platform\InputController.h">
+      <Filter>include\Platform</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\EngineLoop.cpp">

@@ -159,6 +159,7 @@
     <ClInclude Include="..\..\include\Zmey\Memory\PoolAllocator.h" />
     <ClInclude Include="..\..\include\Zmey\Memory\StlAllocator.h" />
     <ClInclude Include="..\..\include\Zmey\Modules.h" />
+    <ClInclude Include="..\..\include\Zmey\Platform\InputController.h" />
     <ClInclude Include="..\..\include\Zmey\Platform\Platform.h" />
     <ClInclude Include="..\..\include\Zmey\ResourceLoader\ResourceLoader.h" />
     <ClInclude Include="..\..\include\Zmey\Scripting\Binding.h" />
