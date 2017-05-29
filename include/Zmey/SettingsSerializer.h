@@ -3,11 +3,16 @@
 
 #include <Zmey/Memory/MemoryManagement.h>
 
+namespace cpptoml
+{
+class table;
+}
+
 namespace Zmey
 {
-class IniParser
+class SettingsSerializer
 {
-	IniParser();
+	SettingsSerializer();
 	void LoadFromFile(const stl::string& fromFile);
 	void SaveToFile(const stl::string& toFile);
 
@@ -23,5 +28,7 @@ class IniParser
 	void DeleteValue(const stl::string& section, const stl::string& key);
 	void DeleteSection(const stl::string& section);
 
+private:
+	stl::shared_ptr<cpptoml::table>
 };
 }
