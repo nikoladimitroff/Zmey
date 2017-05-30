@@ -17,6 +17,12 @@ namespace Rects
 #include "../../Source/Graphics/Shaders/Compiled/DirectX/RectsVS.h"
 #include "../../Source/Graphics/Shaders/Compiled/DirectX/RectsPS.h"
 }
+
+namespace Mesh
+{
+#include "../../Source/Graphics/Shaders/Compiled/DirectX/MeshVS.h"
+#include "../../Source/Graphics/Shaders/Compiled/DirectX/MeshPS.h"
+}
 }
 }
 }

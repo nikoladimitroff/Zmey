@@ -10,6 +10,7 @@ namespace Graphics
 
 struct Mesh
 {
+	uint32_t IndexCount;
 	BufferHandle VertexBuffer;
 	BufferHandle IndexBuffer;
 };

@@ -24,6 +24,8 @@ public:
 	virtual void BindPipelineState(PipelineState* state) override;
 	virtual void Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t startVertex, uint32_t startInstance) override;
 	virtual void SetPushConstants(PipelineState* layout, uint32_t offset, uint32_t count, const void* data) override;
+	virtual void SetVertexBuffer(const Buffer* vbo, uint32_t vertexStride) override;
+	virtual void SetIndexBuffer(const Buffer* ibo) override;
 
 	ID3D12CommandAllocator* CmdAllocator;
 	ID3D12GraphicsCommandList* CmdList;

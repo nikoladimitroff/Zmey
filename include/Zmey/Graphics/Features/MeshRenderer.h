@@ -9,13 +9,15 @@ namespace Zmey
 {
 namespace Graphics
 {
+
+struct RendererData;
 namespace Features
 {
 namespace MeshRenderer
 {
-void GatherData(FrameData& frameData); // TODO: add world state
-void PrepareData(FrameData& frameData);
-void GenerateCommands(FrameData& frameData, RenderPass pass, ViewType view, Backend::CommandList* cmdList);
+void GatherData(FrameData& frameData, MeshHandle handle); // TODO: add world state
+void PrepareData(FrameData& frameData, RendererData& data);
+void GenerateCommands(FrameData& frameData, RenderPass pass, ViewType view, Backend::CommandList* cmdList, RendererData& data);
 };
 }
 }

@@ -82,6 +82,30 @@ void Dx12CommandList::SetPushConstants(PipelineState* layout, uint32_t offset, u
 	CmdList->SetGraphicsRoot32BitConstants(0, count / sizeof(float), data, offset / sizeof(float));
 }
 
+void Dx12CommandList::SetVertexBuffer(const Buffer* vbo, uint32_t vertexStride)
+{
+	auto dx12Buffer = reinterpret_cast<const Dx12Buffer*>(vbo);
+
+	D3D12_VERTEX_BUFFER_VIEW view;
+	view.BufferLocation = dx12Buffer->Buffer->GetGPUVirtualAddress();
+	view.SizeInBytes = vbo->Size;
+	view.StrideInBytes = vertexStride;
+
+	CmdList->IASetVertexBuffers(0, 1, &view);
+}
+
+void Dx12CommandList::SetIndexBuffer(const Buffer* ibo)
+{
+	auto dx12Buffer = reinterpret_cast<const Dx12Buffer*>(ibo);
+
+	D3D12_INDEX_BUFFER_VIEW view;
+	view.BufferLocation = dx12Buffer->Buffer->GetGPUVirtualAddress();
+	view.SizeInBytes = ibo->Size;
+	view.Format = DXGI_FORMAT_R32_UINT;
+
+	CmdList->IASetIndexBuffer(&view);
+}
+
 }
 }
 }

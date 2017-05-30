@@ -36,6 +36,11 @@ class Dx12Buffer : public Buffer
 {
 public:
 	ID3D12Resource* Buffer;
+	D3D12_RESOURCE_STATES State;
+
+	virtual void* Map() override;
+
+	virtual void Unmap() override;
 };
 
 class Dx12Backend : public Backend
@@ -47,7 +52,7 @@ public:
 
 	virtual Shader* CreateShader() override;
 	virtual void DestroyShader(Shader* shader) override;
-	virtual PipelineState* CreatePipelineState() override;
+	virtual PipelineState* CreatePipelineState(const PipelineStateDesc& desc) override;
 	virtual void DestroyPipelineState(PipelineState* state) override;
 
 	virtual CommandList* CreateCommandList() override;
@@ -60,7 +65,7 @@ public:
 	virtual ImageView* CreateImageView() override;
 	virtual void DestroyImageView(ImageView* imageView) override;
 
-	virtual Buffer* CreateBuffer(uint64_t size) override;
+	virtual Buffer* CreateBuffer(uint32_t size) override;
 	virtual void DestroyBuffer(Buffer* buffer) override;
 
 	virtual uint32_t GetSwapChainBuffers() override;

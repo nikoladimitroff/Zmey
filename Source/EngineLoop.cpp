@@ -88,6 +88,8 @@ void EngineLoop::Run()
 	using clock = std::chrono::high_resolution_clock;
 	clock::time_point lastFrameTmestamp = clock::now();
 
+	auto meshId = Modules::ResourceLoader->LoadResource("Content\\Meshes\\Vampire_A_Lusth\\Vampire_A_Lusth.dae");
+
 	auto scriptId = Modules::ResourceLoader->LoadResource("Content\\Scripts\\main.js");
 	while (g_Run)
 	{
@@ -132,7 +134,10 @@ void EngineLoop::Run()
 		Graphics::FrameData frameData;
 
 		frameData.FrameIndex = frameIndex++;
-		Graphics::Features::MeshRenderer::GatherData(frameData);
+		if (Modules::ResourceLoader->IsResourceReady(meshId))
+		{
+			Graphics::Features::MeshRenderer::GatherData(frameData, *Modules::ResourceLoader->As<Graphics::MeshHandle>(meshId));
+		}
 		Graphics::Features::RectRenderer::GatherData(frameData, rectsToDraw.data(), unsigned(rectsToDraw.size()));
 
 		// TODO: From this point graphics stuff should be on render thread

@@ -23,6 +23,9 @@ public:
 
 	virtual void Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t startVertex, uint32_t startInstance) = 0;
 
+	virtual void SetVertexBuffer(const Buffer* vbo, uint32_t vertexStride) = 0;
+	virtual void SetIndexBuffer(const Buffer* ibo) = 0;
+
 	virtual void SetPushConstants(PipelineState* layout, uint32_t offset, uint32_t count, const void* data) = 0;
 };
 

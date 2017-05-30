@@ -127,8 +127,11 @@ ResourceId ResourceLoader::LoadResource(const stl::string& path)
 	}
 	Modules::TaskSystem->SpawnTask("Loading file", [path, this, id]()
 	{
-		const aiScene* scene = aiImportFile(path.c_str(), aiPostProcessSteps::aiProcess_ValidateDataStructure);
-		OnResourceLoaded(this, id, scene);
+		const aiScene* scene = aiImportFile(path.c_str(), aiPostProcessSteps::aiProcess_ValidateDataStructure | aiProcess_ConvertToLeftHanded | aiProcess_Triangulate);
+		if (scene)
+		{
+			OnResourceLoaded(this, id, scene);
+		}
 	});
 	return id;
 }

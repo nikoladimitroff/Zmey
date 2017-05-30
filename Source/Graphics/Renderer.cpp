@@ -10,6 +10,9 @@
 
 #include <assimp/scene.h>
 
+//TODO(alex): remove this
+#include <Zmey/Graphics/Backend/Dx12/Dx12Shaders.h>
+
 namespace Zmey
 {
 namespace Graphics
@@ -19,7 +22,16 @@ bool RendererInterface::CreateWindowSurface(WindowHandle handle)
 {
 	m_Backend->Initialize(handle);
 
-	m_RectsPipelineState = m_Backend->CreatePipelineState();
+	Backend::PipelineStateDesc desc;
+	desc.VertexShader = Backend::Shader{ Backend::Shaders::Rects::g_VertexShaderMain, sizeof(Backend::Shaders::Rects::g_VertexShaderMain) };
+	desc.PixelShader = Backend::Shader{ Backend::Shaders::Rects::g_PixelShaderMain, sizeof(Backend::Shaders::Rects::g_PixelShaderMain) };
+
+	m_Data.RectsPipelineState = m_Backend->CreatePipelineState(desc);
+
+	desc.VertexShader = Backend::Shader{ Backend::Shaders::Mesh::g_VertexShaderMain, sizeof(Backend::Shaders::Mesh::g_VertexShaderMain) };
+	desc.PixelShader = Backend::Shader{ Backend::Shaders::Mesh::g_PixelShaderMain, sizeof(Backend::Shaders::Mesh::g_PixelShaderMain) };
+	desc.Layout.Elements.push_back(Backend::InputElement{ "POSITION", 0, Backend::InputElementFormat::Float3, 0 });
+	m_Data.MeshesPipelineState = m_Backend->CreatePipelineState(desc);
 
 	auto swapChainCount = m_Backend->GetSwapChainBuffers();
 	m_SwapChainFramebuffers.reserve(swapChainCount);
@@ -35,12 +47,15 @@ bool RendererInterface::CreateWindowSurface(WindowHandle handle)
 
 void RendererInterface::Unitialize()
 {
+	m_Data.BufferManager.DestroyResources();
+
 	for (auto& list : m_CommandLists)
 	{
 		m_Backend->DestroyCommandList(list);
 	}
 
-	m_Backend->DestroyPipelineState(m_RectsPipelineState);
+	m_Backend->DestroyPipelineState(m_Data.RectsPipelineState);
+	m_Backend->DestroyPipelineState(m_Data.MeshesPipelineState);
 	for (auto& rtv : m_SwapChainFramebuffers)
 	{
 		m_Backend->DestroyFramebuffer(rtv);
@@ -52,7 +67,7 @@ void RendererInterface::Unitialize()
 void RendererInterface::PrepareData(FrameData& frameData)
 {
 	// TODO: Prepare graphics data
-	Features::MeshRenderer::PrepareData(frameData);
+	Features::MeshRenderer::PrepareData(frameData, m_Data);
 	Features::RectRenderer::PrepareData(frameData);
 }
 
@@ -68,13 +83,14 @@ void RendererInterface::GenerateCommands(FrameData& frameData, uint32_t imageInd
 	Features::MeshRenderer::GenerateCommands(frameData,
 		RenderPass::Main,
 		ViewType::PlayerView,
-		m_CommandLists[imageIndex]);
+		m_CommandLists[imageIndex],
+		m_Data);
 
 	Features::RectRenderer::GenerateCommands(frameData,
 		RenderPass::Main,
 		ViewType::PlayerView,
 		m_CommandLists[imageIndex],
-		m_RectsPipelineState);
+		m_Data);
 
 	m_CommandLists[imageIndex]->EndRenderPass(m_SwapChainFramebuffers[imageIndex]);
 	// End Main pass on PlayerView
@@ -113,12 +129,39 @@ RendererInterface::RendererInterface()
 {
 }
 
-MeshHandle RendererInterface::MeshLoaded(const aiScene* mesh)
+MeshHandle RendererInterface::MeshLoaded(const aiScene* scene)
 {
-	Mesh newMesh;
-	newMesh.VertexBuffer = m_Data.BufferManager.CreateBuffer(64);
-	newMesh.IndexBuffer = m_Data.BufferManager.CreateBuffer(64);
-	return m_Data.MeshManager.CreateMesh(newMesh);
+	TEMP_ALLOCATOR_SCOPE;
+	if (scene->mNumMeshes > 0)
+	{
+		auto mesh = scene->mMeshes[0];
+		tmp::vector<Vector3> vertices;
+		vertices.reserve(mesh->mNumVertices);
+		for (auto i = 0u; i < mesh->mNumVertices; ++i)
+		{
+			auto& aiVector = mesh->mVertices[i];
+			vertices.push_back(Vector3(aiVector.x, aiVector.y, aiVector.z));
+		}
+
+		tmp::vector<uint32_t> indices;
+		indices.reserve(mesh->mNumFaces * 3);
+		for (auto i = 0u; i < mesh->mNumFaces; ++i)
+		{
+			auto& face = mesh->mFaces[i];
+			assert(face.mNumIndices == 3);
+			indices.push_back(face.mIndices[0]);
+			indices.push_back(face.mIndices[1]);
+			indices.push_back(face.mIndices[2]);
+		}
+
+		Mesh newMesh;
+		newMesh.IndexCount = uint32_t(indices.size());
+		newMesh.VertexBuffer = m_Data.BufferManager.CreateStaticBuffer(uint32_t(vertices.size() * sizeof(Vector3)), vertices.data());
+		newMesh.IndexBuffer = m_Data.BufferManager.CreateStaticBuffer(uint32_t(indices.size() * sizeof(uint32_t)), indices.data());
+		return m_Data.MeshManager.CreateMesh(newMesh);
+	}
+
+	return MeshHandle(-1);
 }
 }
 }

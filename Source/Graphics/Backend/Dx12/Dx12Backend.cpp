@@ -12,6 +12,23 @@ namespace Graphics
 namespace Backend
 {
 
+namespace
+{
+	inline DXGI_FORMAT InputElementFormatToDx12(InputElementFormat format)
+	{
+		switch (format)
+		{
+		case Zmey::Graphics::Backend::InputElementFormat::Float3:
+			return DXGI_FORMAT_R32G32B32_FLOAT;
+		default:
+			assert(false);
+			break;
+		}
+
+		return DXGI_FORMAT_UNKNOWN;
+	}
+}
+
 Dx12Backend::Dx12Backend()
 {
 	UINT dxgiFactoryFlags = 0;
@@ -141,8 +158,10 @@ void Dx12Backend::DestroyShader(Shader* shader)
 
 }
 
-PipelineState* Dx12Backend::CreatePipelineState()
+PipelineState* Dx12Backend::CreatePipelineState(const PipelineStateDesc& psDesc)
 {
+	TEMP_ALLOCATOR_SCOPE;
+
 	D3D12_ROOT_PARAMETER rootParam;
 	rootParam.ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
 	rootParam.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
@@ -166,17 +185,35 @@ PipelineState* Dx12Backend::CreatePipelineState()
 
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC desc;
 	ZeroMemory(&desc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
-	desc.InputLayout = { nullptr, 0 };
+
+	tmp::vector<D3D12_INPUT_ELEMENT_DESC> inputElements;
+	inputElements.reserve(psDesc.Layout.Elements.size());
+	for (auto& ie : psDesc.Layout.Elements)
+	{
+		D3D12_INPUT_ELEMENT_DESC ieDesc;
+		ieDesc.SemanticName = ie.Semantic;
+		ieDesc.SemanticIndex = ie.SemanticIndex;
+		ieDesc.Format = InputElementFormatToDx12(ie.Format);
+		ieDesc.InputSlot = ie.Slot;
+		ieDesc.AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+		ieDesc.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
+		ieDesc.InstanceDataStepRate = 0;
+		inputElements.push_back(ieDesc);
+	}
+
+	desc.InputLayout.pInputElementDescs = inputElements.data();
+	desc.InputLayout.NumElements = UINT(inputElements.size());
+
 	desc.pRootSignature = rootSignature;
 
-	desc.VS.pShaderBytecode = Shaders::Rects::g_VertexShaderMain;
-	desc.VS.BytecodeLength = sizeof(Shaders::Rects::g_VertexShaderMain);
-	desc.PS.pShaderBytecode = Shaders::Rects::g_PixelShaderMain;
-	desc.PS.BytecodeLength = sizeof(Shaders::Rects::g_PixelShaderMain);
+	desc.VS.pShaderBytecode = psDesc.VertexShader.Data;
+	desc.VS.BytecodeLength = psDesc.VertexShader.Size;
+	desc.PS.pShaderBytecode = psDesc.PixelShader.Data;
+	desc.PS.BytecodeLength = psDesc.PixelShader.Size;
 
 	desc.RasterizerState.FillMode = D3D12_FILL_MODE_SOLID;
-	desc.RasterizerState.CullMode = D3D12_CULL_MODE_NONE;
-	desc.RasterizerState.FrontCounterClockwise = FALSE;
+	desc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
+	desc.RasterizerState.FrontCounterClockwise = TRUE;
 	desc.RasterizerState.DepthBias = D3D12_DEFAULT_DEPTH_BIAS;
 	desc.RasterizerState.DepthBiasClamp = D3D12_DEFAULT_DEPTH_BIAS_CLAMP;
 	desc.RasterizerState.SlopeScaledDepthBias = D3D12_DEFAULT_SLOPE_SCALED_DEPTH_BIAS;
@@ -236,7 +273,7 @@ void Dx12Backend::DestroyImageView(ImageView* imageView)
 
 }
 
-Buffer* Dx12Backend::CreateBuffer(uint64_t size)
+Buffer* Dx12Backend::CreateBuffer(uint32_t size)
 {
 	D3D12_HEAP_PROPERTIES heapProperties;
 	heapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;
@@ -270,6 +307,8 @@ Buffer* Dx12Backend::CreateBuffer(uint64_t size)
 
 	auto result = new Dx12Buffer;
 	result->Buffer = buffer;
+	result->State = D3D12_RESOURCE_STATE_GENERIC_READ;
+	result->Size = size;
 	return result;
 }
 
@@ -277,6 +316,19 @@ void Dx12Backend::DestroyBuffer(Buffer* buffer)
 {
 	reinterpret_cast<Dx12Buffer*>(buffer)->Buffer->Release();
 	delete buffer;
+}
+
+void* Dx12Buffer::Map()
+{
+	assert(State == D3D12_RESOURCE_STATE_GENERIC_READ);
+	void* mappedMemory = nullptr;
+	CHECK_SUCCESS(Buffer->Map(0, nullptr, &mappedMemory));
+	return mappedMemory;
+}
+
+void Dx12Buffer::Unmap()
+{
+	Buffer->Unmap(0, nullptr);
 }
 
 uint32_t Dx12Backend::GetSwapChainBuffers()

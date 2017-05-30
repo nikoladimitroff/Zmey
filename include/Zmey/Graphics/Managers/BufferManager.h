@@ -16,7 +16,7 @@ public:
 
 	void DestroyResources();
 
-	BufferHandle CreateBuffer(uint64_t size);
+	BufferHandle CreateStaticBuffer(uint32_t size, void* data);
 
 	const Backend::Buffer* GetBuffer(BufferHandle handle) const;
 private:

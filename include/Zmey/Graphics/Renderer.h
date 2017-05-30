@@ -27,6 +27,10 @@ struct RendererData
 
 	BufferManager BufferManager;
 	MeshManager MeshManager;
+
+	// TODO(alex): Add PipelineState Manager and remove this
+	Backend::PipelineState* RectsPipelineState;
+	Backend::PipelineState* MeshesPipelineState;
 };
 
 class RendererInterface
@@ -52,7 +56,6 @@ private:
 	// TODO: atomic
 	uint64_t LastCompletedFrame = 0;
 
-	Backend::PipelineState* m_RectsPipelineState;
 	stl::vector<Backend::Framebuffer*> m_SwapChainFramebuffers;
 	stl::vector<Backend::CommandList*> m_CommandLists;
 

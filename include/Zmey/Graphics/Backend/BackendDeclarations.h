@@ -12,7 +12,7 @@ class PipelineLayout;
 
 class Framebuffer;
 
-class Shader;
+struct Shader;
 
 class CommandList;
 

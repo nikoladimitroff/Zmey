@@ -18,5 +18,8 @@
     <FxCompile Include="..\..\Source\Graphics\Shaders\Source\include\Platform.hlsl">
       <Filter>Shaders\include</Filter>
     </FxCompile>
+    <FxCompile Include="..\..\Source\Graphics\Shaders\Source\Mesh.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

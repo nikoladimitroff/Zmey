@@ -2,6 +2,7 @@
 
 #include <Zmey/Graphics/Features/RectRenderer.h>
 #include <Zmey/Graphics/Backend/CommandList.h>
+#include <Zmey/Graphics/Renderer.h>
 
 namespace Zmey
 {
@@ -32,12 +33,12 @@ void ToScreenSpace(float values[4], Rect& rect)
 }
 }
 
-void RectRenderer::GenerateCommands(FrameData& frameData, RenderPass pass, ViewType view, Backend::CommandList* list, Backend::PipelineState* state)
+void RectRenderer::GenerateCommands(FrameData& frameData, RenderPass pass, ViewType view, Backend::CommandList* list, RendererData& data)
 {
 	if (view == ViewType::PlayerView
 		&& pass == RenderPass::Main)
 	{
-		list->BindPipelineState(state);
+		list->BindPipelineState(data.RectsPipelineState);
 	}
 	else
 	{
@@ -50,8 +51,8 @@ void RectRenderer::GenerateCommands(FrameData& frameData, RenderPass pass, ViewT
 		float rectValues[4];
 		ToScreenSpace(rectValues, rect);
 
-		list->SetPushConstants(state, 0, 4 * sizeof(float), rectValues);
-		list->SetPushConstants(state, 16, 4 * sizeof(float), rect.color);
+		list->SetPushConstants(data.RectsPipelineState, 0, 4 * sizeof(float), rectValues);
+		list->SetPushConstants(data.RectsPipelineState, 16, 4 * sizeof(float), rect.color);
 
 		list->Draw(4, 1, 0, 0);
 	}

@@ -1,6 +1,8 @@
 #pragma once
 
 #include <Zmey/Graphics/Features/MeshRenderer.h>
+#include <Zmey/Graphics/Backend/CommandList.h>
+#include <Zmey/Graphics/Renderer.h>
 
 namespace Zmey
 {
@@ -9,42 +11,41 @@ namespace Graphics
 namespace Features
 {
 
-void MeshRenderer::GatherData(FrameData& frameData)
+void MeshRenderer::GatherData(FrameData& frameData, MeshHandle handle)
 {
-	// TODO(alex): Test code remove me
-	frameData.MeshHandles.push_back(0);
-	frameData.MeshPositions.push_back(Vector3(0.0f, 0.0f, 0.0f));
+	frameData.MeshHandles.push_back(handle);
 }
 
-void MeshRenderer::PrepareData(FrameData& frameData)
+void MeshRenderer::PrepareData(FrameData& frameData, RendererData& data)
 {
-	// No prepare for now
+
 }
 
-void MeshRenderer::GenerateCommands(FrameData& frameData, RenderPass pass, ViewType view, Backend::CommandList* cmdLIst)
+void MeshRenderer::GenerateCommands(FrameData& frameData, RenderPass pass, ViewType view, Backend::CommandList* list, RendererData& data)
 {
-	// TODO: implement me
-	//auto cmd = reinterpret_cast<VkCommandBuffer>(cmdBuffer);
-	//
-	//if (view == ViewType::PlayerView
-	//	&& pass == RenderPass::Main)
-	//{
-	//	vkCmdBindPipeline(cmd, VK_PIPELINE_BIND_POINT_GRAPHICS, data.m_GraphicsPipeline);
-	//}
-	//else
-	//{
-	//	assert(false);
-	//}
+	if (view == ViewType::PlayerView
+		&& pass == RenderPass::Main)
+	{
+		list->BindPipelineState(data.MeshesPipelineState);
+	}
+	else
+	{
+		assert(false);
+	}
 
-	//for (auto i = 0u; i < frameData.MeshHandles.size(); ++i)
-	//{
-	//	// TODO: use real handle and real position
-	//	VkBuffer vertexBuffers[] = { data.m_VertexBuffer };
-	//	VkDeviceSize offsets[] = { 0 };
-	//	vkCmdBindVertexBuffers(cmd, 0, 1, vertexBuffers, offsets);
+	for (auto i = 0u; i < frameData.MeshHandles.size(); ++i)
+	{
+		auto mesh = data.MeshManager.GetMesh(frameData.MeshHandles[i]);
+		assert(mesh);
+		auto vbo = data.BufferManager.GetBuffer(mesh->VertexBuffer);
+		auto ibo = data.BufferManager.GetBuffer(mesh->IndexBuffer);
+		assert(vbo && ibo);
 
-	//	vkCmdDraw(cmd, 4, 1, 0, 0);
-	//}
+		list->SetVertexBuffer(vbo, sizeof(Vector3));
+		list->SetIndexBuffer(ibo);
+
+		list->Draw(mesh->IndexCount, 1, 0, 0);
+	}
 }
 
 }

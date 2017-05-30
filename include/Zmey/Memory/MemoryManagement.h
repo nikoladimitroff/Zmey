@@ -77,6 +77,7 @@ inline void ZmeyDestroyArray(const T* ptr)
 
 namespace tmp
 {
+#define TEMP_ALLOCATOR_SCOPE auto scope = TempAllocator::GetTlsAllocator().ScopeNow()
 
 	template<typename Base>
 	struct TempDeleter
