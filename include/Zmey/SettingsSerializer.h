@@ -3,13 +3,9 @@
 
 #include <Zmey/Memory/MemoryManagement.h>
 
-namespace cpptoml
-{
-class table;
-}
-
 namespace Zmey
 {
+struct SettingsHandle;
 class SettingsSerializer
 {
 	SettingsSerializer();
@@ -25,10 +21,12 @@ class SettingsSerializer
 	int32_t ReadValue(const stl::string& section, const stl::string& key, int32_t defaultValue);
 	void WriteValue(const stl::string& section, const stl::string& key, int32_t value);
 
+	float ReadValue(const stl::string& section, const stl::string& key, float defaultValue);
+	void WriteValue(const stl::string& section, const stl::string& key, float value);
+
 	void DeleteValue(const stl::string& section, const stl::string& key);
-	void DeleteSection(const stl::string& section);
 
 private:
-	stl::shared_ptr<cpptoml::table>
+	stl::unique_ptr<SettingsHandle> m_Settings;
 };
 }

@@ -242,7 +242,7 @@
     <ClInclude Include="..\..\include\Zmey\Platform\InputController.h">
       <Filter>include\Platform</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\IniParser.h">
+    <ClInclude Include="..\..\include\Zmey\SettingsSerializer.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
@@ -319,7 +319,7 @@
     <ClCompile Include="..\..\Source\Graphics\Managers\BufferManager.cpp">
       <Filter>Source\Graphics\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\IniParser.cpp">
+    <ClCompile Include="..\..\Source\SettingsSerializer.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
