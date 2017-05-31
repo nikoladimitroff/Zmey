@@ -149,7 +149,7 @@
     <ClInclude Include="..\..\include\Zmey\Graphics\ResourceHandles.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\View.h" />
     <ClInclude Include="..\..\include\Zmey\Hash.h" />
-    <ClInclude Include="..\..\include\Zmey\SettingsSerializer.h" />
+    <ClInclude Include="..\..\include\Zmey\SettingsManager.h" />
     <ClInclude Include="..\..\include\Zmey\Logging.h" />
     <ClInclude Include="..\..\include\Zmey\LogHandler.h" />
     <ClInclude Include="..\..\include\Zmey\Math\Math.h" />
@@ -197,7 +197,7 @@
     <ClCompile Include="..\..\Source\Graphics\Managers\BufferManager.cpp" />
     <ClCompile Include="..\..\Source\Graphics\Managers\MeshManager.cpp" />
     <ClCompile Include="..\..\Source\Graphics\Renderer.cpp" />
-    <ClCompile Include="..\..\Source\SettingsSerializer.cpp" />
+    <ClCompile Include="..\..\Source\SettingsManager.cpp" />
     <ClCompile Include="..\..\Source\Logging.cpp" />
     <ClCompile Include="..\..\Source\Memory\MemoryManagement.cpp" />
     <ClCompile Include="..\..\Source\Modules.cpp" />
