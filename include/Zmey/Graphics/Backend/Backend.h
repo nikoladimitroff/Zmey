@@ -30,6 +30,7 @@ struct InputElement
 	uint8_t SemanticIndex;
 	InputElementFormat Format;
 	uint8_t Slot;
+	uint32_t Offset;
 };
 
 struct InputLayout

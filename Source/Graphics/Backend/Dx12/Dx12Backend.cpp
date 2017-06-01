@@ -165,7 +165,7 @@ PipelineState* Dx12Backend::CreatePipelineState(const PipelineStateDesc& psDesc)
 	D3D12_ROOT_PARAMETER rootParam;
 	rootParam.ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
 	rootParam.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
-	rootParam.Constants.Num32BitValues = 8;
+	rootParam.Constants.Num32BitValues = 16;
 	rootParam.Constants.RegisterSpace = 0;
 	rootParam.Constants.ShaderRegister = 0;
 
@@ -195,7 +195,7 @@ PipelineState* Dx12Backend::CreatePipelineState(const PipelineStateDesc& psDesc)
 		ieDesc.SemanticIndex = ie.SemanticIndex;
 		ieDesc.Format = InputElementFormatToDx12(ie.Format);
 		ieDesc.InputSlot = ie.Slot;
-		ieDesc.AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+		ieDesc.AlignedByteOffset = ie.Offset;
 		ieDesc.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
 		ieDesc.InstanceDataStepRate = 0;
 		inputElements.push_back(ieDesc);

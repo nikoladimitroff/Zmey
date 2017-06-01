@@ -3,6 +3,7 @@
 #include <Zmey/Memory/MemoryManagement.h>
 #include <Zmey/Graphics/ResourceHandles.h>
 #include <Zmey/Math/Math.h>
+#include <Zmey/Graphics/View.h>
 
 namespace Zmey
 {
@@ -22,8 +23,16 @@ struct FrameData
 {
 	uint64_t FrameIndex;
 
+	// TODO(alex): handle multiple views
+	ViewType Type;
+	Matrix4x4 ProjectionMatrix;
+	Matrix4x4 ViewMatrix;
+	unsigned Width;
+	unsigned Height;
+
+	// Data for render
 	stl::vector<MeshHandle> MeshHandles;
-	stl::vector<Vector3> MeshPositions;
+	stl::vector<Matrix4x4> MeshTransforms;
 
 	stl::vector<Rect> RectsToDraw;
 };

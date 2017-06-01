@@ -197,6 +197,7 @@
     <ClCompile Include="..\..\Source\Graphics\Managers\BufferManager.cpp" />
     <ClCompile Include="..\..\Source\Graphics\Managers\MeshManager.cpp" />
     <ClCompile Include="..\..\Source\Graphics\Renderer.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\View.cpp" />
     <ClCompile Include="..\..\Source\SettingsManager.cpp" />
     <ClCompile Include="..\..\Source\Logging.cpp" />
     <ClCompile Include="..\..\Source\Memory\MemoryManagement.cpp" />

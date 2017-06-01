@@ -2,11 +2,18 @@
 
 #include <Zmey/Graphics/GraphicsObjects.h>
 #include <Zmey/Memory/MemoryManagement.h>
+#include <Zmey/Math/Math.h>
 
 namespace Zmey
 {
 namespace Graphics
 {
+
+struct MeshVertex
+{
+	Vector3 Position;
+	Vector3 Normal;
+};
 
 struct Mesh
 {

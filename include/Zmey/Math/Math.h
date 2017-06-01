@@ -1,6 +1,9 @@
 #pragma once
 
+#define GLM_FORCE_LEFT_HANDED
 #include <glm/glm.hpp>
+#include <glm/gtx/transform.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 
 namespace Zmey
@@ -10,5 +13,6 @@ using Vector2 = glm::vec2;
 using Vector3 = glm::vec3;
 using Vector4 = glm::vec4;
 using Quaternion = glm::quat;
+using Matrix4x4 = glm::mat4x4;
 
 }

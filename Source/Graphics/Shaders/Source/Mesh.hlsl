@@ -3,36 +3,36 @@
 struct VertexInput
 {
 	float3 Position : POSITION0;
+	float3 Normal : NORMAL0;
+};
+
+struct VertexOutput
+{
+	float4 Position : SV_POSITION;
+	float4 Color : COLOR0;
 };
 
 cbuffer VertexPushs : register(b0) PUSH_CONSTANT
 {
-	float x;
-	float y;
-	float width;
-	float height;
+	float4x4 ModelViewProjectionMatrix;
 };
 
-cbuffer PixelPushs : register(b0) PUSH_CONSTANT
+VertexOutput VertexShaderMain(VertexInput input)
 {
-	float4 color : packoffset(c1);
-};
+	VertexOutput result;
+	const float3 LightDir = float3(1.0, 0.0, 0.0);
+	result.Position = mul(ModelViewProjectionMatrix, float4(input.Position, 1.0));
+	//result.Color = float4(input.Normal, 1.0);
 
-float4 VertexShaderMain(VertexInput i) : SV_POSITION
-{
-	float4 pos = float4(i.Position, 1.0);
-	pos.x += 60.0;
-	pos.x /= 120.0;
+	// Simple diffuse lighting
+	result.Color = float4(1.0, 0.0, 0.0, 1.0);
+	result.Color *= dot(input.Normal, LightDir) * 2.0;
+	result.Color += float4(0.0, 1.0, 0.0, 1.0) * 0.05; // ambient
 
-	pos.y += 6.0;
-	pos.y /= 12.0;
-
-	pos.z += 80.0;
-	pos.z /= 160.0;
-	return pos;
+	return result;
 }
 
-float4 PixelShaderMain(float4 pos : SV_POSITION) : SV_TARGET
+float4 PixelShaderMain(VertexOutput input) : SV_TARGET
 {
-	return float4(1.0, 0.0, 0.0, 1.0);
+	return input.Color;
 }

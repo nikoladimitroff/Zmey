@@ -30,7 +30,7 @@ void Dx12CommandList::BeginRenderPass(Framebuffer* fb)
 
 	CmdList->ResourceBarrier(1, &barrier);
 
-	const float clearColor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	const float clearColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	CmdList->ClearRenderTargetView(reinterpret_cast<Dx12Framebuffer*>(fb)->RTV, clearColor, 0, nullptr);
 
 	CmdList->OMSetRenderTargets(1, &reinterpret_cast<Dx12Framebuffer*>(fb)->RTV, FALSE, nullptr);

@@ -90,6 +90,11 @@ void EngineLoop::Run()
 
 	auto meshId = Modules::ResourceLoader->LoadResource("Content\\Meshes\\Vampire_A_Lusth\\Vampire_A_Lusth.dae");
 
+	// Create main Player view
+	Graphics::View playerView(Graphics::ViewType::PlayerView);
+	playerView.SetupProjection(width, height, 60, 0.1f, 1000.0f);
+	playerView.SetupView(Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f));
+
 	auto scriptId = Modules::ResourceLoader->LoadResource("Content\\Scripts\\main.js");
 	while (g_Run)
 	{
@@ -134,6 +139,7 @@ void EngineLoop::Run()
 		Graphics::FrameData frameData;
 
 		frameData.FrameIndex = frameIndex++;
+		playerView.GatherData(frameData);
 		if (Modules::ResourceLoader->IsResourceReady(meshId))
 		{
 			Graphics::Features::MeshRenderer::GatherData(frameData, *Modules::ResourceLoader->As<Graphics::MeshHandle>(meshId));

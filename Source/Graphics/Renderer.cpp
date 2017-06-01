@@ -30,7 +30,8 @@ bool RendererInterface::CreateWindowSurface(WindowHandle handle)
 
 	desc.VertexShader = Backend::Shader{ Backend::Shaders::Mesh::g_VertexShaderMain, sizeof(Backend::Shaders::Mesh::g_VertexShaderMain) };
 	desc.PixelShader = Backend::Shader{ Backend::Shaders::Mesh::g_PixelShaderMain, sizeof(Backend::Shaders::Mesh::g_PixelShaderMain) };
-	desc.Layout.Elements.push_back(Backend::InputElement{ "POSITION", 0, Backend::InputElementFormat::Float3, 0 });
+	desc.Layout.Elements.push_back(Backend::InputElement{ "POSITION", 0, Backend::InputElementFormat::Float3, 0, 0 });
+	desc.Layout.Elements.push_back(Backend::InputElement{ "NORMAL", 0, Backend::InputElementFormat::Float3, 0, 3 * sizeof(float)});
 	m_Data.MeshesPipelineState = m_Backend->CreatePipelineState(desc);
 
 	auto swapChainCount = m_Backend->GetSwapChainBuffers();
@@ -135,12 +136,16 @@ MeshHandle RendererInterface::MeshLoaded(const aiScene* scene)
 	if (scene->mNumMeshes > 0)
 	{
 		auto mesh = scene->mMeshes[0];
-		tmp::vector<Vector3> vertices;
+		tmp::vector<MeshVertex> vertices;
 		vertices.reserve(mesh->mNumVertices);
 		for (auto i = 0u; i < mesh->mNumVertices; ++i)
 		{
 			auto& aiVector = mesh->mVertices[i];
-			vertices.push_back(Vector3(aiVector.x, aiVector.y, aiVector.z));
+			auto& aiNormal = mesh->mNormals[i];
+			vertices.push_back(MeshVertex{
+				Vector3(aiVector.x, aiVector.y, aiVector.z),
+				Vector3{aiNormal.x, aiNormal.y, aiNormal.z}
+			});
 		}
 
 		tmp::vector<uint32_t> indices;
@@ -156,7 +161,7 @@ MeshHandle RendererInterface::MeshLoaded(const aiScene* scene)
 
 		Mesh newMesh;
 		newMesh.IndexCount = uint32_t(indices.size());
-		newMesh.VertexBuffer = m_Data.BufferManager.CreateStaticBuffer(uint32_t(vertices.size() * sizeof(Vector3)), vertices.data());
+		newMesh.VertexBuffer = m_Data.BufferManager.CreateStaticBuffer(uint32_t(vertices.size() * sizeof(MeshVertex)), vertices.data());
 		newMesh.IndexBuffer = m_Data.BufferManager.CreateStaticBuffer(uint32_t(indices.size() * sizeof(uint32_t)), indices.data());
 		return m_Data.MeshManager.CreateMesh(newMesh);
 	}

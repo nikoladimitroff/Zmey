@@ -322,5 +322,8 @@
     <ClCompile Include="..\..\Source\SettingsManager.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\View.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
