@@ -21,7 +21,9 @@ enum class KeyboardButton : uint8_t
 enum class GamepadButton : uint8_t
 {
 	DpadUp, DpadDown, DpadLeft, DpadRight,
+	Start, Back,
 	FaceUp, FaceDown, FaceLeft, FaceRight,
+	LeftStick, RightStick,
 	LeftShoulder, RightShoulder, LeftTrigger, RightTrigger
 };
 
@@ -70,6 +72,15 @@ struct InputState
 	{
 		return GamepadAxes[static_cast<uint8_t>(axis)];
 	}
+	InputState& operator=(const InputState& other)
+	{
+		std::memcpy(GamepadAxes, other.GamepadAxes, sizeof(GamepadAxes));
+		std::memcpy(MouseAxes, other.MouseAxes, sizeof(MouseAxes));
+		KeyboardButtons = other.KeyboardButtons;
+		GamepadButtons = other.GamepadButtons;
+		MouseButtons = other.MouseButtons;
+		return *this;
+	}
 private:
 	float GamepadAxes[8];
 	float MouseAxes[4];
@@ -97,6 +108,19 @@ struct ActionMapping
 			, ExpectsShift(false)
 			, ExpectsAlt(false)
 		{}
+		bool operator==(const Binding& rhs)
+		{
+			return Type == rhs.Type &&
+				InputEnumData == rhs.InputEnumData &&
+				IsContinuous == rhs.IsContinuous &&
+				ExpectsCtrl == rhs.ExpectsCtrl &&
+				ExpectsShift == rhs.ExpectsShift &&
+				ExpectsAlt == rhs.ExpectsAlt;
+		}
+		bool operator!=(const Binding& rhs)
+		{
+			return !(*this == rhs);
+		}
 		MappingType Type;
 		uint8_t InputEnumData;
 		bool IsContinuous : 1;

@@ -8,6 +8,7 @@
 #define NOMINMAX
 #include <Windows.h>
 #include <windowsx.h>
+#include <Xinput.h>
 
 LRESULT CALLBACK DefaultWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -91,6 +92,43 @@ WindowHandle WindowsPlatform::SpawnWindow(unsigned width, unsigned height, const
 	return WindowHandle(hWnd);
 }
 
+void UpdateInputControllerFromGamepad(const XINPUT_STATE& gamepadState)
+{
+	auto& input = *Zmey::Modules::InputController;
+	
+	uint16_t xinputGamepadButtons[] =
+	{
+		XINPUT_GAMEPAD_DPAD_UP, XINPUT_GAMEPAD_DPAD_DOWN, XINPUT_GAMEPAD_DPAD_LEFT, XINPUT_GAMEPAD_DPAD_RIGHT,
+		XINPUT_GAMEPAD_START, XINPUT_GAMEPAD_BACK,
+		XINPUT_GAMEPAD_LEFT_THUMB, XINPUT_GAMEPAD_RIGHT_THUMB,
+		XINPUT_GAMEPAD_LEFT_SHOULDER, XINPUT_GAMEPAD_RIGHT_SHOULDER,
+		XINPUT_GAMEPAD_A, XINPUT_GAMEPAD_B, XINPUT_GAMEPAD_X, XINPUT_GAMEPAD_Y,
+	};
+	GamepadButton zmeyGamepadButtons[] =
+	{
+		GamepadButton::DpadUp, GamepadButton::DpadDown, GamepadButton::DpadLeft, GamepadButton::DpadRight,
+		GamepadButton::Start, GamepadButton::Back,
+		GamepadButton::LeftStick, GamepadButton::RightStick,
+		GamepadButton::LeftShoulder, GamepadButton::RightShoulder,
+		GamepadButton::FaceDown, GamepadButton::FaceRight, GamepadButton::FaceLeft, GamepadButton::FaceUp
+	};
+	static_assert(sizeof(xinputGamepadButtons) / sizeof(uint16_t) == sizeof(zmeyGamepadButtons) / sizeof(GamepadButton), "The arrays above must have the same size");
+	for (size_t i = 0; i < sizeof(xinputGamepadButtons) / sizeof(uint16_t); i++)
+	{
+		input.SetButtonPressed(zmeyGamepadButtons[i], gamepadState.Gamepad.wButtons & xinputGamepadButtons[i]);
+	}
+	const float NormalizeBy32K = 1 / 32767.0f;
+	const float NormalizeBy255 = 1 / 255.0f;
+	input.SetAxis(GamepadAxis::LeftStickX, gamepadState.Gamepad.sThumbLX * NormalizeBy32K);
+	input.SetAxis(GamepadAxis::LeftStickY, gamepadState.Gamepad.sThumbLY * NormalizeBy32K);
+	input.SetAxis(GamepadAxis::RightStickX, gamepadState.Gamepad.sThumbRX * NormalizeBy32K);
+	input.SetAxis(GamepadAxis::RightStickY, gamepadState.Gamepad.sThumbRY * NormalizeBy32K);
+	input.SetAxis(GamepadAxis::LeftTriggerAxis, gamepadState.Gamepad.bLeftTrigger * NormalizeBy255);
+	input.SetAxis(GamepadAxis::RightTriggerAxis, gamepadState.Gamepad.bRightTrigger * NormalizeBy255);
+	input.SetButtonPressed(GamepadButton::LeftTrigger, gamepadState.Gamepad.bLeftTrigger >= XINPUT_GAMEPAD_TRIGGER_THRESHOLD);
+	input.SetButtonPressed(GamepadButton::RightTrigger, gamepadState.Gamepad.bRightTrigger >= XINPUT_GAMEPAD_TRIGGER_THRESHOLD);
+}
+
 void WindowsPlatform::PumpMessages(WindowHandle handle)
 {
 	MSG msg;
@@ -100,6 +138,9 @@ void WindowsPlatform::PumpMessages(WindowHandle handle)
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
+	XINPUT_STATE gamepadState;
+	XInputGetState(0, &gamepadState);
+	UpdateInputControllerFromGamepad(gamepadState);
 }
 
 void WindowsPlatform::KillWindow(WindowHandle handle)

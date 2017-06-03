@@ -7,6 +7,7 @@
 #include <Zmey/Modules.h>
 
 #include <Zmey/Utilities.h>
+#include <Zmey/Math/Math.h>
 
 namespace Zmey
 {
@@ -42,11 +43,19 @@ bool ActionMapping::Binding::MatchesInput(const InputState& current, const Input
 			current.IsButtonPressed(static_cast<Zmey::GamepadButton>(InputEnumData)) &&
 			(IsContinuous || !previous.IsButtonPressed(static_cast<Zmey::GamepadButton>(InputEnumData)));
 	case MappingType::MouseAxis:
+	{
 		outAxisValue = current.ReadAxis(static_cast<Zmey::MouseAxis>(InputEnumData));
-		return matchesModifiers;
+		float oldAxisValue = previous.ReadAxis(static_cast<Zmey::MouseAxis>(InputEnumData));
+		return matchesModifiers &&
+			(IsContinuous || !FloatClose(outAxisValue, oldAxisValue));
+	}
 	case MappingType::GamepadAxis:
+	{
 		outAxisValue = current.ReadAxis(static_cast<Zmey::GamepadAxis>(InputEnumData));
-		return matchesModifiers;
+		float oldAxisValue = previous.ReadAxis(static_cast<Zmey::GamepadAxis>(InputEnumData));
+		return matchesModifiers &&
+			(IsContinuous || !FloatClose(outAxisValue, oldAxisValue));
+	}
 	default:
 		NOT_REACHED();
 		return false;
@@ -55,6 +64,8 @@ bool ActionMapping::Binding::MatchesInput(const InputState& current, const Input
 
 void ConvertKeynameToBinding(Zmey::Hash keyHash, ActionMapping::Binding& binding)
 {
+	ActionMapping::Binding preConvertState = binding;
+
 	using IHash = Zmey::HashHelpers::CaseInsensitiveStringWrapper;
 #define CHECK_KEYNAME(Category, Keyname) \
 	case static_cast<uint64_t>(Hash(IHash(#Keyname))): \
@@ -85,10 +96,14 @@ void ConvertKeynameToBinding(Zmey::Hash keyHash, ActionMapping::Binding& binding
 		CHECK_KEYNAME(GamepadButton, DpadDown);
 		CHECK_KEYNAME(GamepadButton, DpadLeft);
 		CHECK_KEYNAME(GamepadButton, DpadRight);
+		CHECK_KEYNAME(GamepadButton, Start);
+		CHECK_KEYNAME(GamepadButton, Back);
 		CHECK_KEYNAME(GamepadButton, FaceUp);
 		CHECK_KEYNAME(GamepadButton, FaceDown);
 		CHECK_KEYNAME(GamepadButton, FaceLeft);
 		CHECK_KEYNAME(GamepadButton, FaceRight);
+		CHECK_KEYNAME(GamepadButton, LeftStick);
+		CHECK_KEYNAME(GamepadButton, RightStick);
 		CHECK_KEYNAME(GamepadButton, LeftShoulder);
 		CHECK_KEYNAME(GamepadButton, RightShoulder);
 		CHECK_KEYNAME(GamepadButton, LeftTrigger);
@@ -173,6 +188,9 @@ void ConvertKeynameToBinding(Zmey::Hash keyHash, ActionMapping::Binding& binding
 		binding.IsContinuous = true;
 	}
 #pragma warning(pop)
+
+	// Sanity check that we actually did something
+	ASSERT_FATAL(preConvertState != binding);
 }
 
 InputController::InputController()
@@ -219,6 +237,7 @@ void InputController::DispatchActionEventsForFrame()
 			}
 		}
 	}
+	m_PreviousState = m_CurrentState;
 }
 void InputController::AddListenerForAction(Zmey::Hash actionName, InputActionDelegate actionHandler)
 {
