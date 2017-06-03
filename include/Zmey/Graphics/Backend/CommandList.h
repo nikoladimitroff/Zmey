@@ -19,7 +19,7 @@ public:
 	virtual void BeginRenderPass(Framebuffer* fb) = 0;
 	virtual void EndRenderPass(Framebuffer* fb) = 0;
 
-	virtual void BindPipelineState(PipelineState* state) = 0;
+	virtual void BindPipelineState(PipelineState* state, bool strip) = 0;
 
 	virtual void Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t startVertex, uint32_t startInstance) = 0;
 

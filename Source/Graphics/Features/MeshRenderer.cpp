@@ -15,7 +15,7 @@ void MeshRenderer::GatherData(FrameData& frameData, MeshHandle handle)
 {
 	frameData.MeshHandles.push_back(handle);
 	// TODO(alex): remove test code
-	Matrix4x4 meshTransform = glm::translate(Vector3(0.0f, 50.0f, 20.0f)) * glm::rotate(glm::radians(-90.0f), Vector3(1.0f, 0.0f, 0.0f));
+	Matrix4x4 meshTransform = glm::translate(Vector3(0.0f, -5.0f, 15.0f)) * glm::rotate(glm::radians(0.0f), Vector3(0.0f, 1.0f, 0.0f)) * glm::rotate(glm::radians(90.0f), Vector3(1.0f, 0.0f, 0.0f))  * glm::scale(Vector3(1.0f/10.0f, 1.0f/10.f, 1.0f / 10.0f));
 	frameData.MeshTransforms.push_back(meshTransform);
 }
 
@@ -29,7 +29,7 @@ void MeshRenderer::GenerateCommands(FrameData& frameData, RenderPass pass, ViewT
 	if (view == ViewType::PlayerView
 		&& pass == RenderPass::Main)
 	{
-		list->BindPipelineState(data.MeshesPipelineState);
+		list->BindPipelineState(data.MeshesPipelineState, false);
 	}
 	else
 	{

@@ -24,6 +24,8 @@ class Dx12Framebuffer : public Framebuffer
 public:
 	ID3D12Resource* TextureResource;
 	D3D12_CPU_DESCRIPTOR_HANDLE RTV;
+	ID3D12Resource* DSResource;
+	D3D12_CPU_DESCRIPTOR_HANDLE DSV;
 };
 
 class Dx12ImageView : public ImageView
@@ -80,6 +82,9 @@ private:
 	ComPtr<ID3D12CommandQueue> m_GraphicsQueue;
 	ComPtr<IDXGISwapChain3> m_SwapChain;
 	ComPtr<ID3D12DescriptorHeap> m_RTVHeap;
+	ComPtr<ID3D12DescriptorHeap> m_DSVHeap;
+	ComPtr<ID3D12Resource> m_DSV;
+	D3D12_CPU_DESCRIPTOR_HANDLE m_DSVHandle;
 	struct SwapChainImage
 	{
 		ComPtr<ID3D12Resource> Resource;

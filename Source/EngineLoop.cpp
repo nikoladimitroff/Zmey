@@ -92,7 +92,7 @@ void EngineLoop::Run()
 
 	// Create main Player view
 	Graphics::View playerView(Graphics::ViewType::PlayerView);
-	playerView.SetupProjection(width, height, 60, 0.1f, 1000.0f);
+	playerView.SetupProjection(width, height, glm::radians(60.0f), 0.1f, 1000.0f);
 	playerView.SetupView(Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f));
 
 	auto scriptId = Modules::ResourceLoader->LoadResource("Content\\Scripts\\main.js");

@@ -20,6 +20,8 @@ void Dx12CommandList::EndRecording()
 
 void Dx12CommandList::BeginRenderPass(Framebuffer* fb)
 {
+	auto dxfb = reinterpret_cast<Dx12Framebuffer*>(fb);
+
 	D3D12_RESOURCE_BARRIER barrier;
 	barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 	barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
@@ -31,9 +33,11 @@ void Dx12CommandList::BeginRenderPass(Framebuffer* fb)
 	CmdList->ResourceBarrier(1, &barrier);
 
 	const float clearColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	CmdList->ClearRenderTargetView(reinterpret_cast<Dx12Framebuffer*>(fb)->RTV, clearColor, 0, nullptr);
+	CmdList->ClearRenderTargetView(dxfb->RTV, clearColor, 0, nullptr);
 
-	CmdList->OMSetRenderTargets(1, &reinterpret_cast<Dx12Framebuffer*>(fb)->RTV, FALSE, nullptr);
+	CmdList->ClearDepthStencilView(dxfb->DSV, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+
+	CmdList->OMSetRenderTargets(1, &dxfb->RTV, FALSE, &dxfb->DSV);
 
 	D3D12_VIEWPORT viewport;
 	viewport.TopLeftX = 0;
@@ -65,11 +69,11 @@ void Dx12CommandList::EndRenderPass(Framebuffer* fb)
 	CmdList->ResourceBarrier(1, &barrier);
 }
 
-void Dx12CommandList::BindPipelineState(PipelineState* state)
+void Dx12CommandList::BindPipelineState(PipelineState* state, bool strip)
 {
 	CmdList->SetPipelineState(reinterpret_cast<Dx12PipelineState*>(state)->PipelineState);
 	CmdList->SetGraphicsRootSignature(reinterpret_cast<Dx12PipelineState*>(state)->RootSignature);
-	CmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+	CmdList->IASetPrimitiveTopology(strip ? D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP : D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 }
 
 void Dx12CommandList::Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t startVertex, uint32_t startInstance)

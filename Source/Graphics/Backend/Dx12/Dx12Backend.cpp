@@ -118,6 +118,12 @@ void Dx12Backend::Initialize(WindowHandle windowHandle)
 		CHECK_SUCCESS(m_Device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&m_RTVHeap)));
 
 		rtvDescriptorSize = m_Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+
+		D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
+		dsvHeapDesc.NumDescriptors = 1;
+		dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+		dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+		CHECK_SUCCESS(m_Device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&m_DSVHeap)));
 	}
 
 	// Create frame resources.
@@ -133,6 +139,47 @@ void Dx12Backend::Initialize(WindowHandle windowHandle)
 			m_SwapChainImages[n].RTVHandle = rtvHandle;
 
 			rtvHandle.ptr += 1 * rtvDescriptorSize;
+		}
+
+		// Create DepthStencil texture
+		{
+			D3D12_HEAP_PROPERTIES heapProperties;
+			heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT;
+			heapProperties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+			heapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
+			heapProperties.CreationNodeMask = 0;
+			heapProperties.VisibleNodeMask = 0;
+
+			D3D12_RESOURCE_DESC desc;
+			desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+			desc.Alignment = 0;
+			desc.Width = 1280;
+			desc.Height = 720;
+			desc.DepthOrArraySize = 1;
+			desc.MipLevels = 1;
+			desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+			desc.SampleDesc.Count = 1;
+			desc.SampleDesc.Quality = 0;
+			desc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+			desc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+
+			D3D12_CLEAR_VALUE clearValue;
+			clearValue.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+			clearValue.DepthStencil.Depth = 1.0f;
+			clearValue.DepthStencil.Stencil = 0;
+
+			CHECK_SUCCESS(m_Device->CreateCommittedResource(
+				&heapProperties,
+				D3D12_HEAP_FLAG_NONE,
+				&desc,
+				D3D12_RESOURCE_STATE_DEPTH_WRITE,
+				&clearValue,
+				IID_PPV_ARGS(&m_DSV)
+			));
+
+
+			m_DSVHandle = m_DSVHeap->GetCPUDescriptorHandleForHeapStart();
+			m_Device->CreateDepthStencilView(m_DSV.Get(), nullptr, m_DSVHandle);
 		}
 	}
 
@@ -236,13 +283,16 @@ PipelineState* Dx12Backend::CreatePipelineState(const PipelineStateDesc& psDesc)
 	for (UINT i = 0; i < D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT; ++i)
 		desc.BlendState.RenderTarget[i] = defaultRenderTargetBlendDesc;
 
-	desc.DepthStencilState.DepthEnable = FALSE;
+	desc.DepthStencilState.DepthEnable = TRUE;
 	desc.DepthStencilState.StencilEnable = FALSE;
+	desc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+	desc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
 
 	desc.SampleMask = UINT_MAX;
 	desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	desc.NumRenderTargets = 1;
 	desc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+	desc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	desc.SampleDesc.Count = 1;
 
 	ID3D12PipelineState* state;
@@ -370,6 +420,8 @@ Framebuffer* Dx12Backend::CreateFramebuffer(ImageView* imageView)
 	auto result = new Dx12Framebuffer;
 	result->TextureResource = view->Resource.Get();
 	result->RTV = view->RTVHandle;
+	result->DSResource = m_DSV.Get();
+	result->DSV = m_DSVHandle;
 	return result;
 }
 

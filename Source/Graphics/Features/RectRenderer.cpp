@@ -38,7 +38,7 @@ void RectRenderer::GenerateCommands(FrameData& frameData, RenderPass pass, ViewT
 	if (view == ViewType::PlayerView
 		&& pass == RenderPass::Main)
 	{
-		list->BindPipelineState(data.RectsPipelineState);
+		list->BindPipelineState(data.RectsPipelineState, true);
 	}
 	else
 	{
