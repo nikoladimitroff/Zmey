@@ -12,21 +12,23 @@ public:
 	SettingsHandle(SettingsInternalParserHandle& internalHandle, const stl::string& section, class SettingsManager& owner);
 	~SettingsHandle();
 
-	tmp::string ReadValue(const stl::string& key, const stl::string& defaultValue = "");
+	tmp::string ReadValue(const stl::string& key, const stl::string& defaultValue);
 	void WriteValue(const stl::string& key, const stl::string& value);
 
-	bool ReadValue(const stl::string& key, bool defaultValue = false);
+	bool ReadValue(const stl::string& key, bool defaultValue);
 	void WriteValue(const stl::string& key, bool value);
 
-	int32_t ReadValue(const stl::string& key, int32_t defaultValue = 0);
+	int32_t ReadValue(const stl::string& key, int32_t defaultValue);
 	void WriteValue(const stl::string& key, int32_t value);
 
-	float ReadValue(const stl::string& key, float defaultValue = 0.f);
+	float ReadValue(const stl::string& key, float defaultValue);
 	void WriteValue(const stl::string& key, float value);
+
+	tmp::small_vector<tmp::string> ReadValue(const stl::string& key);
 
 	void DeleteValue(const stl::string& key);
 private:
-	const stl::string& m_Section;
+	const stl::string m_Section;
 	SettingsInternalParserHandle& m_Settings;
 	class SettingsManager& m_Owner;
 };

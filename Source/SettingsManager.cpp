@@ -1,13 +1,14 @@
 #include <Zmey/SettingsManager.h>
 
 #include <simpleini/SimpleIni.h>
+#include <Zmey/Utilities.h>
 
 namespace Zmey
 {
 struct SettingsInternalParserHandle
 {
 	SettingsInternalParserHandle()
-		: SimpleIni(true, false, true)
+		: SimpleIni(true, true, true)
 	{}
 	CSimpleIniCaseA SimpleIni;
 };
@@ -55,6 +56,18 @@ float SettingsHandle::ReadValue(const stl::string& key, float defaultValue)
 void SettingsHandle::WriteValue(const stl::string& key, float value)
 {
 	m_Settings.SimpleIni.SetDoubleValue(m_Section.c_str(), key.c_str(), value);
+}
+
+tmp::small_vector<tmp::string> SettingsHandle::ReadValue(const stl::string& key)
+{
+	CSimpleIniCaseA::TNamesDepend names;
+	m_Settings.SimpleIni.GetAllValues(m_Section.c_str(), key.c_str(), names);
+	tmp::small_vector<tmp::string> result;
+	for (const auto& name : names)
+	{
+		result.push_back(name.pItem);
+	}
+	return result;
 }
 
 void SettingsHandle::DeleteValue(const stl::string& key)
