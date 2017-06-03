@@ -75,7 +75,7 @@ void World::AddClassToRegistry(Zmey::Hash className, const uint8_t* buffer, size
 	m_ClassRegistry[className] = std::move(bufferContainer);
 }
 
-EntityId World::SpawnActor(Zmey::Hash actorType)
+EntityId World::SpawnEntity(Zmey::Hash actorType)
 {
 	auto it = m_ClassRegistry.find(actorType);
 	ASSERT_FATAL(it != m_ClassRegistry.end());

@@ -32,7 +32,7 @@ public:
 	};
 	void InitializeFromBuffer(const uint8_t* buffer, size_t size);
 	void AddClassToRegistry(Zmey::Hash className, const uint8_t* buffer, size_t size);
-	EntityId SpawnActor(Zmey::Hash actorClass);
+	EntityId SpawnEntity(Zmey::Hash actorClass);
 	void Simulate(float deltaTime);
 private:
 	Zmey::EntityId m_First;

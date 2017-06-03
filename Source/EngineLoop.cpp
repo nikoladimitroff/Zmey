@@ -137,7 +137,7 @@ void EngineLoop::Run()
 		}
 		if (magicianClassId == -1)
 		{
-			m_World->SpawnActor(magicianHash);
+			m_World->SpawnEntity(magicianHash);
 		}
 
 		clock::time_point currentFrameTimestamp = clock::now();
