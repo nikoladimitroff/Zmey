@@ -67,4 +67,41 @@ void World::Simulate(float deltaTime)
 	}
 }
 
+
+void World::AddClassToRegistry(Zmey::Hash className, const uint8_t* buffer, size_t size)
+{
+	stl::vector<uint8_t> bufferContainer(size);
+	std::memcpy(&bufferContainer[0], buffer, size);
+	m_ClassRegistry[className] = std::move(bufferContainer);
+}
+
+EntityId World::SpawnActor(Zmey::Hash actorType)
+{
+	auto it = m_ClassRegistry.find(actorType);
+	ASSERT_FATAL(it != m_ClassRegistry.end());
+	auto entityId = m_EntityManager.SpawnOne();
+	auto tempScope = TempAllocator::GetTlsAllocator().ScopeNow();
+	tmp::vector<EntityId> entityVec = { entityId };
+
+	Zmey::MemoryInputStream stream(it->second.data(), it->second.size());
+	
+	tmp::small_string versionString;
+	stream >> versionString;
+	assert(versionString == "1.0");
+
+	uint64_t classNameHash;
+	stream >> classNameHash;
+
+	while (!stream.IsEOF())
+	{
+		// Read the next component
+		uint64_t componentHash;
+		stream >> componentHash;
+		auto managerEntry = Zmey::Components::GetComponentManager(componentHash);
+		// Tell the component to read its data
+		m_ComponentManagers[managerEntry.Index]->InitializeFromBlob(entityVec, stream);
+	}
+	return entityId;
+}
+
 }

@@ -16,6 +16,7 @@ public:
 	void Incinerate(const Options&);
 private:
 	void BuildClassIndex(const std::vector<std::string>& classFiles);
+	void IncinerateClass(const std::string& destinationFolder, const std::string& className);
 	void IncinerateWorld(const std::string& destinationFolder, const std::string& worldSectionPath);
 
 	struct ComponentEntry : public Zmey::Components::IDataBlob

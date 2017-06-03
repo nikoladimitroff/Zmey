@@ -14,8 +14,9 @@ namespace Components
 
 void RectangleManager::InitializeFromBlob(const tmp::vector<EntityId>& entities, Zmey::MemoryInputStream&)
 {
-	m_Entities.assign(entities.begin(), entities.end());
-	m_Rects.reserve(entities.size());
+	m_Entities.reserve(m_Entities.size() + entities.size());
+	std::copy(entities.begin(), entities.end(), std::back_inserter(m_Entities));
+	m_Rects.reserve(m_Rects.size() + entities.size());
 	for (EntityId::IndexType i = 0; i < entities.size(); i++)
 	{
 		Graphics::Rect rect{ 0.f, 0.f, 0.1f, 0.1f, { (float)rand() / RAND_MAX, (float)rand() / RAND_MAX , (float)rand() / RAND_MAX , 1.f} };

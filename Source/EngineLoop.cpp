@@ -61,6 +61,7 @@ public:
 	}
 };
 
+static ResourceId magicianClassId;
 EngineLoop::EngineLoop(const char* initialWorld)
 	: m_World(nullptr)
 {
@@ -68,6 +69,7 @@ EngineLoop::EngineLoop(const char* initialWorld)
 	Zmey::GLogHandler = StaticAlloc<StdOutLogHandler>();
 	Zmey::Modules::Initialize();
 	m_WorldResourceId = Modules::ResourceLoader->LoadResource(initialWorld);
+	magicianClassId = Modules::ResourceLoader->LoadResource("IncineratedDataCache/TestClass.bin");
 
 	Zmey::Components::ExportComponentsToScripting();
 
@@ -124,6 +126,18 @@ void EngineLoop::Run()
 		{
 			m_World = Modules::ResourceLoader->TakeOwnershipOver<World>(m_WorldResourceId);
 			Zmey::Chakra::Binding::ProjectGlobal(L"world", m_World, Zmey::Hash("world"));
+		}
+
+		Zmey::Hash magicianHash(Zmey::HashHelpers::CaseInsensitiveStringWrapper("magician"));
+		if (magicianClassId != -1 && Modules::ResourceLoader->IsResourceReady(magicianClassId))
+		{
+			auto vec = Modules::ResourceLoader->As<stl::vector<uint8_t>>(magicianClassId);
+			m_World->AddClassToRegistry(magicianHash, vec->data(), vec->size());
+			magicianClassId = -1;
+		}
+		if (magicianClassId == -1)
+		{
+			m_World->SpawnActor(magicianHash);
 		}
 
 		clock::time_point currentFrameTimestamp = clock::now();

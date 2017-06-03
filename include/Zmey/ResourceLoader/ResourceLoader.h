@@ -6,6 +6,11 @@ struct aiScene;
 
 namespace Zmey
 {
+enum class BinaryFileTypes : uint8_t
+{
+	ClassDescriptor,
+	WorldSection
+};
 class World;
 using ResourceId = unsigned;
 class ResourceLoader
@@ -52,6 +57,16 @@ public:
 		ASSERT_RETURN_VALUE(it != m_Worlds.end(), nullptr);
 		return it->second;
 	}
+	template<>
+	const stl::vector<uint8_t>* As<stl::vector<uint8_t>>(ResourceId id) const
+	{
+		auto it = std::find_if(m_BufferedData.begin(), m_BufferedData.end(), [id](const std::pair<ResourceId, const stl::vector<uint8_t>>& data)
+		{
+			return data.first == id;
+		});
+		ASSERT_RETURN_VALUE(it != m_BufferedData.end(), nullptr);
+		return &it->second;
+	}
 	template<typename T>
 	T* TakeOwnershipOver(ResourceId id)
 	{
@@ -65,11 +80,13 @@ private:
 	friend void OnResourceLoaded(ResourceLoader*, ResourceId, const aiScene*);
 	friend void OnResourceLoaded(ResourceLoader*, ResourceId, const tmp::string&);
 	friend void OnResourceLoaded(ResourceLoader*, ResourceId, const World*);
+	friend void OnResourceLoaded(ResourceLoader*, ResourceId, const stl::vector<uint8_t>&);
 
 	ResourceId m_NextId;
 	stl::vector<std::pair<ResourceId, Graphics::MeshHandle>> m_Meshes;
 	stl::vector<std::pair<ResourceId, const stl::string>> m_TextContents;
 	stl::vector<std::pair<ResourceId, const World*>> m_Worlds;
+	stl::vector<std::pair<ResourceId, const stl::vector<uint8_t>>> m_BufferedData;
 };
 
 }

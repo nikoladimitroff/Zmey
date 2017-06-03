@@ -1,6 +1,7 @@
 #pragma once
 #include <Zmey/Memory/MemoryManagement.h>
 #include <Zmey/EntityManager.h>
+#include <Zmey/Hash.h>
 #include <Zmey/Components/ComponentRegistryCommon.h>
 #include <Zmey/Components/ComponentManager.h>
 
@@ -30,11 +31,14 @@ public:
 		return m_First;
 	};
 	void InitializeFromBuffer(const uint8_t* buffer, size_t size);
+	void AddClassToRegistry(Zmey::Hash className, const uint8_t* buffer, size_t size);
+	EntityId SpawnActor(Zmey::Hash actorClass);
 	void Simulate(float deltaTime);
 private:
 	Zmey::EntityId m_First;
 	EntityManager m_EntityManager;
-	std::vector<Components::ComponentManager*> m_ComponentManagers;
+	stl::vector<Components::ComponentManager*> m_ComponentManagers;
+	stl::unordered_map<Zmey::Hash, stl::vector<uint8_t>> m_ClassRegistry;
 };
 
 }

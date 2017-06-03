@@ -54,6 +54,10 @@ void Incinerator::Incinerate(const Options& options)
 
 	auto classDescriptors = FindAllFiles(contentDir, classExtension);
 	BuildClassIndex(classDescriptors);
+	for (const auto& classDescriptorFile : classDescriptors)
+	{
+		IncinerateClass(compiledDir, "Magician");
+	}
 
 	auto mkdirResult = ::CreateDirectory(compiledDir.c_str(), NULL);
 	assert(mkdirResult != ERROR_PATH_NOT_FOUND);
@@ -110,6 +114,35 @@ void Incinerator::ComponentEntry::WriteData(Zmey::Hash nameHash, const uint8_t* 
 	PropertyData.insert_or_assign(nameHash, std::move(value));
 }
 
+void Incinerator::IncinerateClass(const std::string& destinationFolder, const std::string& className)
+{
+	Zmey::MemoryOutputStream memstream;
+	memstream << (char)0; // 0 for class descriptor marker; TODO REPLACE WITH ENUM
+	memstream << "1.0"; // Version
+	Zmey::Hash classNameHash(Zmey::HashHelpers::CaseInsensitiveStringWrapper(className.c_str()));
+	memstream << static_cast<uint64_t>(classNameHash);
+	for (const auto& fullComponentInfo : m_ClassIndex[className].Components)
+	{
+		Zmey::Hash componentNameHash(Zmey::HashHelpers::CaseInsensitiveStringWrapper(fullComponentInfo.ComponentName.c_str()));
+		memstream << static_cast<uint64_t>(componentNameHash);
+
+		size_t propertiesCountForComponent = fullComponentInfo.PropertyData.size();
+		// Iterate over all properties for this component
+		for (size_t i = 0; i < propertiesCountForComponent; i++)
+		{
+			// Write the data for each property, resulting in all data of the same property laid sequentially in memory
+			Zmey::Hash propertyHash = fullComponentInfo.PropertyInsertionOrder[i];
+			auto propertyIterator = fullComponentInfo.PropertyData.find(propertyHash);
+			assert(propertyIterator != fullComponentInfo.PropertyData.end());
+			const uint8_t* dataPtr = propertyIterator->second.data();
+			size_t dataSize = propertyIterator->second.size();
+			memstream.Write(dataPtr, dataSize);
+		}
+	}
+	std::ofstream outputFile(destinationFolder + "/TestClass.bin", std::ios::binary | std::ios::out);
+	outputFile.write(reinterpret_cast<const char*>(memstream.GetData()), memstream.GetDataSize());
+}
+
 void Incinerator::IncinerateWorld(const std::string& destinationFolder, const std::string& worldSectionPath)
 {
 	std::ifstream worldFile(worldSectionPath);
@@ -160,6 +193,7 @@ void Incinerator::IncinerateWorld(const std::string& destinationFolder, const st
 	}
 
 	Zmey::MemoryOutputStream memstream;
+	memstream << (char)1; // 1 for world marker; TODO REPLACE WITH ENUM
 	memstream << "1.0"; // Version
 	memstream << maxEntityIndex;
 	for (const auto& fullComponentInfo : entitiesForComponent)

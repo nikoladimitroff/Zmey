@@ -68,22 +68,23 @@ void TransformComponentToBlob(const nlohmann::json& rawJson, IDataBlob& blob)
 
 void TransformManager::InitializeFromBlob(const tmp::vector<EntityId>& entities, Zmey::MemoryInputStream& stream)
 {
-	m_Positions.resize(entities.size());
+	EntityId::IndexType currentEntities = static_cast<EntityId::IndexType>(m_Positions.size());
+	m_Positions.resize(currentEntities + entities.size());
 	size_t positionBufferLength = sizeof(Vector3) * entities.size();
-	stream.Read(reinterpret_cast<uint8_t*>(&m_Positions[0]), positionBufferLength);
+	stream.Read(reinterpret_cast<uint8_t*>(&m_Positions[currentEntities]), positionBufferLength);
 
-	m_Rotations.resize(entities.size());
+	m_Rotations.resize(currentEntities + entities.size());
 	size_t rotationBufferLength = sizeof(Quaternion) * entities.size();
-	stream.Read(reinterpret_cast<uint8_t*>(&m_Rotations[0]), rotationBufferLength);
+	stream.Read(reinterpret_cast<uint8_t*>(&m_Rotations[currentEntities]), rotationBufferLength);
 
-	m_Scales.resize(entities.size());
+	m_Scales.resize(currentEntities + entities.size());
 	size_t scaleBufferLength = sizeof(Vector3) * entities.size();
-	stream.Read(reinterpret_cast<uint8_t*>(&m_Scales[0]), scaleBufferLength);
+	stream.Read(reinterpret_cast<uint8_t*>(&m_Scales[currentEntities]), scaleBufferLength);
 
 	// Fill the entity map
 	for (EntityId::IndexType i = 0u; i < entities.size(); ++i)
 	{
-		m_EntityToIndex[entities[i]] = i;
+		m_EntityToIndex[entities[i]] = currentEntities + i;
 	}
 }
 
