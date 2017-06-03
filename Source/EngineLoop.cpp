@@ -70,6 +70,19 @@ EngineLoop::EngineLoop(const char* initialWorld)
 	m_WorldResourceId = Modules::ResourceLoader->LoadResource(initialWorld);
 
 	Zmey::Components::ExportComponentsToScripting();
+
+	Zmey::Modules::InputController->AddListenerForAction(Zmey::Hash("fire"), [](float axisValue)
+	{
+		FORMAT_LOG(Info, Temp, "Fire was called! axisValue: %f", axisValue);
+	});
+	Zmey::Modules::InputController->AddListenerForAction(Zmey::Hash("walk"), [](float axisValue)
+	{
+		FORMAT_LOG(Info, Temp, "walk was called! axisValue: %f", axisValue);
+	});
+	Zmey::Modules::InputController->AddListenerForAction(Zmey::Hash("circle"), [](float axisValue)
+	{
+		FORMAT_LOG(Info, Temp, "circl was called! axisValue: %f", axisValue);
+	});
 }
 void EngineLoop::Run()
 {
@@ -124,6 +137,7 @@ void EngineLoop::Run()
 		}
 
 		Modules::ScriptEngine->ExecuteNextFrame(deltaTime);
+		Modules::InputController->DispatchActionEventsForFrame();
 
 		tmp::vector<Graphics::Rect> rectsToDraw;
 		if (m_World)
