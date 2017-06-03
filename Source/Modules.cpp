@@ -13,6 +13,7 @@ Zmey::Graphics::RendererInterface* Renderer;
 Zmey::ResourceLoader* ResourceLoader;
 Zmey::IScriptEngine* ScriptEngine;
 Zmey::SettingsManager* SettingsManager;
+Zmey::InputController* InputController;
 
 void Initialize()
 {
@@ -24,6 +25,7 @@ void Initialize()
 	ResourceLoader = StaticAlloc<Zmey::ResourceLoader>();
 	ScriptEngine = StaticAlloc<Zmey::Chakra::ChakraScriptEngine>();
 	SettingsManager = StaticAlloc<Zmey::SettingsManager>();
+	InputController = StaticAlloc<Zmey::InputController>();
 }
 }
 }

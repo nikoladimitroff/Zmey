@@ -6,6 +6,7 @@
 #include <Zmey/ResourceLoader/ResourceLoader.h>
 #include <Zmey/Scripting/ScriptEngine.h>
 #include <Zmey/SettingsManager.h>
+#include <Zmey/InputController.h>
 
 namespace Zmey
 {
@@ -18,6 +19,7 @@ extern Graphics::RendererInterface* Renderer;
 extern Zmey::ResourceLoader* ResourceLoader;
 extern Zmey::IScriptEngine* ScriptEngine;
 extern Zmey::SettingsManager* SettingsManager;
+extern Zmey::InputController* InputController;
 
 void Initialize();
 }
