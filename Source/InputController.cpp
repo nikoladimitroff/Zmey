@@ -109,6 +109,7 @@ void ConvertKeynameToBinding(Zmey::Hash keyHash, ActionMapping::Binding& binding
 		CHECK_KEYNAME(GamepadButton, LeftTrigger);
 		CHECK_KEYNAME(GamepadButton, RightTrigger);
 
+		CHECK_KEYNAME(KeyboardButton, Space);
 		CHECK_KEYNAME(KeyboardButton, Digit0);
 		CHECK_KEYNAME(KeyboardButton, Digit1);
 		CHECK_KEYNAME(KeyboardButton, Digit2);
