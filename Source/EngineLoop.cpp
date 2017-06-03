@@ -71,17 +71,17 @@ EngineLoop::EngineLoop(const char* initialWorld)
 
 	Zmey::Components::ExportComponentsToScripting();
 
-	Zmey::Modules::InputController->AddListenerForAction(Zmey::Hash("fire"), [](float axisValue)
+	Zmey::Modules::InputController->AddListenerForAction(Zmey::Hash("movecam"), [](float axisValue)
 	{
-		FORMAT_LOG(Info, Temp, "Fire was called! axisValue: %f", axisValue);
+		FORMAT_LOG(Info, Temp, "movecam was called! axisValue: %f", axisValue);
+	});
+	Zmey::Modules::InputController->AddListenerForAction(Zmey::Hash("jump"), [](float axisValue)
+	{
+		FORMAT_LOG(Info, Temp, "jump was called! axisValue: %f", axisValue);
 	});
 	Zmey::Modules::InputController->AddListenerForAction(Zmey::Hash("walk"), [](float axisValue)
 	{
 		FORMAT_LOG(Info, Temp, "walk was called! axisValue: %f", axisValue);
-	});
-	Zmey::Modules::InputController->AddListenerForAction(Zmey::Hash("circle"), [](float axisValue)
-	{
-		FORMAT_LOG(Info, Temp, "circl was called! axisValue: %f", axisValue);
 	});
 }
 void EngineLoop::Run()
