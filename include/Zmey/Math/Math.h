@@ -15,4 +15,9 @@ using Vector4 = glm::vec4;
 using Quaternion = glm::quat;
 using Matrix4x4 = glm::mat4x4;
 
+inline bool FloatClose(float x, float y, float epsilon = 0.001f)
+{
+	return fabsf(x - y) < epsilon;
+}
+
 }
