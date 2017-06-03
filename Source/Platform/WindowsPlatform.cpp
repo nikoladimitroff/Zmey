@@ -1,10 +1,13 @@
 #include <Zmey/Config.h>
+#include <Zmey/Modules.h>
+
 #include "WindowsPlatform.h" // TODO(alex): should we include like this ? 
 
 
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include <Windows.h>
+#include <windowsx.h>
 
 LRESULT CALLBACK DefaultWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -16,6 +19,34 @@ LRESULT CALLBACK DefaultWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARA
 		PostQuitMessage(0);
 		return 0;
 	}
+	case WM_KEYDOWN:
+		Zmey::Modules::InputController->SetButtonPressed(static_cast<Zmey::KeyboardButton>(wParam), true);
+	break;
+	case WM_KEYUP:
+		Zmey::Modules::InputController->SetButtonPressed(static_cast<Zmey::KeyboardButton>(wParam), false);
+	break;
+	case WM_MOUSEMOVE:
+		Zmey::Modules::InputController->SetAxis(Zmey::MouseAxis::MouseX, static_cast<float>(GET_X_LPARAM(lParam)));
+		Zmey::Modules::InputController->SetAxis(Zmey::MouseAxis::MouseY, static_cast<float>(GET_Y_LPARAM(lParam)));
+	break;
+	case WM_LBUTTONDOWN:
+		Zmey::Modules::InputController->SetButtonPressed(Zmey::MouseButton::LeftButton, true);
+	break;
+	case WM_LBUTTONUP:
+		Zmey::Modules::InputController->SetButtonPressed(Zmey::MouseButton::LeftButton, false);
+	break;
+	case WM_RBUTTONDOWN:
+		Zmey::Modules::InputController->SetButtonPressed(Zmey::MouseButton::RightButton, true);
+	break;
+	case WM_RBUTTONUP:
+		Zmey::Modules::InputController->SetButtonPressed(Zmey::MouseButton::RightButton, false);
+	break;
+	case WM_MBUTTONDOWN:
+		Zmey::Modules::InputController->SetButtonPressed(Zmey::MouseButton::MiddleButton, true);
+	break;
+	case WM_MBUTTONUP:
+		Zmey::Modules::InputController->SetButtonPressed(Zmey::MouseButton::MiddleButton, false);
+	break;
 	}
 
 	return DefWindowProc(hWnd, message, wParam, lParam);
