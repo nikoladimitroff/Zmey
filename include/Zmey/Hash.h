@@ -2,9 +2,10 @@
 #include <stdint.h>
 #include <functional>
 
+#pragma warning(push)
+#pragma warning(disable: 4307) // Integral constant overflow
 namespace Zmey
 {
-
 struct Hash
 {
 	constexpr Hash(uint64_t value) : m_Value(value) {}
@@ -12,15 +13,15 @@ struct Hash
 	template<typename T>
 	constexpr Hash(T input) : m_Value(HashFor<T>(input)) {}
 
-	bool operator==(const Hash& other) const
+	constexpr bool operator==(const Hash& other) const
 	{
 		return m_Value == other.m_Value;
 	}
-	bool operator<(const Hash& other) const
+	constexpr bool operator<(const Hash& other) const
 	{
 		return m_Value < other.m_Value;
 	}
-	explicit operator uint64_t() const
+	constexpr explicit operator uint64_t() const
 	{
 		return m_Value;
 	}
@@ -38,7 +39,7 @@ constexpr uint64_t HashFor(T input)
 }
 
 template<>
-inline constexpr uint64_t HashFor<const char*>(const char* input)
+constexpr uint64_t HashFor<const char*>(const char* input)
 {
 	uint64_t hash = 0xcbf29ce484222325;
 	const uint64_t prime = 0x00000100000001b3;
@@ -63,6 +64,10 @@ struct CaseInsensitiveStringWrapper
 };
 }
 
+inline constexpr char ToLower(const char c)
+{
+	return (c >= 'A' && c <= 'Z') ? c + ('a' - 'A') : c;
+}
 template<>
 inline constexpr uint64_t HashFor<HashHelpers::CaseInsensitiveStringWrapper>(HashHelpers::CaseInsensitiveStringWrapper caseInsenstiveString)
 {
@@ -71,7 +76,7 @@ inline constexpr uint64_t HashFor<HashHelpers::CaseInsensitiveStringWrapper>(Has
 
 	const char* input = caseInsenstiveString.Input;
 	while (*input) {
-		hash ^= static_cast<uint64_t>(tolower(*input));
+		hash ^= static_cast<uint64_t>(ToLower(*input));
 		hash *= prime;
 		++input;
 	}
@@ -92,3 +97,5 @@ namespace std
 		}
 	};
 }
+
+#pragma warning(pop)
