@@ -149,6 +149,7 @@
     <ClInclude Include="..\..\include\Zmey\Graphics\ResourceHandles.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\View.h" />
     <ClInclude Include="..\..\include\Zmey\Hash.h" />
+    <ClInclude Include="..\..\include\Zmey\InputController.h" />
     <ClInclude Include="..\..\include\Zmey\SettingsManager.h" />
     <ClInclude Include="..\..\include\Zmey\Logging.h" />
     <ClInclude Include="..\..\include\Zmey\LogHandler.h" />
@@ -160,13 +161,13 @@
     <ClInclude Include="..\..\include\Zmey\Memory\PoolAllocator.h" />
     <ClInclude Include="..\..\include\Zmey\Memory\StlAllocator.h" />
     <ClInclude Include="..\..\include\Zmey\Modules.h" />
-    <ClInclude Include="..\..\include\Zmey\Platform\InputController.h" />
     <ClInclude Include="..\..\include\Zmey\Platform\Platform.h" />
     <ClInclude Include="..\..\include\Zmey\ResourceLoader\ResourceLoader.h" />
     <ClInclude Include="..\..\include\Zmey\Scripting\Binding.h" />
     <ClInclude Include="..\..\include\Zmey\Scripting\ScriptEngine.h" />
     <ClInclude Include="..\..\include\Zmey\Tasks\BlockingQueue.h" />
     <ClInclude Include="..\..\include\Zmey\Tasks\TaskSystem.h" />
+    <ClInclude Include="..\..\include\Zmey\Utilities.h" />
     <ClInclude Include="..\..\include\Zmey\World.h" />
     <ClInclude Include="..\..\Source\Platform\WindowsPlatform.h" />
     <ClInclude Include="..\..\Source\Scripting\ChakraScriptEngine.h" />
@@ -198,6 +199,7 @@
     <ClCompile Include="..\..\Source\Graphics\Managers\MeshManager.cpp" />
     <ClCompile Include="..\..\Source\Graphics\Renderer.cpp" />
     <ClCompile Include="..\..\Source\Graphics\View.cpp" />
+    <ClCompile Include="..\..\Source\InputController.cpp" />
     <ClCompile Include="..\..\Source\SettingsManager.cpp" />
     <ClCompile Include="..\..\Source\Logging.cpp" />
     <ClCompile Include="..\..\Source\Memory\MemoryManagement.cpp" />

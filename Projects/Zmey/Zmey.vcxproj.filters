@@ -239,10 +239,13 @@
     <ClInclude Include="..\..\include\Zmey\Graphics\Managers\BufferManager.h">
       <Filter>include\Graphics\Managers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Platform\InputController.h">
-      <Filter>include\Platform</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\Zmey\SettingsManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\InputController.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Utilities.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
@@ -324,6 +327,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\Graphics\View.cpp">
       <Filter>Source\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\InputController.cpp">
+      <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
