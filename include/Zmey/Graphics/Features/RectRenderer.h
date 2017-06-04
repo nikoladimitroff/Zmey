@@ -8,6 +8,8 @@
 
 namespace Zmey
 {
+
+class World;
 namespace Graphics
 {
 
@@ -16,7 +18,7 @@ namespace Features
 {
 namespace RectRenderer
 {
-void GatherData(FrameData& frameData, Rect* rects, uint64_t count);
+void GatherData(FrameData& frameData, World& world); //TODO(alex): make this const after there managers can be getted with constnest
 void PrepareData(FrameData& frameData);
 void GenerateCommands(FrameData& frameData, RenderPass pass, ViewType view, Backend::CommandList* cmdList, RendererData& data);
 };

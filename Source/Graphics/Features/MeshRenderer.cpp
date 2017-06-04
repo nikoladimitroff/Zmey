@@ -3,6 +3,8 @@
 #include <Zmey/Graphics/Features/MeshRenderer.h>
 #include <Zmey/Graphics/Backend/CommandList.h>
 #include <Zmey/Graphics/Renderer.h>
+#include <Zmey/World.h>
+#include <Zmey/Components/TransformManager.h>
 
 namespace Zmey
 {
@@ -11,12 +13,22 @@ namespace Graphics
 namespace Features
 {
 
-void MeshRenderer::GatherData(FrameData& frameData, MeshHandle handle)
+void MeshRenderer::GatherData(FrameData& frameData, World& world)
 {
-	frameData.MeshHandles.push_back(handle);
-	// TODO(alex): remove test code
-	Matrix4x4 meshTransform = glm::translate(Vector3(0.0f, -5.0f, 15.0f)) * glm::rotate(glm::radians(0.0f), Vector3(0.0f, 1.0f, 0.0f)) * glm::rotate(glm::radians(90.0f), Vector3(1.0f, 0.0f, 0.0f))  * glm::scale(Vector3(1.0f/10.0f, 1.0f/10.f, 1.0f / 10.0f));
-	frameData.MeshTransforms.push_back(meshTransform);
+	frameData.MeshHandles.reserve(world.Meshes.size());
+	frameData.MeshTransforms.reserve(world.Meshes.size());
+	auto& transformManager = world.GetManager<Components::TransformManager>();
+	for (const auto& meshes : world.Meshes)
+	{
+		frameData.MeshHandles.push_back(meshes.second);
+		const auto& transform = transformManager.Lookup(meshes.first);
+
+		frameData.MeshTransforms.push_back(
+			glm::translate(transform.Position()) *
+			glm::toMat4(transform.Rotation()) *
+			glm::scale(transform.Scale())
+		);
+	}
 }
 
 void MeshRenderer::PrepareData(FrameData& frameData, RendererData& data)

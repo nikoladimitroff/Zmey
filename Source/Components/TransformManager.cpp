@@ -16,10 +16,14 @@ TransformInstance& TransformManager::Lookup(EntityId id)
 
 void TransformManager::Simulate(float deltaTime)
 {
-	for (auto& pos : m_Positions)
-	{
-		pos += Vector3(0.05f, 0.05f, 0.05f) * deltaTime;
-	}
+}
+
+void TransformManager::AddNewEntity(EntityId id, Vector3 pos, Vector3 scale, Quaternion rot)
+{
+	m_Positions.push_back(pos);
+	m_Scales.push_back(scale);
+	m_Rotations.push_back(rot);
+	m_EntityToIndex[id] = unsigned(m_Positions.size() - 1);
 }
 
 void TransformComponentDefaults(IDataBlob& blob)

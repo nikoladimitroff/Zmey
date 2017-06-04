@@ -19,7 +19,7 @@ public:
 	virtual void InitializeFromBlob(const tmp::vector<EntityId>&, Zmey::MemoryInputStream&) override;
 	virtual void Simulate(float deltaTime) override;
 
-	tmp::vector<Graphics::Rect> GetRectsToRender() const;
+	const stl::vector<Graphics::Rect>& GetRectsToRender() const;
 private:
 	stl::vector<EntityId> m_Entities;
 	stl::vector<Graphics::Rect> m_Rects;

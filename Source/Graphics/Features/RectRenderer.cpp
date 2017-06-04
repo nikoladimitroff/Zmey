@@ -3,6 +3,8 @@
 #include <Zmey/Graphics/Features/RectRenderer.h>
 #include <Zmey/Graphics/Backend/CommandList.h>
 #include <Zmey/Graphics/Renderer.h>
+#include <Zmey/World.h>
+#include <Zmey/Components/RectangleManager.h>
 
 namespace Zmey
 {
@@ -11,10 +13,11 @@ namespace Graphics
 namespace Features
 {
 
-void RectRenderer::GatherData(FrameData& frameData, Rect* rects, uint64_t count)
+void RectRenderer::GatherData(FrameData& frameData, World& world)
 {
-	frameData.RectsToDraw.reserve(count);
-	std::copy(rects, rects + count, std::back_inserter(frameData.RectsToDraw));
+	const auto& rects = world.GetManager<Components::RectangleManager>().GetRectsToRender();
+	frameData.RectsToDraw.reserve(rects.size());
+	std::copy(rects.begin(), rects.end(), std::back_inserter(frameData.RectsToDraw));
 }
 
 void RectRenderer::PrepareData(FrameData& frameData)

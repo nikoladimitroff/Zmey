@@ -153,12 +153,20 @@ void EngineLoop::Run()
 		Modules::ScriptEngine->ExecuteNextFrame(deltaTime);
 		Modules::InputController->DispatchActionEventsForFrame();
 
-		tmp::vector<Graphics::Rect> rectsToDraw;
 		if (m_World)
 		{
 			m_World->Simulate(deltaTime);
-			rectsToDraw = m_World->GetManager<Zmey::Components::RectangleManager>().GetRectsToRender();
+
+			if (m_World->Meshes.empty() && Modules::ResourceLoader->IsResourceReady(meshId))
+			{
+				auto& entityManager = m_World->GetEntityManager();
+				auto newEntity = entityManager.SpawnOne();
+				m_World->Meshes.insert(std::make_pair(newEntity, *Modules::ResourceLoader->As<Graphics::MeshHandle>(meshId)));
+				auto& transformManager = m_World->GetManager<Components::TransformManager>();
+				transformManager.AddNewEntity(newEntity, Vector3(0.0f, -5.0f, 15.0f), Vector3(1.0f / 10.0f, 1.0f / 10.f, 1.0f / 10.0f), Quaternion(Vector3(glm::radians(90.0f), 0.0f, 0.0f)));
+			}
 		}
+
 		// Rendering stuff
 
 		// TODO: Compute visibility
@@ -168,11 +176,12 @@ void EngineLoop::Run()
 
 		frameData.FrameIndex = frameIndex++;
 		playerView.GatherData(frameData);
-		if (Modules::ResourceLoader->IsResourceReady(meshId))
+
+		if (m_World)
 		{
-			Graphics::Features::MeshRenderer::GatherData(frameData, *Modules::ResourceLoader->As<Graphics::MeshHandle>(meshId));
+			Graphics::Features::MeshRenderer::GatherData(frameData, *m_World);
+			Graphics::Features::RectRenderer::GatherData(frameData, *m_World);
 		}
-		Graphics::Features::RectRenderer::GatherData(frameData, rectsToDraw.data(), unsigned(rectsToDraw.size()));
 
 		// TODO: From this point graphics stuff should be on render thread
 		Modules::Renderer->RenderFrame(frameData);

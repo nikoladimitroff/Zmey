@@ -7,6 +7,8 @@
 
 namespace Zmey
 {
+
+class World;
 namespace Graphics
 {
 
@@ -15,7 +17,7 @@ namespace Features
 {
 namespace MeshRenderer
 {
-void GatherData(FrameData& frameData, MeshHandle handle); // TODO: add world state
+void GatherData(FrameData& frameData, World& world); //TODO(alex): make this const after there managers can be getted with constnest
 void PrepareData(FrameData& frameData, RendererData& data);
 void GenerateCommands(FrameData& frameData, RenderPass pass, ViewType view, Backend::CommandList* cmdList, RendererData& data);
 };

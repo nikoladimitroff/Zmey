@@ -4,6 +4,7 @@
 #include <Zmey/Hash.h>
 #include <Zmey/Components/ComponentRegistryCommon.h>
 #include <Zmey/Components/ComponentManager.h>
+#include <Zmey/Graphics/GraphicsObjects.h>
 
 namespace Zmey
 {
@@ -34,6 +35,9 @@ public:
 	void AddClassToRegistry(Zmey::Hash className, const uint8_t* buffer, size_t size);
 	EntityId SpawnEntity(Zmey::Hash actorClass);
 	void Simulate(float deltaTime);
+
+	// TODO(alex): remove this after we have an mesh component manager
+	stl::unordered_map<EntityId, Graphics::MeshHandle> Meshes;
 private:
 	Zmey::EntityId m_First;
 	EntityManager m_EntityManager;

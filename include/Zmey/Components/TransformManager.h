@@ -17,6 +17,7 @@ public:
 
 	struct TransformInstance& Lookup(EntityId);
 
+	void AddNewEntity(EntityId id, Vector3 pos, Vector3 scale, Quaternion rot);
 	virtual void InitializeFromBlob(const tmp::vector<EntityId>&, Zmey::MemoryInputStream&) override;
 	virtual void Simulate(float deltaTime) override;
 private:

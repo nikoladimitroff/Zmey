@@ -29,15 +29,17 @@ void RectangleManager::Simulate(float deltaTime)
 	for (EntityId::IndexType i = 0u; i < m_Entities.size(); i++)
 	{
 		auto transform = transformManager.Lookup(m_Entities[i]);
+
+		transform.Position() += Vector3(0.05f, 0.05f, 0.05f) * deltaTime;
+
 		m_Rects[i].x = transform.Position().x;
 		m_Rects[i].y = transform.Position().y;
 	}
 }
 
-tmp::vector<Graphics::Rect> RectangleManager::GetRectsToRender() const
+const stl::vector<Graphics::Rect>& RectangleManager::GetRectsToRender() const
 {
-	tmp::vector<Graphics::Rect> rects(m_Rects.begin(), m_Rects.end());
-	return rects;
+	return m_Rects;
 }
 
 
