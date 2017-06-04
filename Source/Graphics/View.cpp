@@ -26,6 +26,7 @@ void View::SetupProjection(unsigned width, unsigned height, float fov, float zne
 void View::GatherData(FrameData& data)
 {
 	data.Type = m_Type;
+	data.EyePosition = m_Position;
 	data.ProjectionMatrix = glm::perspectiveFov(m_Fov, float(m_Width), float(m_Height), m_ZNear, m_ZFar);
 	data.ViewMatrix = glm::lookAt(m_Position, m_LookAtTarget, m_UpDirection);
 }

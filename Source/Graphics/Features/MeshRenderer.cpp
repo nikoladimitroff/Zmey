@@ -38,6 +38,11 @@ void MeshRenderer::GenerateCommands(FrameData& frameData, RenderPass pass, ViewT
 
 	auto viewProjection = frameData.ProjectionMatrix * frameData.ViewMatrix;
 
+	Vector3 lightDir(-1.0, -1.0, 1.0);
+	lightDir = glm::normalize(lightDir);
+	list->SetPushConstants(data.MeshesPipelineState, 2 * sizeof(Matrix4x4), sizeof(Vector3), &lightDir);
+	list->SetPushConstants(data.MeshesPipelineState, 2 * sizeof(Matrix4x4) + sizeof(Vector3), sizeof(Vector3), &frameData.EyePosition);
+
 	for (auto i = 0u; i < frameData.MeshHandles.size(); ++i)
 	{
 		auto mesh = data.MeshManager.GetMesh(frameData.MeshHandles[i]);
@@ -51,6 +56,7 @@ void MeshRenderer::GenerateCommands(FrameData& frameData, RenderPass pass, ViewT
 
 		auto mat = viewProjection * frameData.MeshTransforms[i];
 		list->SetPushConstants(data.MeshesPipelineState, 0, sizeof(Matrix4x4), &mat);
+		list->SetPushConstants(data.MeshesPipelineState, sizeof(Matrix4x4), sizeof(Matrix4x4), &frameData.MeshTransforms[i]);
 
 		list->Draw(mesh->IndexCount, 1, 0, 0);
 	}

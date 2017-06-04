@@ -212,7 +212,7 @@ PipelineState* Dx12Backend::CreatePipelineState(const PipelineStateDesc& psDesc)
 	D3D12_ROOT_PARAMETER rootParam;
 	rootParam.ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
 	rootParam.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
-	rootParam.Constants.Num32BitValues = 16;
+	rootParam.Constants.Num32BitValues = 40;
 	rootParam.Constants.RegisterSpace = 0;
 	rootParam.Constants.ShaderRegister = 0;
 

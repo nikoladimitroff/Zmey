@@ -25,6 +25,7 @@ struct FrameData
 
 	// TODO(alex): handle multiple views
 	ViewType Type;
+	Vector3 EyePosition;
 	Matrix4x4 ProjectionMatrix;
 	Matrix4x4 ViewMatrix;
 	unsigned Width;

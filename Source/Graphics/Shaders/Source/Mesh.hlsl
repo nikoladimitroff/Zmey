@@ -9,30 +9,45 @@ struct VertexInput
 struct VertexOutput
 {
 	float4 Position : SV_POSITION;
-	float4 Color : COLOR0;
+	float3 WorldPosition : POSITION0;
+	float3 Normal : NORMAL0;
 };
 
 cbuffer VertexPushs : register(b0) PUSH_CONSTANT
 {
-	float4x4 ModelViewProjectionMatrix;
+	float4x4 WorldViewProjectionMatrix;
+	float4x4 WorldMatrix;
+	float3 LightDirection; // Directional Light
+	float3 EyePosition;
 };
 
 VertexOutput VertexShaderMain(VertexInput input)
 {
 	VertexOutput result;
-	const float3 LightDir = float3(1.0, 0.0, 0.0);
-	result.Position = mul(ModelViewProjectionMatrix, float4(input.Position, 1.0));
-	//result.Color = float4(input.Normal, 1.0);
-
-	// Simple diffuse lighting
-	result.Color = float4(1.0, 0.0, 0.0, 1.0);
-	result.Color *= dot(input.Normal, LightDir) * 2.0;
-	result.Color += float4(0.0, 1.0, 0.0, 1.0) * 0.05; // ambient
+	result.Position = mul(WorldViewProjectionMatrix, float4(input.Position, 1.0));
+	result.WorldPosition = mul(WorldMatrix, float4(input.Position, 1.0)).xyz;
+	result.Normal = normalize(mul(WorldMatrix, float4(input.Normal, 0.0)).xyz);
 
 	return result;
 }
 
 float4 PixelShaderMain(VertexOutput input) : SV_TARGET
 {
-	return input.Color;
+	// Simple diffuse lighting
+	float4 color = float4(0.75, 0.75, 0.75, 1.0);
+
+	// diffuse
+	float diffuseFactor = saturate(dot(input.Normal, -LightDirection));
+
+	// specular
+	float3 eyeDirection = normalize(EyePosition - input.WorldPosition);
+	float3 reflected = reflect(LightDirection, input.Normal);
+	float specularFactor = pow(saturate(dot(reflected, eyeDirection)), 24);
+
+	// ambient
+	float ambientFactor = 0.1;
+
+	return (color * diffuseFactor)
+		+ (color * specularFactor)
+		+ (color * ambientFactor);
 }
