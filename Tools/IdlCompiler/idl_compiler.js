@@ -45,6 +45,8 @@ class IdlCompiler {
     compileFiles(error, files) {
         const singleFileCompilationDestination = path.join(this.destDir, "ScriptingGlue.cpp");
         if (this.compileAsSingleFile) {
+            // Write to the file to make sure it's been created
+            fs.writeFileSync(singleFileCompilationDestination, "");
             fs.truncateSync(singleFileCompilationDestination, 0);
         }
         for (let file of files) {
