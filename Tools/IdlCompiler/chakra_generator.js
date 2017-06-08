@@ -186,13 +186,38 @@ JsValueRef CALLBACK Js${uniqueInterfaceName}Constructor(JsValueRef callee, bool 
 `;
         return cppCode;
     }
-
+    generateReturnTypeDeclarations(returnType) {
+        if (Common.getTypeEnumOfAnyType(returnType)) {
+            return ""; // Nothing to do for any
+        }
+        switch (returnType) {
+            case "float":
+            case "double":
+            case "Zmey::EntityId":
+            case "int":
+            case "string":
+            case "long":
+                return ""; // Nothing to do;
+            default:
+                const uniqueInterfaceName = Common.convertQualifiedToUniqueTypename(returnType);
+                const prototypeDeclarations =  `extern ${this.generatePrototypeDefinition(uniqueInterfaceName)};`;
+                const protototypeSetupDeclarations = this.generatePropertiesSetupMethodSignature(uniqueInterfaceName) + ";";
+                const code =
+`
+${prototypeDeclarations}
+${protototypeSetupDeclarations}
+`
+                return code;
+        }
+    }
     generateMethod(qualifiedName, uniqueInterfaceName, returnType, methodName, argList, attributes) {
         const argParsingCode = this.generateParserForArgList(argList);
         const cppMethodName = attributes.nameAsIs ? methodName : methodName[0].toUpperCase() + methodName.slice(1);
         const callCode = this.generateCallCode(returnType, cppMethodName, argList);
+        const returnTypeDeclarations = this.generateReturnTypeDeclarations(returnType);
         const cppCode =
 `
+${returnTypeDeclarations}
 JsValueRef CALLBACK Js${uniqueInterfaceName}${methodName}(JsValueRef callee, bool isConstructCall, JsValueRef *arguments, unsigned short argumentCount, void *callbackState)
 {
 	assert(!isConstructCall && argumentCount == ${argList.length + 1});
@@ -253,6 +278,9 @@ JsValueRef CALLBACK Js${uniqueInterfaceName}${name}Setter(JsValueRef callee, boo
 `;
         return cppCode;
     }
+    generatePropertiesSetupMethodSignature(uniqueInterfaceName) {
+        return `void Js${uniqueInterfaceName}DefineProperties(JsValueRef object)`;
+    }
     generatePropertiesSetup(uniqueInterfaceName, propertyList) {
         const propertiesGeneratorCode = propertyList.map(p => {
             const getterName = `Js${uniqueInterfaceName}${p.name}Getter`;
@@ -264,7 +292,7 @@ JsValueRef CALLBACK Js${uniqueInterfaceName}${name}Setter(JsValueRef callee, boo
         }).join(os.EOL + "\t");
         const cppCode =
 `
-void Js${uniqueInterfaceName}DefineProperties(JsValueRef object)
+${this.generatePropertiesSetupMethodSignature(uniqueInterfaceName)}
 {
 	${propertiesGeneratorCode}
 }
