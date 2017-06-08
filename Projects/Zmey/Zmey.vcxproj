@@ -75,6 +75,9 @@
     <PostBuildEvent>
       <Message>Copying third party dependencies</Message>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>node prebuild.js $(OutputPath)</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -104,6 +107,9 @@
     <PostBuildEvent>
       <Message>Copying third party dependencies</Message>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>node prebuild.js $(OutputPath)</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\Zmey\Components\ComponentManager.h" />
