@@ -1,27 +1,28 @@
 #pragma once
 #include <string>
 #include <stdio.h>
+#include <Zmey/Config.h>
 #include <Zmey/LogHandler.h>
 
 namespace Zmey
 {
-extern Zmey::ILogHandler* GLogHandler;
+ZMEY_API extern Zmey::ILogHandler* GLogHandler;
 }
 
 #define LOG(Severity, Channel, Message) \
 	do \
 	{ \
-		GLogHandler->WriteLog(Zmey::LogSeverity::##Severity, #Channel, Message); \
+		Zmey::GLogHandler->WriteLog(Zmey::LogSeverity::##Severity, #Channel, Message); \
 	} \
 	while(0, 0)
 
 #define FORMAT_LOG(Severity, Channel, Message, ...) \
 	do \
 	{ \
-		auto scope = TempAllocator::GetTlsAllocator().ScopeNow(); \
-		tmp::string buffer(sizeof(Message) * 5, '\0'); \
+		auto scope = Zmey::TempAllocator::GetTlsAllocator().ScopeNow(); \
+		Zmey::tmp::string buffer(sizeof(Message) * 5, '\0'); \
 		sprintf_s(&buffer[0], sizeof(Message) * 5, Message, __VA_ARGS__); \
-		GLogHandler->WriteLog(Zmey::LogSeverity::##Severity, #Channel, buffer.c_str()); \
+		Zmey::GLogHandler->WriteLog(Zmey::LogSeverity::##Severity, #Channel, buffer.c_str()); \
 	}\
 	while(0, 0)
 

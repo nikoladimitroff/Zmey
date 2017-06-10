@@ -142,8 +142,8 @@ class InputController
 public:
 	InputController();
 	void DispatchActionEventsForFrame();
-	void AddListenerForAction(Zmey::Hash actionName, InputActionDelegate actionHandler);
-	void RemoveListenerForAction(Zmey::Hash actionName, InputActionDelegate actionHandler);
+	ZMEY_API void AddListenerForAction(Zmey::Hash actionName, InputActionDelegate actionHandler);
+	ZMEY_API void RemoveListenerForAction(Zmey::Hash actionName, InputActionDelegate actionHandler);
 
 	inline void SetButtonPressed(MouseButton button, bool isPressed)
 	{

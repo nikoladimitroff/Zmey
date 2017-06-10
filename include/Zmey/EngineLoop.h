@@ -6,15 +6,15 @@
 namespace Zmey
 {
 
-class EngineLoop
+class ZMEY_API EngineLoop
 {
 public:
-	ZMEY_API EngineLoop(const char* initialWorld);
-	ZMEY_API void Run();
-	ZMEY_API ~EngineLoop();
+	EngineLoop(class Game* game);
+	void Run();
+	~EngineLoop();
 private:
 	class World* m_World;
-	Zmey::Name m_WorldResource;
+	class Game* m_Game;
 };
 
 }

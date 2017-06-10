@@ -40,6 +40,7 @@ inline T* StaticAlloc()
 }
 
 constexpr size_t tls_TempAllocatorSize = 4 * 1024 * 1024; // 4MB
+extern template class ThreadLocalLinearAllocator<tls_TempAllocatorSize>;
 using TempAllocator = ThreadLocalLinearAllocator<tls_TempAllocatorSize>;
 
 using ArraySizeType = unsigned;

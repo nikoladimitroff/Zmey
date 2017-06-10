@@ -46,10 +46,10 @@ private:
 class EntityManager
 {
 public:
-	EntityId SpawnOne();
-	tmp::vector<EntityId> SpawnRange(EntityId::IndexType count);
-	void Destroy(EntityId);
-	bool IsAlive(EntityId);
+	ZMEY_API EntityId SpawnOne();
+	ZMEY_API tmp::vector<EntityId> SpawnRange(EntityId::IndexType count);
+	ZMEY_API void Destroy(EntityId);
+	ZMEY_API bool IsAlive(EntityId);
 private:
 	stl::vector<uint16_t> m_Generation;
 	stl::queue<uint_fast32_t> m_FreeIndices;

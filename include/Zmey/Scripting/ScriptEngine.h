@@ -5,7 +5,7 @@
 namespace Zmey
 {
 
-class IScriptEngine
+class ZMEY_API IScriptEngine
 {
 public:
 	virtual ~IScriptEngine() {}

@@ -54,35 +54,37 @@ public:
 	// Starts loading the resource at the given path.
 	// @return The name of the resource which can also be acquired via Zmey::Name::Name()
 	// but this function returns it for easier usage.
-	Zmey::Name LoadResource(const stl::string& path);
-	bool IsResourceReady(Zmey::Name pathHash);
+	ZMEY_API Zmey::Name LoadResource(const stl::string& path);
+	ZMEY_API bool IsResourceReady(Zmey::Name pathHash);
+	ZMEY_API void WaitForResource(Zmey::Name name);
 
 	// Use non-template methods for public access so as the client doesn't have to wonder
 	// what exact type should he pass in the templated function.
 
-	const Graphics::MeshHandle* AsMeshHandle(Zmey::Name name) const
+	ZMEY_API const Graphics::MeshHandle* AsMeshHandle(Zmey::Name name) const
 	{
 		return FindResourceInCollection(name, m_Meshes);
 	}
-	const World* AsWorld(Zmey::Name name) const
+	ZMEY_API const World* AsWorld(Zmey::Name name) const
 	{
-		return *FindResourceInCollection(name, m_Worlds);
+		World* const* world = FindResourceInCollection(name, m_Worlds);
+		return world ? *world : nullptr;
 	}
-	const stl::vector<uint8_t>* AsBuffer(Zmey::Name name) const
+	ZMEY_API const stl::vector<uint8_t>* AsBuffer(Zmey::Name name) const
 	{
 		return FindResourceInCollection(name, m_BufferedData);
 	}
-	const stl::string* AsText(Zmey::Name name) const
+	ZMEY_API const stl::string* AsText(Zmey::Name name) const
 	{
 		return FindResourceInCollection(name, m_TextContents);
 	}
-	void ReleaseOwnershipOver(Zmey::Name);
-	void FreeResource(Zmey::Name name);
+	ZMEY_API void ReleaseOwnershipOver(Zmey::Name);
+	ZMEY_API void FreeResource(Zmey::Name name);
 private:
 	template<typename T>
-	bool TryFreeFromCollection(Zmey::Name name, stl::vector<std::pair<Zmey::Name, T>> collection);
+	bool TryFreeFromCollection(Zmey::Name name, stl::vector<std::pair<Zmey::Name, T>>& collection);
 	template<typename T>
-	bool ResourceExistsInCollection(Zmey::Name name, stl::vector<std::pair<Zmey::Name, T>> collection);
+	bool ResourceExistsInCollection(Zmey::Name name, const stl::vector<std::pair<Zmey::Name, T>>& collection);
 	// Callback for the task system
 	friend void OnResourceLoaded(ResourceLoader*, Zmey::Name, const aiScene*);
 	friend void OnResourceLoaded(ResourceLoader*, Zmey::Name, const tmp::string&);

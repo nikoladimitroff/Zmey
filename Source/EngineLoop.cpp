@@ -8,6 +8,7 @@
 #include <Zmey/Logging.h>
 #include <Zmey/Modules.h>
 #include <Zmey/World.h>
+#include <Zmey/Game.h>
 #include <Zmey/Components/ComponentRegistry.h>
 #include <Zmey/Components/TransformManager.h>
 #include <Zmey/Components/RectangleManager.h>
@@ -61,30 +62,16 @@ public:
 	}
 };
 
-EngineLoop::EngineLoop(const char* initialWorld)
+EngineLoop::EngineLoop(Game* game)
 	: m_World(nullptr)
-	, m_WorldResource(initialWorld)
+	, m_Game(game)
 {
 	Zmey::GAllocator = StaticAlloc<MallocAllocator>();
 	Zmey::GLogHandler = StaticAlloc<StdOutLogHandler>();
 	Zmey::Modules::Initialize();
-	Modules::ResourceLoader->LoadResource(initialWorld);
-
 	Zmey::Components::ExportComponentsToScripting();
-
-	Zmey::Modules::InputController->AddListenerForAction(Zmey::Hash("movecam"), [](float axisValue)
-	{
-		FORMAT_LOG(Info, Temp, "movecam was called! axisValue: %f", axisValue);
-	});
-	Zmey::Modules::InputController->AddListenerForAction(Zmey::Hash("jump"), [](float axisValue)
-	{
-		FORMAT_LOG(Info, Temp, "jump was called! axisValue: %f", axisValue);
-	});
-	Zmey::Modules::InputController->AddListenerForAction(Zmey::Hash("walk"), [](float axisValue)
-	{
-		FORMAT_LOG(Info, Temp, "walk was called! axisValue: %f", axisValue);
-	});
 }
+
 void EngineLoop::Run()
 {
 	// TODO(alex): get this params from somewhere
@@ -102,14 +89,19 @@ void EngineLoop::Run()
 	using clock = std::chrono::high_resolution_clock;
 	clock::time_point lastFrameTmestamp = clock::now();
 
-	Zmey::Name meshName = Modules::ResourceLoader->LoadResource("Content\\Meshes\\Vampire_A_Lusth\\Vampire_A_Lusth.dae");
-
 	// Create main Player view
 	Graphics::View playerView(Graphics::ViewType::PlayerView);
 	playerView.SetupProjection(width, height, glm::radians(60.0f), 0.1f, 1000.0f);
 	playerView.SetupView(Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f));
 
-	auto scriptName = Modules::ResourceLoader->LoadResource("Content\\Scripts\\main.js");
+	Zmey::Name worldName = m_Game->Initialize();
+	Modules::ResourceLoader->WaitForResource(worldName);
+	const World* world = Modules::ResourceLoader->AsWorld(worldName);
+	Modules::ResourceLoader->ReleaseOwnershipOver(worldName);
+	m_World = const_cast<World*>(world);
+	Zmey::Chakra::Binding::ProjectGlobal(L"world", m_World, Zmey::Hash("world"));
+	m_Game->SetWorld(m_World);
+
 	while (g_Run)
 	{
 		auto frameScope = TempAllocator::GetTlsAllocator().ScopeNow();
@@ -121,41 +113,15 @@ void EngineLoop::Run()
 			Modules::Platform->PumpMessages(windowHandle);
 		}
 
-		if (!m_World && Modules::ResourceLoader->IsResourceReady(m_WorldResource))
-		{
-			const World* world = Modules::ResourceLoader->AsWorld(m_WorldResource);
-			Modules::ResourceLoader->ReleaseOwnershipOver(m_WorldResource);
-			m_World = const_cast<World*>(world);
-
-			Zmey::Chakra::Binding::ProjectGlobal(L"world", m_World, Zmey::Hash("world"));
-		}
-
 		clock::time_point currentFrameTimestamp = clock::now();
 		clock::duration timeSinceLastFrame = currentFrameTimestamp - lastFrameTmestamp;
 		float deltaTime = timeSinceLastFrame.count() * 1e-9f;
-	
-		if (Modules::ResourceLoader->IsResourceReady(scriptName))
-		{
-			Modules::ScriptEngine->ExecuteFromFile(scriptName);
-			Modules::ResourceLoader->FreeResource(scriptName);
-		}
 
 		Modules::ScriptEngine->ExecuteNextFrame(deltaTime);
 		Modules::InputController->DispatchActionEventsForFrame();
 
-		if (m_World)
-		{
-			m_World->Simulate(deltaTime);
-
-			if (m_World->Meshes.empty() && Modules::ResourceLoader->IsResourceReady(meshName))
-			{
-				auto& entityManager = m_World->GetEntityManager();
-				auto newEntity = entityManager.SpawnOne();
-				m_World->Meshes.insert(std::make_pair(newEntity, *Modules::ResourceLoader->AsMeshHandle(meshName)));
-				auto& transformManager = m_World->GetManager<Components::TransformManager>();
-				transformManager.AddNewEntity(newEntity, Vector3(0.0f, -5.0f, 15.0f), Vector3(1.0f / 10.0f, 1.0f / 10.f, 1.0f / 10.0f), Quaternion(Vector3(glm::radians(90.0f), 0.0f, 0.0f)));
-			}
-		}
+		m_Game->Simulate(deltaTime);
+		m_World->Simulate(deltaTime);
 
 		// Rendering stuff
 

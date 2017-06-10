@@ -50,7 +50,7 @@ namespace Components
 	}
 
 #define DEFINE_COMPONENT_MANAGER(Class, ShortName, DefaultsToBlob, ToBlob) \
-	const ComponentIndex Class##::SZmeyComponentManagerIndex = GetNextComponentManagerIndex(); \
+	ZMEY_API const ComponentIndex Class##::SZmeyComponentManagerIndex = GetNextComponentManagerIndex(); \
 	static Zmey::Components::ComponentManagerEntry G##ShortName##ComponentManagerRegistration(#Class, #ShortName, \
 		Class##::SZmeyComponentManagerIndex, \
 		&InstantiateManager<##Class##>, \

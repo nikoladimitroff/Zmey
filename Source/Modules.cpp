@@ -7,13 +7,13 @@ namespace Zmey
 {
 namespace Modules
 {
-Zmey::TaskSystem<4>* TaskSystem;
-Zmey::IPlatform* Platform;
-Zmey::Graphics::RendererInterface* Renderer;
-Zmey::ResourceLoader* ResourceLoader;
-Zmey::IScriptEngine* ScriptEngine;
-Zmey::SettingsManager* SettingsManager;
-Zmey::InputController* InputController;
+ZMEY_API Zmey::TaskSystem<4>* TaskSystem;
+ZMEY_API Zmey::IPlatform* Platform;
+ZMEY_API Zmey::Graphics::RendererInterface* Renderer;
+ZMEY_API Zmey::ResourceLoader* ResourceLoader;
+ZMEY_API Zmey::IScriptEngine* ScriptEngine;
+ZMEY_API Zmey::SettingsManager* SettingsManager;
+ZMEY_API Zmey::InputController* InputController;
 
 void Initialize()
 {

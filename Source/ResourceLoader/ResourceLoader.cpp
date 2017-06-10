@@ -56,7 +56,7 @@ void ResourceLoader::ReleaseOwnershipOver(Zmey::Name name)
 	Function(Name, m_BufferedData)
 
 template<typename T>
-bool ResourceLoader::ResourceExistsInCollection(Zmey::Name name, stl::vector<std::pair<Zmey::Name, T>> collection)
+bool ResourceLoader::ResourceExistsInCollection(Zmey::Name name, const stl::vector<std::pair<Zmey::Name, T>>& collection)
 {
 	return FindResourceIteratorInCollection(name, collection) != collection.end();
 }
@@ -67,7 +67,7 @@ bool ResourceLoader::IsResourceReady(Zmey::Name name)
 }
 
 template<typename T>
-bool ResourceLoader::TryFreeFromCollection(Zmey::Name name, stl::vector<std::pair<Zmey::Name, T>> collection)
+bool ResourceLoader::TryFreeFromCollection(Zmey::Name name, stl::vector<std::pair<Zmey::Name, T>>& collection)
 {
 	auto it = FindResourceIteratorInCollection(name, collection);
 	if (it != collection.end())
@@ -82,6 +82,12 @@ bool ResourceLoader::TryFreeFromCollection(Zmey::Name name, stl::vector<std::pai
 void ResourceLoader::FreeResource(Zmey::Name name)
 {
 	FIRST_IN_ALL_RESOURCE_COLLECTIONS(TryFreeFromCollection, name);
+}
+
+void ResourceLoader::WaitForResource(Zmey::Name name)
+{
+	while (!IsResourceReady(name))
+	{}
 }
 
 void OnResourceLoaded(ResourceLoader* loader, Zmey::Name name, const aiScene* scene)

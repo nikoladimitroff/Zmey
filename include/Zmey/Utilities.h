@@ -43,5 +43,32 @@ inline bool EndsWith(const std::basic_string<CharType, std::char_traits<CharType
 	return EndsWith(value, ending);
 }
 
+template<typename T>
+class ConstructorInitializable
+{
+public:
+	ConstructorInitializable()
+		: m_IsInitialized(false)
+	{}
+	T& operator=(const T& other)
+	{
+		assert(!m_IsInitialized);
+		std::memcpy(m_Buffer, &other, sizeof(T));
+		m_IsInitialized = true;
+		return *this;
+	}
+	inline operator T&()
+	{
+		return reinterpret_cast<T&>(m_Buffer);
+	}
+	inline operator const T&() const
+	{
+		return reinterpret_cast<T&>(m_Buffer);
+	}
+private:
+	char m_Buffer[sizeof(T)];
+	bool m_IsInitialized : 1;
+};
+
 }
 }

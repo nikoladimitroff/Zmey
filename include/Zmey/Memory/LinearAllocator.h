@@ -25,7 +25,7 @@ public:
 	}
 	inline void* Realloc(void* ptr, size_t newSize)
 	{
-		auto copy = Malloc(newSize);
+		auto copy = Malloc(newSize, 0);
 		std::memcpy(copy, ptr, newSize);
 		Free(ptr);
 		return copy;
@@ -78,19 +78,19 @@ class ThreadLocalLinearAllocator
 {
 public:
 	inline void Initialize() {}
-	inline void* Malloc(size_t size, unsigned alignment)
+	ZMEY_API inline void* Malloc(size_t size, unsigned alignment)
 	{
 		return tls_Alloc.Malloc(size, alignment);
 	}
-	inline void Free(void* ptr)
+	ZMEY_API inline void Free(void* ptr)
 	{
 		return tls_Alloc.Free(ptr);
 	}
-	inline void* Realloc(void* ptr, size_t newSize)
+	ZMEY_API inline void* Realloc(void* ptr, size_t newSize)
 	{
 		return tls_Alloc.Realloc(ptr, newSize);
 	}
-	static inline LinearAllocator<Capacity>& GetTlsAllocator()
+	ZMEY_API static LinearAllocator<Capacity>& GetTlsAllocator()
 	{
 		return tls_Alloc;
 	}

@@ -8,7 +8,7 @@ let nextFrame = function (delta) {
     let transform = transformManager.lookup(world.getFirstEntity());
     let posy = new Vector3(0.1, 0, 0);
     //posy.x = 0.2;
-    const pozz = transform.position();
+    let pozz = transform.position();
     //console.log(pozz.x, "|", JSON.stringify(posy.x));
     pozz.x = 0.1;
     //console.log(JSON.stringify(transform.position()));

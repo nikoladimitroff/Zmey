@@ -3,8 +3,9 @@
 
 namespace Zmey
 {
-Zmey::IAllocator* GAllocator = nullptr;
+ZMEY_API Zmey::IAllocator* GAllocator = nullptr;
 Zmey::StaticDataAllocator<1024 * 8> GStaticDataAllocator;
+template class ThreadLocalLinearAllocator<tls_TempAllocatorSize>;
 thread_local Zmey::LinearAllocator<tls_TempAllocatorSize> Zmey::TempAllocator::tls_Alloc;
 }
 

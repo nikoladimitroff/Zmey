@@ -1,6 +1,7 @@
+#include <Zmey/Config.h>
 #include <Zmey/LogHandler.h>
 
 namespace Zmey
 {
-	Zmey::ILogHandler* GLogHandler;
+ZMEY_API Zmey::ILogHandler* GLogHandler;
 }

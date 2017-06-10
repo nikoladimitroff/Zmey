@@ -120,6 +120,7 @@
     <ClInclude Include="..\..\include\Zmey\Config.h" />
     <ClInclude Include="..\..\include\Zmey\EngineLoop.h" />
     <ClInclude Include="..\..\include\Zmey\EntityManager.h" />
+    <ClInclude Include="..\..\include\Zmey\Game.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Backend.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\Backend\BackendDeclarations.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\Backend\CommandList.h" />
