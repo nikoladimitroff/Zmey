@@ -39,12 +39,21 @@ ResourceLoader::~ResourceLoader()
 
 void ResourceLoader::ReleaseOwnershipOver(Zmey::Name name)
 {
-	//auto it = m_Resources.find(name);
-	//if (it != m_Resources.end())
-	//{
-	//	m_Resources.erase(it);
-	//}
+	// TODO: implement for other types
+	auto it = std::find_if(m_Worlds.begin(), m_Worlds.end(), [name](const std::pair<Zmey::Name, const World*>& data)
+	{
+		return data.first == name;
+	});
+	if (it != m_Worlds.end())
+	{
+		m_Worlds.erase(it);
+	}
 }
+#define FIRST_IN_ALL_RESOURCE_COLLECTIONS(Function, Name) \
+	Function(Name, m_Meshes) || \
+	Function(Name, m_TextContents) || \
+	Function(Name, m_Worlds) || \
+	Function(Name, m_BufferedData)
 
 template<typename T>
 bool ResourceLoader::ResourceExistsInCollection(Zmey::Name name, stl::vector<std::pair<Zmey::Name, T>> collection)
@@ -54,10 +63,7 @@ bool ResourceLoader::ResourceExistsInCollection(Zmey::Name name, stl::vector<std
 
 bool ResourceLoader::IsResourceReady(Zmey::Name name)
 {
-	return ResourceExistsInCollection(name, m_Meshes) ||
-		ResourceExistsInCollection(name, m_TextContents) ||
-		ResourceExistsInCollection(name, m_Worlds) ||
-		ResourceExistsInCollection(name, m_BufferedData);
+	return FIRST_IN_ALL_RESOURCE_COLLECTIONS(ResourceExistsInCollection, name);
 }
 
 template<typename T>
@@ -75,10 +81,7 @@ bool ResourceLoader::TryFreeFromCollection(Zmey::Name name, stl::vector<std::pai
 }
 void ResourceLoader::FreeResource(Zmey::Name name)
 {
-	TryFreeFromCollection(name, m_Meshes) ||
-		TryFreeFromCollection(name, m_TextContents) ||
-		TryFreeFromCollection(name, m_Worlds) ||
-		TryFreeFromCollection(name, m_BufferedData);
+	FIRST_IN_ALL_RESOURCE_COLLECTIONS(TryFreeFromCollection, name);
 }
 
 void OnResourceLoaded(ResourceLoader* loader, Zmey::Name name, const aiScene* scene)
@@ -166,3 +169,5 @@ Zmey::Name ResourceLoader::LoadResource(const stl::string& path)
 }
 
 }
+
+#undef FIRST_IN_ALL_RESOURCE_COLLECTIONS
