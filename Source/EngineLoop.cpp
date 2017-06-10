@@ -61,15 +61,14 @@ public:
 	}
 };
 
-static ResourceId magicianClassId;
 EngineLoop::EngineLoop(const char* initialWorld)
 	: m_World(nullptr)
+	, m_WorldResource(initialWorld)
 {
 	Zmey::GAllocator = StaticAlloc<MallocAllocator>();
 	Zmey::GLogHandler = StaticAlloc<StdOutLogHandler>();
 	Zmey::Modules::Initialize();
-	m_WorldResourceId = Modules::ResourceLoader->LoadResource(initialWorld);
-	magicianClassId = Modules::ResourceLoader->LoadResource("IncineratedDataCache/TestClass.bin");
+	Modules::ResourceLoader->LoadResource(initialWorld);
 
 	Zmey::Components::ExportComponentsToScripting();
 
@@ -103,14 +102,14 @@ void EngineLoop::Run()
 	using clock = std::chrono::high_resolution_clock;
 	clock::time_point lastFrameTmestamp = clock::now();
 
-	auto meshId = Modules::ResourceLoader->LoadResource("Content\\Meshes\\Vampire_A_Lusth\\Vampire_A_Lusth.dae");
+	Zmey::Name meshName = Modules::ResourceLoader->LoadResource("Content\\Meshes\\Vampire_A_Lusth\\Vampire_A_Lusth.dae");
 
 	// Create main Player view
 	Graphics::View playerView(Graphics::ViewType::PlayerView);
 	playerView.SetupProjection(width, height, glm::radians(60.0f), 0.1f, 1000.0f);
 	playerView.SetupView(Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f));
 
-	auto scriptId = Modules::ResourceLoader->LoadResource("Content\\Scripts\\main.js");
+	auto scriptName = Modules::ResourceLoader->LoadResource("Content\\Scripts\\main.js");
 	while (g_Run)
 	{
 		auto frameScope = TempAllocator::GetTlsAllocator().ScopeNow();
@@ -122,32 +121,23 @@ void EngineLoop::Run()
 			Modules::Platform->PumpMessages(windowHandle);
 		}
 
-		if (!m_World && Modules::ResourceLoader->IsResourceReady(m_WorldResourceId))
+		if (!m_World && Modules::ResourceLoader->IsResourceReady(m_WorldResource))
 		{
-			m_World = Modules::ResourceLoader->TakeOwnershipOver<World>(m_WorldResourceId);
-			Zmey::Chakra::Binding::ProjectGlobal(L"world", m_World, Zmey::Hash("world"));
-		}
+			const World* world = Modules::ResourceLoader->AsWorld(m_WorldResource);
+			Modules::ResourceLoader->ReleaseOwnershipOver(m_WorldResource);
+			m_World = const_cast<World*>(world);
 
-		Zmey::Hash magicianHash(Zmey::HashHelpers::CaseInsensitiveStringWrapper("magician"));
-		if (magicianClassId != -1 && Modules::ResourceLoader->IsResourceReady(magicianClassId))
-		{
-			auto vec = Modules::ResourceLoader->As<stl::vector<uint8_t>>(magicianClassId);
-			m_World->AddClassToRegistry(magicianHash, vec->data(), vec->size());
-			magicianClassId = -1;
-		}
-		if (magicianClassId == -1)
-		{
-			m_World->SpawnEntity(magicianHash);
+			Zmey::Chakra::Binding::ProjectGlobal(L"world", m_World, Zmey::Hash("world"));
 		}
 
 		clock::time_point currentFrameTimestamp = clock::now();
 		clock::duration timeSinceLastFrame = currentFrameTimestamp - lastFrameTmestamp;
 		float deltaTime = timeSinceLastFrame.count() * 1e-9f;
 	
-		if (Modules::ResourceLoader->IsResourceReady(scriptId))
+		if (Modules::ResourceLoader->IsResourceReady(scriptName))
 		{
-			Modules::ScriptEngine->ExecuteFromFile(scriptId);
-			scriptId = -1;
+			Modules::ScriptEngine->ExecuteFromFile(scriptName);
+			Modules::ResourceLoader->FreeResource(scriptName);
 		}
 
 		Modules::ScriptEngine->ExecuteNextFrame(deltaTime);
@@ -157,11 +147,11 @@ void EngineLoop::Run()
 		{
 			m_World->Simulate(deltaTime);
 
-			if (m_World->Meshes.empty() && Modules::ResourceLoader->IsResourceReady(meshId))
+			if (m_World->Meshes.empty() && Modules::ResourceLoader->IsResourceReady(meshName))
 			{
 				auto& entityManager = m_World->GetEntityManager();
 				auto newEntity = entityManager.SpawnOne();
-				m_World->Meshes.insert(std::make_pair(newEntity, *Modules::ResourceLoader->As<Graphics::MeshHandle>(meshId)));
+				m_World->Meshes.insert(std::make_pair(newEntity, *Modules::ResourceLoader->AsMeshHandle(meshName)));
 				auto& transformManager = m_World->GetManager<Components::TransformManager>();
 				transformManager.AddNewEntity(newEntity, Vector3(0.0f, -5.0f, 15.0f), Vector3(1.0f / 10.0f, 1.0f / 10.f, 1.0f / 10.0f), Quaternion(Vector3(glm::radians(90.0f), 0.0f, 0.0f)));
 			}

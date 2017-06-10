@@ -28,5 +28,20 @@ tmp::small_vector<tmp::string> SplitString(const std::basic_string<char, std::ch
 	return result;
 }
 
+template<typename CharType, typename Allocator>
+inline bool EndsWith(const std::basic_string<CharType, std::char_traits<CharType>, Allocator>& value, const std::basic_string<CharType, std::char_traits<CharType>, Allocator>& ending)
+{
+	if (ending.size() > value.size()) return false;
+	return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
+}
+
+
+template<typename CharType, typename Allocator>
+inline bool EndsWith(const std::basic_string<CharType, std::char_traits<CharType>, Allocator>& value, const CharType* endingPtr)
+{
+	std::basic_string<CharType, std::char_traits<CharType>, Allocator> ending(endingPtr);
+	return EndsWith(value, ending);
+}
+
 }
 }

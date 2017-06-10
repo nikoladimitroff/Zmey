@@ -76,10 +76,10 @@ void ChakraScriptEngine::ExecuteNextFrame(float deltaTime)
 	}
 }
 
-void ChakraScriptEngine::ExecuteFromFile(ResourceId id)
+void ChakraScriptEngine::ExecuteFromFile(Zmey::Name name)
 {
-	auto scriptSource = Zmey::Modules::ResourceLoader->As<char>(id);
-	m_ScriptTasks.push_back(std::move(ScriptTask(scriptSource)));
+	auto scriptSource = Zmey::Modules::ResourceLoader->AsText(name);
+	m_ScriptTasks.push_back(std::move(ScriptTask(*scriptSource)));
 }
 
 tmp::string StringifyJsValue(JsValueRef value)

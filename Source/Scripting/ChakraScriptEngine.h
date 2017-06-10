@@ -19,7 +19,7 @@ public:
 	ChakraScriptEngine();
 	~ChakraScriptEngine();
 
-	virtual void ExecuteFromFile(ResourceId) override;
+	virtual void ExecuteFromFile(Zmey::Name) override;
 	virtual void ExecuteNextFrame(float deltaTime) override;
 private:
 	void ExecuteScript(const wchar_t* script, const wchar_t* scriptSourceUrl);

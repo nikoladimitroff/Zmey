@@ -1,6 +1,7 @@
 #include <Zmey/ResourceLoader/ResourceLoader.h>
 
 #include <fstream>
+#include <utility>
 // Use the C interface as the CPP interface at let's us destroy the aiScene when we decide we want to
 // and is also thread-safe
 #include <assimp/cimport.h>
@@ -11,6 +12,7 @@
 
 #include <Zmey/Modules.h>
 #include <Zmey/World.h>
+#include <Zmey/Utilities.h>
 
 namespace Zmey
 {
@@ -35,79 +37,78 @@ ResourceLoader::~ResourceLoader()
 	Assimp::DefaultLogger::kill();
 }
 
-void ResourceLoader::ReleaseOwnershipOver(ResourceId id)
+void ResourceLoader::ReleaseOwnershipOver(Zmey::Name name)
 {
-	// TODO: implement for other types
-	auto it = std::find_if(m_Worlds.begin(), m_Worlds.end(), [id](const std::pair<ResourceId, const World*>& data)
+	//auto it = m_Resources.find(name);
+	//if (it != m_Resources.end())
+	//{
+	//	m_Resources.erase(it);
+	//}
+}
+
+template<typename T>
+bool ResourceLoader::ResourceExistsInCollection(Zmey::Name name, stl::vector<std::pair<Zmey::Name, T>> collection)
+{
+	return FindResourceIteratorInCollection(name, collection) != collection.end();
+}
+
+bool ResourceLoader::IsResourceReady(Zmey::Name name)
+{
+	return ResourceExistsInCollection(name, m_Meshes) ||
+		ResourceExistsInCollection(name, m_TextContents) ||
+		ResourceExistsInCollection(name, m_Worlds) ||
+		ResourceExistsInCollection(name, m_BufferedData);
+}
+
+template<typename T>
+bool ResourceLoader::TryFreeFromCollection(Zmey::Name name, stl::vector<std::pair<Zmey::Name, T>> collection)
+{
+	auto it = FindResourceIteratorInCollection(name, collection);
+	if (it != collection.end())
 	{
-		return data.first == id;
-	});
-	if (it != m_Worlds.end())
-	{
-		m_Worlds.erase(it);
+		auto& lastPair = collection[collection.size() - 1];
+		it->swap(lastPair);
+		collection.pop_back();
+		return true;
 	}
+	return false;
 }
-
-bool ResourceLoader::IsResourceReady(ResourceId id)
+void ResourceLoader::FreeResource(Zmey::Name name)
 {
-	bool found = false;
-	auto it = std::find_if(m_Meshes.begin(), m_Meshes.end(), [id](const std::pair<ResourceId, Graphics::MeshHandle>& meshData)
-	{
-		return meshData.first == id;
-	});
-	found |= it != m_Meshes.end();
-	auto it2 = std::find_if(m_TextContents.begin(), m_TextContents.end(), [id](const std::pair<ResourceId, const stl::string>& meshData)
-	{
-		return meshData.first == id;
-	});
-	found |= it2 != m_TextContents.end();
-	auto it3 = std::find_if(m_Worlds.begin(), m_Worlds.end(), [id](const std::pair<ResourceId, const World*>& data)
-	{
-		return data.first == id;
-	});
-	found |= it3 != m_Worlds.end();
-	auto it4 = std::find_if(m_BufferedData.begin(), m_BufferedData.end(), [id](const std::pair<ResourceId, const stl::vector<uint8_t>>& data)
-	{
-		return data.first == id;
-	});
-	found |= it4 != m_BufferedData.end();
-	return found;
+	TryFreeFromCollection(name, m_Meshes) ||
+		TryFreeFromCollection(name, m_TextContents) ||
+		TryFreeFromCollection(name, m_Worlds) ||
+		TryFreeFromCollection(name, m_BufferedData);
 }
 
-void OnResourceLoaded(ResourceLoader* loader, ResourceId id, const aiScene* scene)
+void OnResourceLoaded(ResourceLoader* loader, Zmey::Name name, const aiScene* scene)
 {
 	auto handle = Modules::Renderer->MeshLoaded(scene);
-	loader->m_Meshes.push_back(std::make_pair(id, handle));
-	FORMAT_LOG(Info, ResourceLoader, "Just loaded asset for id: %d", id);
+	loader->m_Meshes.push_back(std::make_pair(name, handle));
+	FORMAT_LOG(Info, ResourceLoader, "Just loaded asset for name: %llu", static_cast<uint64_t>(name));
 }
-void OnResourceLoaded(ResourceLoader* loader, ResourceId id, const tmp::string& text)
+void OnResourceLoaded(ResourceLoader* loader, Zmey::Name name, const tmp::string& text)
 {
-	loader->m_TextContents.push_back(std::make_pair(id, text.c_str()));
-	FORMAT_LOG(Info, ResourceLoader, "Just loaded asset for id: %d", id);
+	loader->m_TextContents.push_back(std::make_pair(name, text.c_str()));
+	FORMAT_LOG(Info, ResourceLoader, "Just loaded asset for name: %llu", static_cast<uint64_t>(name));
 }
-void OnResourceLoaded(ResourceLoader* loader, ResourceId id, const World* world)
+void OnResourceLoaded(ResourceLoader* loader, Zmey::Name name, World* world)
 {
-	loader->m_Worlds.push_back(std::make_pair(id, world));
-	FORMAT_LOG(Info, ResourceLoader, "Just loaded asset for id: %d", id);
+	loader->m_Worlds.push_back(std::make_pair(name, world));
+	FORMAT_LOG(Info, ResourceLoader, "Just loaded asset for name: %llu", static_cast<uint64_t>(name));
 }
-void OnResourceLoaded(ResourceLoader* loader, ResourceId id, const stl::vector<uint8_t>& data)
+void OnResourceLoaded(ResourceLoader* loader, Zmey::Name name, stl::vector<uint8_t>&& data)
 {
-	loader->m_BufferedData.push_back(std::make_pair(id, data));
-	FORMAT_LOG(Info, ResourceLoader, "Just loaded asset for id: %d", id);
-}
-
-inline bool EndsWith(const stl::string& value, const stl::string&ending)
-{
-	if (ending.size() > value.size()) return false;
-	return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
+	loader->m_BufferedData.push_back(std::make_pair(name, std::move(data)));
+	FORMAT_LOG(Info, ResourceLoader, "Just loaded asset for name: %llu", static_cast<uint64_t>(name));
 }
 
-ResourceId ResourceLoader::LoadResource(const stl::string& path)
+Zmey::Name ResourceLoader::LoadResource(const stl::string& path)
 {
-	auto id = m_NextId++;
-	if (EndsWith(path, ".bin"))
+	const Zmey::Name name(path.c_str());
+	if (Utilities::EndsWith(path, ".bin"))
 	{
-		Modules::TaskSystem->SpawnTask("Loading file", [path, this, id]()
+		Modules::TaskSystem->SpawnTask("Loading file", [path, this, name]()
 		{
 			std::ifstream stream(path.c_str());
 			stream.seekg(0, std::ios::end);
@@ -123,24 +124,23 @@ ResourceId ResourceLoader::LoadResource(const stl::string& path)
 			{
 				stl::vector<uint8_t> data(size);
 				std::memcpy(&data[0], buffer.get(), size);
-				OnResourceLoaded(this, id, std::move(data));
+				OnResourceLoaded(this, name, std::move(data));
 			}
 			else if (markerType == BinaryFileTypes::WorldSection)
 			{
 				World* world = new World();
 				world->InitializeFromBuffer(buffer.get(), size);
-				OnResourceLoaded(this, id, world);
+				OnResourceLoaded(this, name, world);
 			}
 			else
 			{
 				NOT_REACHED();
 			}
 		});
-		return id;
 	}
-	if (EndsWith(path, ".js"))
+	else if (Utilities::EndsWith(path, ".js"))
 	{
-		Modules::TaskSystem->SpawnTask("Loading file", [path, this, id]()
+		Modules::TaskSystem->SpawnTask("Loading file", [path, this, name]()
 		{
 			std::ifstream stream(path.c_str());
 			stream.seekg(0, std::ios::end);
@@ -148,19 +148,21 @@ ResourceId ResourceLoader::LoadResource(const stl::string& path)
 			stream.seekg(0);
 			tmp::string buffer(size, '\0');
 			stream.read(&buffer[0], size);
-			OnResourceLoaded(this, id, buffer);
+			OnResourceLoaded(this, name, buffer);
 		});
-		return id;
 	}
-	Modules::TaskSystem->SpawnTask("Loading file", [path, this, id]()
+	else
 	{
-		const aiScene* scene = aiImportFile(path.c_str(), aiPostProcessSteps::aiProcess_ValidateDataStructure | aiProcess_MakeLeftHanded | aiProcess_FlipUVs | aiProcess_Triangulate);
-		if (scene)
+		Modules::TaskSystem->SpawnTask("Loading file", [path, this, name]()
 		{
-			OnResourceLoaded(this, id, scene);
-		}
-	});
-	return id;
+			const aiScene* scene = aiImportFile(path.c_str(), aiPostProcessSteps::aiProcess_ValidateDataStructure | aiProcess_MakeLeftHanded | aiProcess_FlipUVs | aiProcess_Triangulate);
+			if (scene)
+			{
+				OnResourceLoaded(this, name, scene);
+			}
+		});
+	}
+	return name;
 }
 
 }

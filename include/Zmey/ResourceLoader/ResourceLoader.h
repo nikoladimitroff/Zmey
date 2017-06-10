@@ -1,5 +1,6 @@
 #pragma once
 #include <Zmey/Memory/MemoryManagement.h>
+#include <Zmey/Hash.h>
 #include <Zmey/Graphics/GraphicsObjects.h>
 
 struct aiScene;
@@ -12,81 +13,86 @@ enum class BinaryFileTypes : uint8_t
 	WorldSection
 };
 class World;
-using ResourceId = unsigned;
+
 class ResourceLoader
 {
+	template<typename T>
+	typename stl::vector<std::pair<Zmey::Name, T>>::iterator FindResourceIteratorInCollection(Zmey::Name name, stl::vector<std::pair<Zmey::Name, T>>& collection) const
+	{
+		auto it = std::find_if(collection.begin(), collection.end(), [name](const std::pair<Zmey::Name, T>& data)
+		{
+			return data.first == name;
+		});
+		return it;
+	}
+	template<typename T>
+	typename stl::vector<std::pair<Zmey::Name, T>>::const_iterator FindResourceIteratorInCollection(Zmey::Name name, const stl::vector<std::pair<Zmey::Name, T>>& collection) const
+	{
+		auto it = std::find_if(collection.begin(), collection.end(), [name](const std::pair<Zmey::Name, T>& data)
+		{
+			return data.first == name;
+		});
+		return it;
+	}
+	template<typename T>
+	const T* FindResourceInCollection(Zmey::Name name, const stl::vector<std::pair<Zmey::Name, T>>& collection) const
+	{
+		auto it = FindResourceIteratorInCollection(name, collection);
+		if (it != collection.end())
+		{
+			return &it->second;
+		}
+		return nullptr;
+	}
 public:
 	ResourceLoader();
 	~ResourceLoader();
-	ResourceId LoadResource(const stl::string&);
-	bool IsResourceReady(ResourceId);
 
-	template<typename T>
-	const T* As(ResourceId) const
+	ResourceLoader(const ResourceLoader&) = delete;
+	ResourceLoader(ResourceLoader&&) = delete;
+	ResourceLoader& operator=(const ResourceLoader&) = delete;
+	// Starts loading the resource at the given path.
+	// @return The name of the resource which can also be acquired via Zmey::Name::Name()
+	// but this function returns it for easier usage.
+	Zmey::Name LoadResource(const stl::string& path);
+	bool IsResourceReady(Zmey::Name pathHash);
+
+	// Use non-template methods for public access so as the client doesn't have to wonder
+	// what exact type should he pass in the templated function.
+
+	const Graphics::MeshHandle* AsMeshHandle(Zmey::Name name) const
 	{
-		ASSERT_FATAL(false && "Not supported type");
-		return nullptr;
+		return FindResourceInCollection(name, m_Meshes);
 	}
-	template<>
-	const Graphics::MeshHandle* As<Graphics::MeshHandle>(ResourceId id) const
+	const World* AsWorld(Zmey::Name name) const
 	{
-		auto it = std::find_if(m_Meshes.begin(), m_Meshes.end(), [id](const std::pair<ResourceId, Graphics::MeshHandle>& meshData)
-		{
-			return meshData.first == id;
-		});
-		ASSERT_RETURN_VALUE(it != m_Meshes.end(), nullptr);
-		return &it->second;
+		return *FindResourceInCollection(name, m_Worlds);
 	}
-	template<>
-	const char* As<char>(ResourceId id) const
+	const stl::vector<uint8_t>* AsBuffer(Zmey::Name name) const
 	{
-		auto it = std::find_if(m_TextContents.begin(), m_TextContents.end(), [id](const std::pair<ResourceId, const stl::string>& meshData)
-		{
-			return meshData.first == id;
-		});
-		ASSERT_RETURN_VALUE(it != m_TextContents.end(), nullptr);
-		return it->second.c_str();
+		return FindResourceInCollection(name, m_BufferedData);
 	}
-	template<>
-	const World* As<World>(ResourceId id) const
+	const stl::string* AsText(Zmey::Name name) const
 	{
-		auto it = std::find_if(m_Worlds.begin(), m_Worlds.end(), [id](const std::pair<ResourceId, const World*>& data)
-		{
-			return data.first == id;
-		});
-		ASSERT_RETURN_VALUE(it != m_Worlds.end(), nullptr);
-		return it->second;
+		return FindResourceInCollection(name, m_TextContents);
 	}
-	template<>
-	const stl::vector<uint8_t>* As<stl::vector<uint8_t>>(ResourceId id) const
-	{
-		auto it = std::find_if(m_BufferedData.begin(), m_BufferedData.end(), [id](const std::pair<ResourceId, const stl::vector<uint8_t>>& data)
-		{
-			return data.first == id;
-		});
-		ASSERT_RETURN_VALUE(it != m_BufferedData.end(), nullptr);
-		return &it->second;
-	}
-	template<typename T>
-	T* TakeOwnershipOver(ResourceId id)
-	{
-		const T* resource = As<T>(id);
-		ReleaseOwnershipOver(id);
-		return const_cast<T*>(resource);
-	}
+	void ReleaseOwnershipOver(Zmey::Name);
+	void FreeResource(Zmey::Name name);
 private:
-	void ReleaseOwnershipOver(ResourceId);
+	template<typename T>
+	bool TryFreeFromCollection(Zmey::Name name, stl::vector<std::pair<Zmey::Name, T>> collection);
+	template<typename T>
+	bool ResourceExistsInCollection(Zmey::Name name, stl::vector<std::pair<Zmey::Name, T>> collection);
 	// Callback for the task system
-	friend void OnResourceLoaded(ResourceLoader*, ResourceId, const aiScene*);
-	friend void OnResourceLoaded(ResourceLoader*, ResourceId, const tmp::string&);
-	friend void OnResourceLoaded(ResourceLoader*, ResourceId, const World*);
-	friend void OnResourceLoaded(ResourceLoader*, ResourceId, const stl::vector<uint8_t>&);
+	friend void OnResourceLoaded(ResourceLoader*, Zmey::Name, const aiScene*);
+	friend void OnResourceLoaded(ResourceLoader*, Zmey::Name, const tmp::string&);
+	friend void OnResourceLoaded(ResourceLoader*, Zmey::Name, World*);
+	friend void OnResourceLoaded(ResourceLoader*, Zmey::Name, stl::vector<uint8_t>&&);
 
-	ResourceId m_NextId;
-	stl::vector<std::pair<ResourceId, Graphics::MeshHandle>> m_Meshes;
-	stl::vector<std::pair<ResourceId, const stl::string>> m_TextContents;
-	stl::vector<std::pair<ResourceId, const World*>> m_Worlds;
-	stl::vector<std::pair<ResourceId, const stl::vector<uint8_t>>> m_BufferedData;
+	stl::vector<std::pair<Zmey::Name, Graphics::MeshHandle>> m_Meshes;
+	stl::vector<std::pair<Zmey::Name, stl::string>> m_TextContents;
+	stl::vector<std::pair<Zmey::Name, World*>> m_Worlds;
+	stl::vector<std::pair<Zmey::Name, stl::vector<uint8_t>>> m_BufferedData;
 };
 
 }
