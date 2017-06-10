@@ -65,11 +65,20 @@ void RendererInterface::Unitialize()
 	m_Backend.reset();
 }
 
+void RendererInterface::GatherData(FrameData& frameData, World& world)
+{
+	for (auto gatherData : m_Features.GatherDataPtrs)
+	{
+		gatherData(frameData, world);
+	}
+}
+
 void RendererInterface::PrepareData(FrameData& frameData)
 {
-	// TODO: Prepare graphics data
-	Features::MeshRenderer::PrepareData(frameData, m_Data);
-	Features::RectRenderer::PrepareData(frameData);
+	for (auto prepareData : m_Features.PrepareDataPtrs)
+	{
+		prepareData(frameData, m_Data);
+	}
 }
 
 void RendererInterface::GenerateCommands(FrameData& frameData, uint32_t imageIndex)
@@ -81,17 +90,14 @@ void RendererInterface::GenerateCommands(FrameData& frameData, uint32_t imageInd
 	// Begin Main pass on PlayerView
 	m_CommandLists[imageIndex]->BeginRenderPass(m_SwapChainFramebuffers[imageIndex]);
 
-	Features::MeshRenderer::GenerateCommands(frameData,
-		RenderPass::Main,
-		ViewType::PlayerView,
-		m_CommandLists[imageIndex],
-		m_Data);
-
-	Features::RectRenderer::GenerateCommands(frameData,
-		RenderPass::Main,
-		ViewType::PlayerView,
-		m_CommandLists[imageIndex],
-		m_Data);
+	for (auto generateCommands : m_Features.GenerateCommandsPtrs)
+	{
+		generateCommands(frameData,
+			RenderPass::Main,
+			ViewType::PlayerView,
+			m_CommandLists[imageIndex],
+			m_Data);
+	}
 
 	m_CommandLists[imageIndex]->EndRenderPass(m_SwapChainFramebuffers[imageIndex]);
 	// End Main pass on PlayerView
@@ -128,6 +134,19 @@ RendererInterface::RendererInterface()
 	: m_Backend(Backend::CreateBackend())
 	, m_Data(m_Backend.get())
 {
+	// Initialize renderer features
+	m_Features.GatherDataPtrs.reserve(2);
+	m_Features.PrepareDataPtrs.reserve(2);
+	m_Features.GenerateCommandsPtrs.reserve(2);
+
+#define REGISTER_FEATURE(NAME, HAS_GATHER, HAS_PREPARE, HAS_GENERATE) \
+	if (HAS_GATHER) m_Features.GatherDataPtrs.push_back(Features::NAME::GatherData); \
+	if (HAS_PREPARE) m_Features.PrepareDataPtrs.push_back(Features::NAME::PrepareData); \
+	if (HAS_GENERATE) m_Features.GenerateCommandsPtrs.push_back(Features::NAME::GenerateCommands);
+
+	RENDER_FEATURE_MACRO_ITERATOR(REGISTER_FEATURE)
+
+#undef REGISTER_FEATURE
 }
 
 MeshHandle RendererInterface::MeshLoaded(const aiScene* scene)

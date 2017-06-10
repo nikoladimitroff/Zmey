@@ -15,7 +15,6 @@
 #include <Zmey/Scripting/Binding.h>
 
 #include <Zmey/Graphics/FrameData.h>
-#include <Zmey/Graphics/Features.h>
 
 namespace Zmey
 {
@@ -132,12 +131,7 @@ void EngineLoop::Run()
 
 		frameData.FrameIndex = frameIndex++;
 		playerView.GatherData(frameData);
-
-		if (m_World)
-		{
-			Graphics::Features::MeshRenderer::GatherData(frameData, *m_World);
-			Graphics::Features::RectRenderer::GatherData(frameData, *m_World);
-		}
+		Modules::Renderer->GatherData(frameData, *m_World);
 
 		// TODO: From this point graphics stuff should be on render thread
 		Modules::Renderer->RenderFrame(frameData);

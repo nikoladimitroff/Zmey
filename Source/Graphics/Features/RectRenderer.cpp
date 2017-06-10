@@ -20,7 +20,7 @@ void RectRenderer::GatherData(FrameData& frameData, World& world)
 	std::copy(rects.begin(), rects.end(), std::back_inserter(frameData.RectsToDraw));
 }
 
-void RectRenderer::PrepareData(FrameData& frameData)
+void RectRenderer::PrepareData(FrameData& frameData, RendererData& data)
 {
 
 }

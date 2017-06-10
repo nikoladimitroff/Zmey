@@ -4,6 +4,8 @@
 #include <Zmey/Memory/MemoryManagement.h>
 #include <Zmey/Graphics/Backend/BackendDeclarations.h>
 #include <Zmey/Graphics/GraphicsObjects.h>
+#include <Zmey/Graphics/RenderPasses.h>
+#include <Zmey/Graphics/View.h>
 
 #include <Zmey/Graphics/Managers/BufferManager.h>
 #include <Zmey/Graphics/Managers/MeshManager.h>
@@ -14,10 +16,13 @@ struct aiScene;
 
 namespace Zmey
 {
+
+class World;
 namespace Graphics
 {
 
 struct FrameData;
+
 
 struct RendererData
 {
@@ -42,6 +47,7 @@ public:
 	void Unitialize();
 
 	void RenderFrame(FrameData& frameData);
+	void GatherData(FrameData& frameData, World& world);
 
 	bool CheckIfFrameCompleted(uint64_t frameIndex);
 
@@ -58,6 +64,19 @@ private:
 
 	stl::vector<Backend::Framebuffer*> m_SwapChainFramebuffers;
 	stl::vector<Backend::CommandList*> m_CommandLists;
+
+	struct RenderFeatures
+	{
+		using GatherDataFunctionPtr = void (*)(FrameData&, World&); //TODO(alex): make this const after there managers can be getted with constnest
+		using PrepareDataFunctionPtr = void (*)(FrameData&, RendererData&);
+		using GenerateCommandsFunctionPtr = void (*)(FrameData&, RenderPass, ViewType, Backend::CommandList*, RendererData&);
+
+		stl::vector<GatherDataFunctionPtr> GatherDataPtrs;
+		stl::vector<PrepareDataFunctionPtr> PrepareDataPtrs;
+		stl::vector<GenerateCommandsFunctionPtr> GenerateCommandsPtrs;
+	};
+
+	RenderFeatures m_Features;
 
 	RendererData m_Data;
 };
