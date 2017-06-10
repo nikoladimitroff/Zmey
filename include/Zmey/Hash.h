@@ -84,6 +84,30 @@ inline constexpr uint64_t HashFor<HashHelpers::CaseInsensitiveStringWrapper>(Has
 	return hash;
 }
 
+class Name
+{
+public:
+	constexpr Name(const char* str)
+		: m_Hash(HashHelpers::CaseInsensitiveStringWrapper(str))
+	{}
+
+	constexpr bool operator==(const Name& other) const
+	{
+		return m_Hash == other.m_Hash;
+	}
+	constexpr bool operator<(const Name& other) const
+	{
+		return m_Hash < other.m_Hash;
+	}
+	explicit operator uint64_t()
+	{
+		return static_cast<uint64_t>(m_Hash);
+	}
+private:
+	Zmey::Hash m_Hash;
+	friend struct std::hash<Zmey::Name>;
+};
+
 }
 
 namespace std
@@ -94,6 +118,14 @@ namespace std
 		inline constexpr size_t operator()(const Zmey::Hash& x) const
 		{
 			return x.m_Value;
+		}
+	};
+	template<>
+	struct hash<Zmey::Name>
+	{
+		inline constexpr size_t operator()(const Zmey::Name& x) const
+		{
+			return static_cast<uint64_t>(x.m_Hash);
 		}
 	};
 }
