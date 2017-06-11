@@ -92,7 +92,7 @@ WindowHandle WindowsPlatform::SpawnWindow(unsigned width, unsigned height, const
 	return WindowHandle(hWnd);
 }
 
-void UpdateInputControllerFromGamepad(const XINPUT_STATE& gamepadState)
+void UpdateInputControllerFromGamepad(const XINPUT_STATE& gamepadState, uint8_t playerIndex)
 {
 	auto& input = *Zmey::Modules::InputController;
 	
@@ -115,18 +115,18 @@ void UpdateInputControllerFromGamepad(const XINPUT_STATE& gamepadState)
 	static_assert(sizeof(xinputGamepadButtons) / sizeof(uint16_t) == sizeof(zmeyGamepadButtons) / sizeof(GamepadButton), "The arrays above must have the same size");
 	for (size_t i = 0; i < sizeof(xinputGamepadButtons) / sizeof(uint16_t); i++)
 	{
-		input.SetButtonPressed(zmeyGamepadButtons[i], gamepadState.Gamepad.wButtons & xinputGamepadButtons[i]);
+		input.SetButtonPressed(zmeyGamepadButtons[i], gamepadState.Gamepad.wButtons & xinputGamepadButtons[i], playerIndex);
 	}
 	const float NormalizeBy32K = 1 / 32767.0f;
 	const float NormalizeBy255 = 1 / 255.0f;
-	input.SetAxis(GamepadAxis::LeftStickX, gamepadState.Gamepad.sThumbLX * NormalizeBy32K);
-	input.SetAxis(GamepadAxis::LeftStickY, gamepadState.Gamepad.sThumbLY * NormalizeBy32K);
-	input.SetAxis(GamepadAxis::RightStickX, gamepadState.Gamepad.sThumbRX * NormalizeBy32K);
-	input.SetAxis(GamepadAxis::RightStickY, gamepadState.Gamepad.sThumbRY * NormalizeBy32K);
-	input.SetAxis(GamepadAxis::LeftTriggerAxis, gamepadState.Gamepad.bLeftTrigger * NormalizeBy255);
-	input.SetAxis(GamepadAxis::RightTriggerAxis, gamepadState.Gamepad.bRightTrigger * NormalizeBy255);
-	input.SetButtonPressed(GamepadButton::LeftTrigger, gamepadState.Gamepad.bLeftTrigger >= XINPUT_GAMEPAD_TRIGGER_THRESHOLD);
-	input.SetButtonPressed(GamepadButton::RightTrigger, gamepadState.Gamepad.bRightTrigger >= XINPUT_GAMEPAD_TRIGGER_THRESHOLD);
+	input.SetAxis(GamepadAxis::LeftStickX, gamepadState.Gamepad.sThumbLX * NormalizeBy32K, playerIndex);
+	input.SetAxis(GamepadAxis::LeftStickY, gamepadState.Gamepad.sThumbLY * NormalizeBy32K, playerIndex);
+	input.SetAxis(GamepadAxis::RightStickX, gamepadState.Gamepad.sThumbRX * NormalizeBy32K, playerIndex);
+	input.SetAxis(GamepadAxis::RightStickY, gamepadState.Gamepad.sThumbRY * NormalizeBy32K, playerIndex);
+	input.SetAxis(GamepadAxis::LeftTriggerAxis, gamepadState.Gamepad.bLeftTrigger * NormalizeBy255, playerIndex);
+	input.SetAxis(GamepadAxis::RightTriggerAxis, gamepadState.Gamepad.bRightTrigger * NormalizeBy255, playerIndex);
+	input.SetButtonPressed(GamepadButton::LeftTrigger, gamepadState.Gamepad.bLeftTrigger >= XINPUT_GAMEPAD_TRIGGER_THRESHOLD, playerIndex);
+	input.SetButtonPressed(GamepadButton::RightTrigger, gamepadState.Gamepad.bRightTrigger >= XINPUT_GAMEPAD_TRIGGER_THRESHOLD, playerIndex);
 }
 
 void WindowsPlatform::PumpMessages(WindowHandle handle)
@@ -138,9 +138,18 @@ void WindowsPlatform::PumpMessages(WindowHandle handle)
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
-	XINPUT_STATE gamepadState;
-	XInputGetState(0, &gamepadState);
-	UpdateInputControllerFromGamepad(gamepadState);
+
+	for (uint8_t i = 0; i < XUSER_MAX_COUNT; ++i)
+	{
+		XINPUT_STATE gamepadState;
+		ZeroMemory(&gamepadState, sizeof(XINPUT_STATE));
+		DWORD result = XInputGetState(i, &gamepadState);
+		if (result == ERROR_SUCCESS)
+		{
+			// TODO: Detect a disconnected controller and nullify all of its inputs
+			UpdateInputControllerFromGamepad(gamepadState, i);
+		}
+	}
 }
 
 void WindowsPlatform::KillWindow(WindowHandle handle)

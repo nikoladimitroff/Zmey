@@ -19,19 +19,21 @@ public:
 		m_MeshName = Zmey::Modules::ResourceLoader->LoadResource("Content\\Meshes\\Vampire_A_Lusth\\Vampire_A_Lusth.dae");
 		m_ScriptName = Zmey::Modules::ResourceLoader->LoadResource("Content\\Scripts\\main.js");
 
-
-		Zmey::Modules::InputController->AddListenerForAction(Zmey::Hash("movecam"), [](float axisValue)
+		for (size_t playerIndex = 0; playerIndex < 2; playerIndex++)
 		{
-			FORMAT_LOG(Info, Temp, "movecam was called! axisValue: %f", axisValue);
-		});
-		Zmey::Modules::InputController->AddListenerForAction(Zmey::Hash("jump"), [](float axisValue)
-		{
-			FORMAT_LOG(Info, Temp, "jump was called! axisValue: %f", axisValue);
-		});
-		Zmey::Modules::InputController->AddListenerForAction(Zmey::Hash("walk"), [](float axisValue)
-		{
-			FORMAT_LOG(Info, Temp, "walk was called! axisValue: %f", axisValue);
-		});
+			Zmey::Modules::InputController->AddListenerForAction(Zmey::Name("movecam"), playerIndex, [playerIndex](float axisValue)
+			{
+				FORMAT_LOG(Info, Temp, "movecam was called on player %u! axisValue: %f", playerIndex, axisValue);
+			});
+			Zmey::Modules::InputController->AddListenerForAction(Zmey::Name("jump"), playerIndex, [playerIndex](float axisValue)
+			{
+				FORMAT_LOG(Info, Temp, "jump was called on player %u! axisValue: %f", playerIndex, axisValue);
+			});
+			Zmey::Modules::InputController->AddListenerForAction(Zmey::Name("walk"), playerIndex, [playerIndex](float axisValue)
+			{
+				FORMAT_LOG(Info, Temp, "walk was called on player %u! axisValue: %f", playerIndex, axisValue);
+			});
+		}
 
 		m_WorldName = Zmey::Modules::ResourceLoader->LoadResource("IncineratedDataCache/testworld.bin");
 		return m_WorldName;

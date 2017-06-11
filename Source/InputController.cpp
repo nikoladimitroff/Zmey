@@ -194,7 +194,7 @@ void ConvertKeynameToBinding(Zmey::Name keyHash, ActionMapping::Binding& binding
 }
 
 InputController::InputController()
-	: MouseKeyboardPlayerIndex(1u)
+	: MouseKeyboardPlayerIndex(0u)
 {
 	auto tempScope = TempAllocator::GetTlsAllocator().ScopeNow();
 
@@ -224,31 +224,48 @@ InputController::InputController()
 
 void InputController::DispatchActionEventsForFrame()
 {
+	for (uint8_t i = 0u; i < MaxPlayerCount; i++)
+	{
+		DispatchActionEventsForPlayerInCurrentFrame(i);
+	}
+}
+
+void InputController::DispatchActionEventsForPlayerInCurrentFrame(uint8_t playerIndex)
+{
+	auto& previousState = m_PreviousState[playerIndex];
+	auto& currentState = m_CurrentState[playerIndex];
 	for (const auto& mapping : m_ActionMappings)
 	{
 		float axisValue;
 		bool actionFired = std::any_of(std::begin(mapping.ActionBindings),
 			std::end(mapping.ActionBindings),
-			[this, &axisValue](const ActionMapping::Binding& binding)
-			{ return binding.MatchesInput(m_CurrentState, m_PreviousState, axisValue); });
+			[&previousState, &currentState, &axisValue](const ActionMapping::Binding& binding)
+		{ return binding.MatchesInput(currentState, previousState, axisValue); });
 		if (actionFired)
 		{
-			auto& handlers = m_ActionHandlers[mapping.ActionNameHash];
-			for (auto handler : handlers)
+			// Find the first delegate with the same action and index
+			PlayerInputAction baseAction{ mapping.ActionName, playerIndex, nullptr };
+			auto lowerBound = std::lower_bound(m_ActionHandlers.begin(), m_ActionHandlers.end(), baseAction);
+			for (auto it = lowerBound; it->Action == mapping.ActionName && it->PlayerIndex == playerIndex; ++it)
 			{
-				handler(axisValue);
+				it->Delegate(axisValue);
 			}
 		}
 	}
-	m_PreviousState = m_CurrentState;
+	previousState = currentState;
+
 }
-void InputController::AddListenerForAction(Zmey::Hash actionName, InputActionDelegate actionHandler)
+void InputController::AddListenerForAction(Zmey::Name actionName, uint8_t playerIndex, InputActionDelegate actionHandler)
 {
-	m_ActionHandlers[actionName].push_back(actionHandler);
+	ASSERT_RETURN(playerIndex < MaxPlayerCount);
+	PlayerInputAction inputAction{ actionName, playerIndex, actionHandler };
+	auto it = std::lower_bound(m_ActionHandlers.begin(), m_ActionHandlers.end(), inputAction);
+	m_ActionHandlers.insert(it, std::move(inputAction));
 }
-void InputController::RemoveListenerForAction(Zmey::Hash actionName, InputActionDelegate actionHandler)
+void InputController::RemoveListenerForAction(Zmey::Name actionName, uint8_t playerIndex, InputActionDelegate actionHandler)
 {
-	ASSERT_FATAL("Not implemented");
+	ASSERT_RETURN(playerIndex < MaxPlayerCount);
+	ASSERT_FATAL("not implemented");
 }
 
 }

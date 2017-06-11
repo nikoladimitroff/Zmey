@@ -142,35 +142,50 @@ class InputController
 public:
 	InputController();
 	void DispatchActionEventsForFrame();
-	ZMEY_API void AddListenerForAction(Zmey::Hash actionName, InputActionDelegate actionHandler);
-	ZMEY_API void RemoveListenerForAction(Zmey::Hash actionName, InputActionDelegate actionHandler);
+	ZMEY_API void AddListenerForAction(Zmey::Name actionName, uint8_t playerIndex, InputActionDelegate actionHandler);
+	ZMEY_API void RemoveListenerForAction(Zmey::Name actionName, uint8_t playerIndex, InputActionDelegate actionHandler);
+	ZMEY_API static const uint8_t MaxPlayerCount = 8;
 
 	inline void SetButtonPressed(MouseButton button, bool isPressed)
 	{
-		m_CurrentState.MouseButtons[static_cast<uint8_t>(button)] = isPressed;
+		m_CurrentState[MouseKeyboardPlayerIndex].MouseButtons[static_cast<uint8_t>(button)] = isPressed;
 	}
 	inline void SetButtonPressed(KeyboardButton button, bool isPressed)
 	{
-		m_CurrentState.KeyboardButtons[static_cast<uint8_t>(button)] = isPressed;
+		m_CurrentState[MouseKeyboardPlayerIndex].KeyboardButtons[static_cast<uint8_t>(button)] = isPressed;
 	}
-	inline void SetButtonPressed(GamepadButton button, bool isPressed)
+	inline void SetButtonPressed(GamepadButton button, bool isPressed, uint8_t playerIndex)
 	{
-		m_CurrentState.GamepadButtons[static_cast<uint8_t>(button)] = isPressed;
+		m_CurrentState[playerIndex].GamepadButtons[static_cast<uint8_t>(button)] = isPressed;
 	}
 	inline void SetAxis(MouseAxis axis, float value)
 	{
-		m_CurrentState.MouseAxes[static_cast<uint8_t>(axis)] = value;
+		m_CurrentState[MouseKeyboardPlayerIndex].MouseAxes[static_cast<uint8_t>(axis)] = value;
 	}
-	inline void SetAxis(GamepadAxis axis, float value)
+	inline void SetAxis(GamepadAxis axis, float value, uint8_t playerIndex)
 	{
-		m_CurrentState.GamepadAxes[static_cast<uint8_t>(axis)] = value;
+		m_CurrentState[playerIndex].GamepadAxes[static_cast<uint8_t>(axis)] = value;
 	}
 private:
-	InputState m_CurrentState;
-	InputState m_PreviousState;
+	void DispatchActionEventsForPlayerInCurrentFrame(uint8_t playerIndex);
+
+	uint8_t MouseKeyboardPlayerIndex;
+	stl::array<InputState, MaxPlayerCount> m_CurrentState;
+	stl::array<InputState, MaxPlayerCount> m_PreviousState;
 	stl::vector<ActionMapping> m_ActionMappings;
-	// TODO: This collection doesn't look very performant
-	stl::unordered_map<Zmey::Hash, stl::small_vector<InputActionDelegate>> m_ActionHandlers;
+	struct PlayerInputAction
+	{
+		Zmey::Name Action;
+		uint8_t PlayerIndex;
+		InputActionDelegate Delegate;
+
+		bool operator<(const PlayerInputAction& other) const
+		{
+			return std::tie(PlayerIndex, Action) < std::tie(other.PlayerIndex, other.Action);
+		}
+	};
+	// Keep this sorted, firstly by player, secondly by action name
+	stl::vector<PlayerInputAction> m_ActionHandlers;
 };
 
 }
