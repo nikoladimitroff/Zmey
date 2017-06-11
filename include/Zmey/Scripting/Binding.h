@@ -22,6 +22,23 @@ inline tmp::wstring ConvertUtf8ToWideString(const tmp::string& utf8String)
 	mbstowcs(&wideString[0], utf8String.c_str(), utf8String.size());
 	return wideString;
 }
+
+inline stl::string ConvertWideStringToUtf8(const stl::wstring& wString)
+{
+	stl::string utf8String;
+	auto utf8Size = wcstombs(nullptr, wString.c_str(), wString.size());
+	utf8String.assign(utf8Size, ' ');
+	wcstombs(&utf8String[0], wString.c_str(), wString.size());
+	return utf8String;
+}
+inline stl::wstring ConvertUtf8ToWideString(const stl::string& utf8String)
+{
+	stl::wstring wideString;
+	auto wideSize = mbstowcs(nullptr, utf8String.c_str(), utf8String.size());
+	wideString.assign(wideSize, L' ');
+	mbstowcs(&wideString[0], utf8String.c_str(), utf8String.size());
+	return wideString;
+}
 namespace Chakra
 {
 

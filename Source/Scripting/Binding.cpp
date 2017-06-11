@@ -55,7 +55,7 @@ void AutoNativeClassProjecter::RegisterForInitialization()
 }
 void AutoNativeClassProjecter::Project()
 {
-	tmp::string utf8Name = Zmey::ConvertWideStringToUtf8(ClassName);
+	tmp::string utf8Name = Zmey::ConvertWideStringToUtf8(tmp::wstring(ClassName));
 	NameHash = Zmey::Hash(Zmey::HashHelpers::CaseInsensitiveStringWrapper(utf8Name.c_str()));
 
 	const tmp::vector<const wchar_t *> memberNames(MemberNames, MemberNames + ActualMemberCount);
@@ -197,10 +197,10 @@ void RegisterPrototypesForAnyTypeSet(AnyTypeData data)
 	{
 		JsValueRef indexValue;
 		CHECKCHAKRA(JsIntToNumber(i, &indexValue));
-		tmp::wstring name = Zmey::ConvertUtf8ToWideString(data.PrototypeNames[i]);
+		tmp::wstring name = Zmey::ConvertUtf8ToWideString(tmp::string(data.PrototypeNames[i]));
 		SetProperty(enumObject, name.c_str(), indexValue);
 	}
-	tmp::wstring anySetName = Zmey::ConvertUtf8ToWideString(data.Name);
+	tmp::wstring anySetName = Zmey::ConvertUtf8ToWideString(tmp::string(data.Name));
 	SetProperty(globalObject, anySetName.c_str(), enumObject);
 }
 JsValueRef GetProtototypeOfAnyTypeSet(Zmey::Hash anyTypeName, int index)
