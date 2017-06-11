@@ -28,7 +28,7 @@ class ResourceLoader
 	template<typename T>
 	typename stl::vector<std::pair<Zmey::Name, T>>::const_iterator FindResourceIteratorInCollection(Zmey::Name name, const stl::vector<std::pair<Zmey::Name, T>>& collection) const
 	{
-		auto it = std::find_if(collection.begin(), collection.end(), [name](const std::pair<Zmey::Name, T>& data)
+		auto it = std::find_if(collection.cbegin(), collection.cend(), [name](const std::pair<Zmey::Name, T>& data)
 		{
 			return data.first == name;
 		});
