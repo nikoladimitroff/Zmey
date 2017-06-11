@@ -251,6 +251,9 @@
     <ClInclude Include="..\..\include\Zmey\Game.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Components\TagManager.h">
+      <Filter>include\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\EngineLoop.cpp">
@@ -333,6 +336,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\InputController.cpp">
       <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Components\TagManager.cpp">
+      <Filter>Source\Components</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
