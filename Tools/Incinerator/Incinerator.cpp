@@ -175,7 +175,7 @@ void Incinerator::IncinerateWorld(const std::string& destinationFolder, const st
 			const std::string componentName = newComponent["name"];
 			auto& entities = entitiesForComponent[componentName];
 			// If this overrides an inherited components, this entity must be the last one added // srsly?
-			bool overridesInherited = entities[entities.size() - 1].EntityIndex == entityIndex;
+			bool overridesInherited = entities.size() != 0 && entities[entities.size() - 1].EntityIndex == entityIndex;
 			if (!overridesInherited)
 			{
 				entities.push_back({ entityIndex, ComponentEntry(componentName) });
