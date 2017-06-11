@@ -144,6 +144,13 @@ public:
 	void DispatchActionEventsForFrame();
 	ZMEY_API void AddListenerForAction(Zmey::Name actionName, uint8_t playerIndex, InputActionDelegate actionHandler);
 	ZMEY_API void RemoveListenerForAction(Zmey::Name actionName, uint8_t playerIndex, InputActionDelegate actionHandler);
+	/// <summary>
+	///  Causes a vibration on the gamepad connected with the specified player index
+	/// </summary>
+	/// <param name = "playerIndex">The index of the gamepad which to fire.</param>
+	/// <param name = "leftMotorSpeed">The speed of the left motor, normalized between 0 and 1.</param>
+	/// <param name = "rightMotorSpeed">The speed of the right motor, normalized between 0 and 1.</param>
+	ZMEY_API void Vibrate(uint8_t playerIndex, float leftMotorSpeed, float rightMotorSpeed);
 	ZMEY_API static const uint8_t MaxPlayerCount = 8;
 
 	inline void SetButtonPressed(MouseButton button, bool isPressed)

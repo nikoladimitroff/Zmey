@@ -152,6 +152,15 @@ void WindowsPlatform::PumpMessages(WindowHandle handle)
 	}
 }
 
+void InputController::Vibrate(uint8_t playerIndex, float leftMotorSpeed, float rightMotorSpeed)
+{
+	ASSERT_RETURN(playerIndex < XUSER_MAX_COUNT && leftMotorSpeed >= 0.f && leftMotorSpeed <= 1.f && rightMotorSpeed >= 0.f && rightMotorSpeed <= 1.f);
+	XINPUT_VIBRATION vibration;
+	vibration.wLeftMotorSpeed = static_cast<WORD>(leftMotorSpeed * 0xFFFF);
+	vibration.wRightMotorSpeed = static_cast<WORD>(rightMotorSpeed * 0xFFFF);
+	::XInputSetState(playerIndex, &vibration);
+}
+
 void WindowsPlatform::KillWindow(WindowHandle handle)
 {
 	DestroyWindow(HWND(handle));

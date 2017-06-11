@@ -28,6 +28,7 @@ public:
 			Zmey::Modules::InputController->AddListenerForAction(Zmey::Name("jump"), playerIndex, [playerIndex](float axisValue)
 			{
 				FORMAT_LOG(Info, Temp, "jump was called on player %u! axisValue: %f", playerIndex, axisValue);
+				Zmey::Modules::InputController->Vibrate(playerIndex, 1.f, 0.5f);
 			});
 			Zmey::Modules::InputController->AddListenerForAction(Zmey::Name("walk"), playerIndex, [playerIndex](float axisValue)
 			{
