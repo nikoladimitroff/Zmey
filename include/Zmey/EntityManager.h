@@ -31,12 +31,25 @@ struct EntityId
 	{
 		return *(double*)this;
 	}
+
+	static EntityId NullEntity()
+	{
+		EntityId nullEntity{ 0xFFFFFFFFFFFFFFFF };
+		return nullEntity;
+	}
 private:
 	EntityId(uint32_t index, uint16_t generation)
 		: Index(index)
 		, Generation(generation)
 		, UnusedBits(0)
 	{}
+	EntityId(uint64_t bits)
+		: Index(0u)
+		, Generation(0u)
+		, UnusedBits(0u)
+	{
+		std::memcpy(const_cast<EntityId*>(this), &bits, sizeof(uint64_t));
+	}
 	const uint32_t Index;
 	const uint16_t Generation;
 	const uint16_t UnusedBits;

@@ -2,6 +2,8 @@
 #include <stdint.h>
 #include <functional>
 
+#include <Zmey/Memory/MemoryManagement.h>
+
 #pragma warning(push)
 #pragma warning(disable: 4307) // Integral constant overflow
 namespace Zmey
@@ -16,6 +18,10 @@ struct Hash
 	constexpr bool operator==(const Hash& other) const
 	{
 		return m_Value == other.m_Value;
+	}
+	constexpr bool operator!=(const Hash& other) const
+	{
+		return !(m_Value == other.m_Value);
 	}
 	constexpr bool operator<(const Hash& other) const
 	{
@@ -90,10 +96,17 @@ public:
 	constexpr Name(const char* str)
 		: m_Hash(HashHelpers::CaseInsensitiveStringWrapper(str))
 	{}
+	constexpr Name(const stl::string& str)
+		: m_Hash(HashHelpers::CaseInsensitiveStringWrapper(str.c_str()))
+	{}
 
 	constexpr bool operator==(const Name& other) const
 	{
 		return m_Hash == other.m_Hash;
+	}
+	constexpr bool operator!=(const Name& other) const
+	{
+		return !(m_Hash == other.m_Hash);
 	}
 	constexpr bool operator<(const Name& other) const
 	{
@@ -103,7 +116,16 @@ public:
 	{
 		return static_cast<uint64_t>(m_Hash);
 	}
+
+	static constexpr Name NullName()
+	{
+		Name nullName(0ull);
+		return nullName;
+	}
 private:
+	constexpr Name(uint64_t value)
+		: m_Hash(value)
+	{}
 	Zmey::Hash m_Hash;
 	friend struct std::hash<Zmey::Name>;
 };
