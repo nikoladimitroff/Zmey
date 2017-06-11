@@ -13,7 +13,7 @@ namespace Zmey
 {
 
 ActionMapping::ActionMapping(const char* actionName, const tmp::small_vector<Binding> bindings)
-	: ActionNameHash(Zmey::HashHelpers::CaseInsensitiveStringWrapper(actionName))
+	: ActionName(actionName)
 {
 	size_t sizeToCopy = std::min(bindings.size(), static_cast<size_t>(MaxKeyBindingsPerAction)) * sizeof(Binding);
 	std::memcpy(const_cast<Binding*>(&ActionBindings[0]), bindings.data(), sizeToCopy);
@@ -62,13 +62,12 @@ bool ActionMapping::Binding::MatchesInput(const InputState& current, const Input
 	}
 }
 
-void ConvertKeynameToBinding(Zmey::Hash keyHash, ActionMapping::Binding& binding)
+void ConvertKeynameToBinding(Zmey::Name keyHash, ActionMapping::Binding& binding)
 {
 	ActionMapping::Binding preConvertState = binding;
 
-	using IHash = Zmey::HashHelpers::CaseInsensitiveStringWrapper;
 #define CHECK_KEYNAME(Category, Keyname) \
-	case static_cast<uint64_t>(Hash(IHash(#Keyname))): \
+	case static_cast<uint64_t>(Name(#Keyname)): \
 		binding.InputEnumData = static_cast<uint8_t>(Category::##Keyname); \
 		binding.Type = ActionMapping::MappingType::##Category; \
 	break
@@ -174,7 +173,7 @@ void ConvertKeynameToBinding(Zmey::Hash keyHash, ActionMapping::Binding& binding
 #undef CHECK_KEYNAME
 
 #define CHECK_MODIFIER(Keyname) \
-	case static_cast<uint64_t>(Hash(IHash(#Keyname))): \
+	case static_cast<uint64_t>(Name(#Keyname)): \
 		binding.Expects##Keyname = true; \
 	break
 
@@ -184,7 +183,7 @@ void ConvertKeynameToBinding(Zmey::Hash keyHash, ActionMapping::Binding& binding
 		CHECK_MODIFIER(Alt);
 		CHECK_MODIFIER(Shift);
 	}
-	if (keyHash == Zmey::Hash(IHash("CONT")))
+	if (keyHash == Zmey::Name("CONT"))
 	{
 		binding.IsContinuous = true;
 	}
@@ -195,6 +194,7 @@ void ConvertKeynameToBinding(Zmey::Hash keyHash, ActionMapping::Binding& binding
 }
 
 InputController::InputController()
+	: MouseKeyboardPlayerIndex(1u)
 {
 	auto tempScope = TempAllocator::GetTlsAllocator().ScopeNow();
 
@@ -212,7 +212,7 @@ InputController::InputController()
 			ActionMapping::Binding binding;
 			for (tmp::string& part : bindingParts)
 			{
-				Zmey::Hash partHash(Zmey::HashHelpers::CaseInsensitiveStringWrapper(part.c_str()));
+				Zmey::Name partHash(part.c_str());
 				ConvertKeynameToBinding(partHash, binding);
 			}
 			bindings.push_back(binding);

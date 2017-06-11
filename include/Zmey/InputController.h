@@ -132,7 +132,7 @@ struct ActionMapping
 		bool MatchesInput(const InputState& current, const InputState& previous, float& outAxisValue) const;
 	};
 	ActionMapping(const char* actionName, const tmp::small_vector<Binding> bindings);
-	const Zmey::Hash ActionNameHash;
+	const Zmey::Name ActionName;
 	static constexpr uint8_t MaxKeyBindingsPerAction = 2u;
 	const Binding ActionBindings[MaxKeyBindingsPerAction];
 };
