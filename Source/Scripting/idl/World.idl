@@ -21,5 +21,4 @@ interface Zmey::Components::RectangleManager {
 }
 interface Zmey::World {
     anyof<Manager> getManager(int index);
-    Zmey::EntityId getFirstEntity();
 }

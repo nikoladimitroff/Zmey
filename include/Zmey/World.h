@@ -27,10 +27,6 @@ public:
 	{
 		return *m_ComponentManagers[index];
 	}
-	Zmey::EntityId GetFirstEntity() const
-	{
-		return m_First;
-	};
 	void InitializeFromBuffer(const uint8_t* buffer, size_t size);
 	void AddClassToRegistry(Zmey::Hash className, const uint8_t* buffer, size_t size);
 	EntityId SpawnEntity(Zmey::Hash actorClass);
@@ -39,7 +35,6 @@ public:
 	// TODO(alex): remove this after we have an mesh component manager
 	stl::unordered_map<EntityId, Graphics::MeshHandle> Meshes;
 private:
-	Zmey::EntityId m_First;
 	EntityManager m_EntityManager;
 	stl::vector<Components::ComponentManager*> m_ComponentManagers;
 	stl::unordered_map<Zmey::Hash, stl::vector<uint8_t>> m_ClassRegistry;
