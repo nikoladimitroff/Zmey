@@ -14,10 +14,10 @@ const Common = {
 };
 
 class ChakraGlueGenerator {
-    generateCastingOperatorForType(type) {
+    generateRetrievingCastingOperatorForType(type) {
         switch (type) {
             case "string":
-                return `(stl::string);`;
+                return `(Zmey::stl::string)`;
             case "float":
             case "double":
             case "Zmey::EntityId":
@@ -27,17 +27,37 @@ class ChakraGlueGenerator {
                 return `(${type}*)&`;
         }
     }
-    generateCastingOperatorForTypeOrAny(type) {
+    generatePassArgCastingOperatorForTypeOrAny(type) {
+        const match = Common.getTypeEnumOfAnyType(type);
+        if (match) {
+            assert(false); // NOT IMPLEMENTED
+        }
+        return this.generatePassArgCastingOperatorForType(type);
+    }
+    generatePassArgCastingOperatorForType(type) {
+        switch (type) {
+            case "string":
+                return `(Zmey::stl::string)`;
+            case "float":
+            case "double":
+            case "Zmey::EntityId":
+            case "int":
+                return `(${type})`;
+            default:
+                return `*(${type}*)`;
+        }
+    }
+    generateRetrievingCastingOperatorForTypeOrAny(type) {
         const match = Common.getTypeEnumOfAnyType(type);
         if (match) {
             return "(void*)&";
         }
-        return this.generateCastingOperatorForType(type);
+        return this.generateRetrievingCastingOperatorForType(type);
     }
     generateDefinitionForArg(arg) {
         switch (arg.type) {
             case "string":
-                return `stl::string _${arg.name};`;
+                return `Zmey::stl::string _${arg.name};`;
             case "float":
             case "double":
             case "Zmey::EntityId":
@@ -71,16 +91,17 @@ class ChakraGlueGenerator {
                 code = `
 	JsValueRef _${arg.name}stringValue;
 	JsConvertValueToString(arguments[${actualArgIndex}], &_${arg.name}stringValue);
-	const wchar_t* _${arg.name}string;
-	size_t _${arg.name}Stringlength;
-	JsStringToPointer(_${arg.name}stringValue, _${arg.name}string, &_${arg.name}Stringlength);
-	stl::string _${arg.name} = ConvertWideStringToUtf8(_${arg.name}String, _${arg.name}Stringlength);
+	const wchar_t* _${arg.name}WideString;
+	size_t _${arg.name}WideStringlength;
+	JsStringToPointer(_${arg.name}stringValue, &_${arg.name}WideString, &_${arg.name}WideStringlength);
+	Zmey::stl::wstring _${arg.name}WideStl(_${arg.name}WideString, _${arg.name}WideStringlength);
+	_${arg.name} = Zmey::ConvertWideStringToUtf8(_${arg.name}WideStl);
 `;
                 return code;
             case "long":
                 assert(false, "Unsupported type: " + arg.type);
             default:
-                code = `JsGetExternalData(arguments[${actualArgIndex}], &_${arg.name});`
+                code = `JsGetExternalData(arguments[${actualArgIndex}], (void**)&_${arg.name});`
                 return code;
         }
     }
@@ -109,7 +130,7 @@ class ChakraGlueGenerator {
                 code = `
 	const wchar_t* _resultWString;
 	size_t _resultStringlength;
-	Utf8ToWString(result, _resultWString, _resultStringlength);
+	Zmey::ConvertUtf8ToWideString(result, _resultWString, _resultStringlength);
 	JsPointerToString(_resultWString, _resultStringlength, &output);
 `;
                 return code;
@@ -140,7 +161,7 @@ class ChakraGlueGenerator {
 
     generateListForArgList(argList) {
         return argList.map(arg => {
-            return `(${arg.type})_${arg.name}`;
+            return `${this.generatePassArgCastingOperatorForTypeOrAny(arg.type)} _${arg.name}`;
         }).join(",");
     }
     generateHeader() {
@@ -149,6 +170,7 @@ class ChakraGlueGenerator {
 #include <cassert>
 #include <ChakraCore/ChakraCore.h>
 #include <Zmey/Scripting/Binding.h>
+#include <Zmey/Memory/MemoryManagement.h>
 `;
         return cppHeaders;
     }
@@ -181,7 +203,7 @@ JsValueRef CALLBACK Js${uniqueInterfaceName}Constructor(JsValueRef callee, bool 
         const cppCode =
 `
 	${this.generateDefinitionForArgOrAny(returnArg)}
-	_result = ${this.generateCastingOperatorForTypeOrAny(returnType)}${callMethod}
+	_result = ${this.generateRetrievingCastingOperatorForTypeOrAny(returnType)}${callMethod}
 	${this.generateOutputForTypeOrAny(returnType, argList[0])}
 `;
         return cppCode;
