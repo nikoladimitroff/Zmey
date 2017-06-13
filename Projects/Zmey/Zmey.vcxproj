@@ -158,6 +158,7 @@
     <ClInclude Include="..\..\include\Zmey\Graphics\View.h" />
     <ClInclude Include="..\..\include\Zmey\Hash.h" />
     <ClInclude Include="..\..\include\Zmey\InputController.h" />
+    <ClInclude Include="..\..\include\Zmey\ResourceLoader\DDSLoader.h" />
     <ClInclude Include="..\..\include\Zmey\SettingsManager.h" />
     <ClInclude Include="..\..\include\Zmey\Logging.h" />
     <ClInclude Include="..\..\include\Zmey\LogHandler.h" />
@@ -209,6 +210,7 @@
     <ClCompile Include="..\..\Source\Graphics\Renderer.cpp" />
     <ClCompile Include="..\..\Source\Graphics\View.cpp" />
     <ClCompile Include="..\..\Source\InputController.cpp" />
+    <ClCompile Include="..\..\Source\ResourceLoader\DDSLoader.cpp" />
     <ClCompile Include="..\..\Source\SettingsManager.cpp" />
     <ClCompile Include="..\..\Source\Logging.cpp" />
     <ClCompile Include="..\..\Source\Memory\MemoryManagement.cpp" />

@@ -254,6 +254,9 @@
     <ClInclude Include="..\..\include\Zmey\Components\TagManager.h">
       <Filter>include\Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\ResourceLoader\DDSLoader.h">
+      <Filter>include\ResourceLoader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\EngineLoop.cpp">
@@ -339,6 +342,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\Components\TagManager.cpp">
       <Filter>Source\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\ResourceLoader\DDSLoader.cpp">
+      <Filter>Source\ResourceLoader</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -10,5 +10,11 @@ namespace Graphics
 using MeshHandle = uint64_t;
 using BufferHandle = uint64_t;
 
+enum class PixelFormat
+{
+	Unknown,
+	B8G8R8A8,
+};
+
 }
 }
