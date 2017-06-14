@@ -1,0 +1,10 @@
+{
+    "version": "1.0",
+    "name": "Magician",
+    "extends": "",
+    "components": [ {
+        "name": "rectangle"
+    }, {
+        "name": "transform"
+    }]
+}

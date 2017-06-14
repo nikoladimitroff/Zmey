@@ -1,0 +1,24 @@
+{
+    "version": "1.0",
+    "name": "city-of-township",
+    "extends": "city-template",
+    "entities": [{
+        "type": "Magician", "compiler-id": 1,
+        "components": [{
+            "name": "transform",
+            "position": [0.1, 0.3, 0]
+        }]
+    },{
+        "type": "Magician", "compiler-id": 1,
+        "components": [{
+            "name": "transform",
+            "position": [0.3, 0.1, 0]
+        }]
+    }, {
+        "type": "Magician", "compiler-id": 2,
+        "components": [{
+            "name": "transform",
+            "position": [0.2, 0.2, 0]
+        }]
+    }]
+}
