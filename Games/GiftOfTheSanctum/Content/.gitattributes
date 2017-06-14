@@ -1,0 +1,4 @@
+Games/GiftOfTheSanctum/Content/**/*.dae filter=lfs diff=lfs merge=lfs -text
+Games/GiftOfTheSanctum/Content/**/*.png filter=lfs diff=lfs merge=lfs -text
+Games/GiftOfTheSanctum/Content/**/*.jpg filter=lfs diff=lfs merge=lfs -text
+Games/GiftOfTheSanctum/Content/**/*.dds filter=lfs diff=lfs merge=lfs -text
