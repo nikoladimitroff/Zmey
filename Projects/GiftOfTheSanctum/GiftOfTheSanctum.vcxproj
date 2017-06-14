@@ -45,10 +45,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)Build\$(Configuration)_$(Platform)\bin\</OutDir>
     <IntDir>$(SolutionDir)Build\$(Configuration)_$(Platform)\obj\$(ProjectName)\</IntDir>
+    <CustomBuildBeforeTargets>PreBuildEvent</CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)Build\$(Configuration)_$(Platform)\bin\</OutDir>
     <IntDir>$(SolutionDir)Build\$(Configuration)_$(Platform)\obj\$(ProjectName)\</IntDir>
+    <CustomBuildBeforeTargets>PreBuildEvent</CustomBuildBeforeTargets>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -66,8 +68,13 @@
       <SubSystem>Console</SubSystem>
     </Link>
     <PreBuildEvent>
-      <Command>node ../Zmey/prebuild.js $(OutputPath) --game</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
+    <CustomBuildStep>
+      <Command>node ../Zmey/prebuild.js $(OutputPath) --game</Command>
+      <Outputs>nonexistent-file-path-to-force-visual-studio-to-run-this-build-step</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -88,8 +95,13 @@
       <SubSystem>Console</SubSystem>
     </Link>
     <PreBuildEvent>
-      <Command>node ../Zmey/prebuild.js $(OutputPath) --game</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
+    <CustomBuildStep>
+      <Command>node ../Zmey/prebuild.js $(OutputPath) --game</Command>
+      <Outputs>nonexistent-file-path-to-force-visual-studio-to-run-this-build-step</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ProjectReference Include="..\Zmey\Zmey.vcxproj">
