@@ -2,19 +2,37 @@ const fs = require("fs");
 const path = require("path");
 const process = require("process");
 const exec = require('child_process').execSync;
-const sys = require("sys");
 
 const scriptDir = __dirname;
 const rootDir = path.join(scriptDir, "../../");
 
+var walkSync = function(dir, filelist) {
+    const files = fs.readdirSync(dir);
+    filelist = filelist || [];
+    files.forEach(function(file) {
+        const filepath = path.join(dir, file);
+        if (fs.statSync(filepath).isDirectory()) {
+            filelist = walkSync(path.join(dir, file), filelist);
+        }
+        else {
+            filelist.push(filepath);
+        }
+    });
+    return filelist;
+};
+
+const getLastModifiedTime = function (directory) {
+    const files = walkSync(directory);
+    return Math.max.apply(null, files.map(f => fs.statSync(f).mtime));
+};
+
 const runToolsIfNeeded = function (toolsToRun) {
-    console.log(toolsToRun);
     if (!fs.existsSync("prebuilddata.json")) {
         fs.writeFileSync("prebuilddata.json", "{}", {encoding: "utf8"});
     }
     const storageData = JSON.parse(fs.readFileSync("prebuilddata.json", "utf8", "r"));
     for (const toolInfo of toolsToRun) {
-        const lastChangedDate = fs.statSync(toolInfo.directory).mtime;
+        const lastChangedDate = getLastModifiedTime(toolInfo.directory);
         const lastRecordedDate = new Date(storageData[toolInfo.directory] || 0);
         if (lastRecordedDate < lastChangedDate) {
             console.log(`Detected that dir ${toolInfo.directory} has changed. Running ${toolInfo.tool}...`);
@@ -46,6 +64,7 @@ let main = function () {
         { directory: contentDir, tool: `${incineratorCompiler} --game Games/GiftOfTheSanctum` }
     ];
     const toolsToRun = isGame ? gameToolsToRun : engineToolsToRun;
+    console.log("Running checks for changed content...");
     runToolsIfNeeded(toolsToRun);
 };
 try {
@@ -53,5 +72,5 @@ try {
 }
 catch (err) {
     console.error(err);
-    sys.exit(1);
+    process.exit(1);
 }

@@ -45,10 +45,16 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)Build\$(Configuration)_$(Platform)\bin\</OutDir>
     <IntDir>$(SolutionDir)Build\$(Configuration)_$(Platform)\obj\$(ProjectName)\</IntDir>
+    <CustomBuildBeforeTargets>PreBuildEvent</CustomBuildBeforeTargets>
+    <CodeAnalysisRuleSet>E:\Tools\VS2017\Team Tools\Static Analysis Tools\Rule Sets\NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)Build\$(Configuration)_$(Platform)\bin\</OutDir>
     <IntDir>$(SolutionDir)Build\$(Configuration)_$(Platform)\obj\$(ProjectName)\</IntDir>
+    <CustomBuildBeforeTargets>PreBuildEvent</CustomBuildBeforeTargets>
+    <CodeAnalysisRuleSet>E:\Tools\VS2017\Team Tools\Static Analysis Tools\Rule Sets\NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -62,6 +68,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
+      <EnablePREfast>false</EnablePREfast>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)ThirdParty\libx64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -76,8 +83,13 @@
       <Message>Copying third party dependencies</Message>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>node prebuild.js $(OutputPath)</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
+    <CustomBuildStep>
+      <Command>node prebuild.js $(OutputPath)</Command>
+      <Outputs>nonexistent-file-path-to-force-visual-studio-to-run-this-build-step</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -92,6 +104,7 @@
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWarningAsError>true</TreatWarningAsError>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <EnablePREfast>false</EnablePREfast>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -108,8 +121,13 @@
       <Message>Copying third party dependencies</Message>
     </PostBuildEvent>
     <PreBuildEvent>
-      <Command>node prebuild.js $(OutputPath)</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
+    <CustomBuildStep>
+      <Command>node prebuild.js $(OutputPath)</Command>
+      <Outputs>nonexistent-file-path-to-force-visual-studio-to-run-this-build-step</Outputs>
+    </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\Zmey\Components\ComponentManager.h" />
