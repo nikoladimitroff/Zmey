@@ -112,7 +112,7 @@ public:
 	{
 		return m_Hash < other.m_Hash;
 	}
-	constexpr explicit operator uint64_t()
+	constexpr explicit operator uint64_t() const
 	{
 		return static_cast<uint64_t>(m_Hash);
 	}
