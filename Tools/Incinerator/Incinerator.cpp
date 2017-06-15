@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <unordered_set>
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include <Windows.h>
@@ -114,6 +115,11 @@ void Incinerator::ComponentEntry::WriteData(Zmey::Hash nameHash, const uint8_t* 
 	PropertyData.insert_or_assign(nameHash, std::move(value));
 }
 
+void Incinerator::ComponentEntry::RequestResource(Zmey::Name resourceName)
+{
+	Resources.push_back(resourceName);
+}
+
 void Incinerator::IncinerateClass(const std::string& destinationFolder, const std::string& className)
 {
 	Zmey::MemoryOutputStream memstream;
@@ -159,6 +165,7 @@ void Incinerator::IncinerateWorld(const std::string& destinationFolder, const st
 	std::unordered_map<std::string, std::vector<EntityDataPerComponent>> entitiesForComponent;
 	Zmey::EntityId::IndexType maxEntityIndex = 0u;
 
+	std::unordered_set<Zmey::Name> resourceList;
 	for (const auto& entityData : rawData["entities"])
 	{
 		// Go through each entity and serialize their components
@@ -170,9 +177,9 @@ void Incinerator::IncinerateWorld(const std::string& destinationFolder, const st
 			auto& entities = entitiesForComponent[inheritedComponent.ComponentName];
 			entities.push_back({ entityIndex, inheritedComponent });
 		}
-		for (const auto& newComponent : entityData["components"])
+		for (const auto& currentComponentData : entityData["components"])
 		{
-			const std::string componentName = newComponent["name"];
+			const std::string componentName = currentComponentData["name"];
 			auto& entities = entitiesForComponent[componentName];
 			// If this overrides an inherited components, this entity must be the last one added // srsly?
 			bool overridesInherited = entities.size() != 0 && entities[entities.size() - 1].EntityIndex == entityIndex;
@@ -182,19 +189,43 @@ void Incinerator::IncinerateWorld(const std::string& destinationFolder, const st
 			}
 			auto& componentEntry = entities[entities.size() - 1].DataForComponent;
 
+			// Request data from the component manager
 			Zmey::Hash componentNameHash(Zmey::HashHelpers::CaseInsensitiveStringWrapper(componentName.c_str()));
 			auto compiler = Zmey::Components::GetComponentManager(componentNameHash);
 			if (!overridesInherited)
 			{
 				compiler.DefaultsToBlob(componentEntry);
 			}
-			compiler.ToBlob(newComponent, componentEntry);
+			compiler.ToBlob(currentComponentData, componentEntry);
+
+			// Pick up the resources that the component manager required
+			std::copy(componentEntry.Resources.cbegin(), componentEntry.Resources.cend(),
+				std::inserter(resourceList, resourceList.begin()));
+		}
+	}
+	// Add resources required by default type instances
+	for (const auto& classInfo : m_ClassIndex)
+	{
+		for (const auto& componentData : classInfo.second.Components)
+		{
+			std::copy(componentData.Resources.cbegin(), componentData.Resources.cend(),
+				std::inserter(resourceList, resourceList.begin()));
 		}
 	}
 
+	// Serialization time
 	Zmey::MemoryOutputStream memstream;
 	memstream << (char)1; // 1 for world marker; TODO REPLACE WITH ENUM
 	memstream << "1.0"; // Version
+
+	// Resources
+	memstream << (uint64_t) resourceList.size();
+	for (const auto name : resourceList)
+	{
+		memstream << static_cast<uint64_t>(name);
+	}
+
+	// Entities
 	memstream << maxEntityIndex;
 	for (const auto& fullComponentInfo : entitiesForComponent)
 	{
