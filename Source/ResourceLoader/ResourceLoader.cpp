@@ -90,6 +90,13 @@ void ResourceLoader::WaitForResource(Zmey::Name name)
 	{}
 }
 
+void ResourceLoader::WaitForAllResources(const tmp::vector<Zmey::Name>& resources)
+{
+	auto isResourceMissing = [this](const Zmey::Name name) { return !IsResourceReady(name); };
+	while (std::any_of(resources.begin(), resources.end(), isResourceMissing))
+	{}
+}
+
 void OnResourceLoaded(ResourceLoader* loader, Zmey::Name name, const aiScene* scene)
 {
 	auto handle = Modules::Renderer->MeshLoaded(scene);
@@ -115,6 +122,12 @@ void OnResourceLoaded(ResourceLoader* loader, Zmey::Name name, stl::vector<uint8
 Zmey::Name ResourceLoader::LoadResource(const stl::string& path)
 {
 	const Zmey::Name name(path.c_str());
+
+	if (IsResourceReady(name))
+	{
+		return name;
+	}
+
 	if (Utilities::EndsWith(path, ".bin"))
 	{
 		Modules::TaskSystem->SpawnTask("Loading file", [path, this, name]()

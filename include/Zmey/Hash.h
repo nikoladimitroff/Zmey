@@ -93,11 +93,18 @@ inline constexpr uint64_t HashFor<HashHelpers::CaseInsensitiveStringWrapper>(Has
 class Name
 {
 public:
+	constexpr Name()
+		: m_Hash(0ull)
+	{}
+
 	constexpr Name(const char* str)
 		: m_Hash(HashHelpers::CaseInsensitiveStringWrapper(str))
 	{}
 	constexpr Name(const stl::string& str)
 		: m_Hash(HashHelpers::CaseInsensitiveStringWrapper(str.c_str()))
+	{}
+	explicit constexpr Name(Zmey::Hash hash)
+		: m_Hash(hash)
 	{}
 
 	constexpr bool operator==(const Name& other) const

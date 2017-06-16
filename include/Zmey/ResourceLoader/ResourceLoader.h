@@ -57,6 +57,7 @@ public:
 	ZMEY_API Zmey::Name LoadResource(const stl::string& path);
 	ZMEY_API bool IsResourceReady(Zmey::Name pathHash);
 	ZMEY_API void WaitForResource(Zmey::Name name);
+	ZMEY_API void WaitForAllResources(const tmp::vector<Zmey::Name>& resources);
 
 	// Use non-template methods for public access so as the client doesn't have to wonder
 	// what exact type should he pass in the templated function.

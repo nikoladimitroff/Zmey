@@ -18,7 +18,8 @@ namespace Components
 	public:
 		virtual ~IDataBlob() {}
 		virtual void WriteData(Hash dataName, const uint8_t* data, uint16_t dataSize) = 0;
-		virtual void RequestResource(Zmey::Name resourceName) = 0;
+		virtual void WriteData(Hash dataName, const char* text, uint16_t textSize) = 0;
+		virtual void RequestResource(const char* resourcePath, uint16_t size) = 0;
 	};
 	struct ComponentManagerEntry
 	{

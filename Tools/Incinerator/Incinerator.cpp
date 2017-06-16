@@ -115,9 +115,23 @@ void Incinerator::ComponentEntry::WriteData(Zmey::Hash nameHash, const uint8_t* 
 	PropertyData.insert_or_assign(nameHash, std::move(value));
 }
 
-void Incinerator::ComponentEntry::RequestResource(Zmey::Name resourceName)
+void Incinerator::ComponentEntry::WriteData(Zmey::Hash nameHash, const char* text, uint16_t textSize)
 {
-	Resources.push_back(resourceName);
+	SingleDataValue value;
+	value.resize(textSize);
+	std::memcpy(value.data(), text, textSize);
+	value.push_back(0); // terminating zero
+
+	if (PropertyData.find(nameHash) == PropertyData.end())
+	{
+		PropertyInsertionOrder.push_back(nameHash);
+	}
+	PropertyData.insert_or_assign(nameHash, std::move(value));
+}
+
+void Incinerator::ComponentEntry::RequestResource(const char* resourcePath, uint16_t size)
+{
+	Resources.push_back(std::string(resourcePath, size));
 }
 
 void Incinerator::IncinerateClass(const std::string& destinationFolder, const std::string& className)
@@ -165,7 +179,7 @@ void Incinerator::IncinerateWorld(const std::string& destinationFolder, const st
 	std::unordered_map<std::string, std::vector<EntityDataPerComponent>> entitiesForComponent;
 	Zmey::EntityId::IndexType maxEntityIndex = 0u;
 
-	std::unordered_set<Zmey::Name> resourceList;
+	std::unordered_set<std::string> resourceList;
 	for (const auto& entityData : rawData["entities"])
 	{
 		// Go through each entity and serialize their components
@@ -220,9 +234,9 @@ void Incinerator::IncinerateWorld(const std::string& destinationFolder, const st
 
 	// Resources
 	memstream << (uint64_t) resourceList.size();
-	for (const auto name : resourceList)
+	for (const auto& name : resourceList)
 	{
-		memstream << static_cast<uint64_t>(name);
+		memstream << name;
 	}
 
 	// Entities

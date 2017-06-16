@@ -26,7 +26,8 @@ private:
 		{}
 
 		virtual void WriteData(Zmey::Hash nameHash, const uint8_t* data, uint16_t dataSize) override;
-		virtual void RequestResource(Zmey::Name resourceName) override;
+		virtual void WriteData(Zmey::Hash dataName, const char* text, uint16_t textSize) override;
+		virtual void RequestResource(const char* resourcePath, uint16_t size) override;
 
 		// The component's name
 		std::string ComponentName;
@@ -36,7 +37,7 @@ private:
 		// We need the insertion order so store that in an additional vector
 		std::vector<Zmey::Hash> PropertyInsertionOrder;
 		// Resources requested by the entry
-		std::vector<Zmey::Name> Resources;
+		std::vector<std::string> Resources;
 	};
 	struct ClassEntry
 	{

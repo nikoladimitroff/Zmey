@@ -12,8 +12,8 @@ let nextFrame = function (delta) {
     let posy = new Vector3(0.1, 0, 0);
     //posy.x = 0.2;
     let pozz = transform.position();
+    //pozz.y += 0.01;
     //console.log(pozz.x, "|", JSON.stringify(posy.x));
-    pozz.x = 0.1;
     //console.log(JSON.stringify(transform.position()));
     //actor.pos.x++;
     //console.log(actor.pos.x, actor.pos.length());

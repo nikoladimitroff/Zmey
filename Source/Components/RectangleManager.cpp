@@ -30,8 +30,6 @@ void RectangleManager::Simulate(float deltaTime)
 	{
 		auto transform = transformManager.Lookup(m_Entities[i]);
 
-		transform.Position() += Vector3(0.05f, 0.05f, 0.05f) * deltaTime;
-
 		m_Rects[i].x = transform.Position().x;
 		m_Rects[i].y = transform.Position().y;
 	}

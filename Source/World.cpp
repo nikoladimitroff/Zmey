@@ -3,6 +3,7 @@
 #include <Zmey/Memory/MemoryManagement.h>
 #include <Zmey/MemoryStream.h>
 #include <Zmey/Components/ComponentRegistry.h>
+#include <Zmey/Modules.h>
 
 namespace Zmey
 {
@@ -24,6 +25,19 @@ void World::InitializeFromBuffer(const uint8_t* buffer, size_t size)
 	stream >> versionString;
 	assert(versionString == "1.0");
 
+	// Read resources
+	uint64_t resourceCount;
+	stream >> resourceCount;
+	tmp::vector<Zmey::Name> dependentResources;
+	for (uint64_t i = 0u; i < resourceCount; i++)
+	{
+		stl::string resourcePath; // TODO Use tmp strings?
+		stream >> resourcePath;
+		dependentResources.push_back(Zmey::Modules::ResourceLoader->LoadResource(resourcePath));
+	}
+	Zmey::Modules::ResourceLoader->WaitForAllResources(dependentResources);
+
+	// Read entities
 	using EntityIndex = Zmey::EntityId::IndexType;
 	EntityIndex entityCount;
 	stream >> entityCount;

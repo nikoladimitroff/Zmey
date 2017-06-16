@@ -35,6 +35,20 @@ inline void ForceCrash()
 #define _STRINGIFY_MACRO(x) #x
 #define STRINGIFY_MACRO(x) _STRINGIFY_MACRO(x)
 
+#ifdef NDEBUG
+#define ASSERT(expression)
+#else
+#define ASSERT(expression) \
+	do \
+	{ \
+		if (!(expression)) \
+		{ \
+			LOG(Error, Assert, "Assert failed: " #expression " at " __FILE__ ":" STRINGIFY_MACRO(__LINE__)); \
+			return; \
+		} \
+	} while(0, 0)
+#endif
+
 #define ASSERT_RETURN(expression) \
 	do \
 	{ \

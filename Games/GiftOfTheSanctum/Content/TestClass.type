@@ -5,6 +5,10 @@
     "components": [ {
         "name": "rectangle"
     }, {
-        "name": "transform"
+        "name": "transform",
+        "scale": [0.05, 0.05, 0.05]
+    }, {
+        "name": "mesh",
+        "mesh": "Content/Meshes/Vampire_A_Lusth/Vampire_A_Lusth.dae"
     }]
 }

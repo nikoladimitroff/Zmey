@@ -16,7 +16,6 @@ class GiftOfTheSanctumGame : public Zmey::Game
 public:
 	virtual Zmey::Name Initialize() override
 	{
-		m_MeshName = Zmey::Modules::ResourceLoader->LoadResource("Content\\Meshes\\Vampire_A_Lusth\\Vampire_A_Lusth.dae");
 		m_ScriptName = Zmey::Modules::ResourceLoader->LoadResource("Content\\Scripts\\main.js");
 
 		for (size_t playerIndex = 0; playerIndex < 2; playerIndex++)
@@ -46,23 +45,12 @@ public:
 			Zmey::Modules::ScriptEngine->ExecuteFromFile(m_ScriptName);
 			Zmey::Modules::ResourceLoader->FreeResource(m_ScriptName);
 		}
-
-		if (GetWorld()->Meshes.empty() && Zmey::Modules::ResourceLoader->IsResourceReady(m_MeshName))
-		{
-			auto& entityManager = GetWorld()->GetEntityManager();
-			auto newEntity = entityManager.SpawnOne();
-			GetWorld()->Meshes.insert(std::make_pair(newEntity, *Zmey::Modules::ResourceLoader->AsMeshHandle(m_MeshName)));
-			auto& transformManager = GetWorld()->GetManager<Zmey::Components::TransformManager>();
-			transformManager.AddNewEntity(newEntity, Zmey::Vector3(0.0f, -5.0f, 15.0f), Zmey::Vector3(1.0f / 10.0f, 1.0f / 10.f, 1.0f / 10.0f), Zmey::Quaternion(Zmey::Vector3(glm::radians(90.0f), 0.0f, 0.0f)));
-		}
 	}
 	virtual void Uninitialize() override
 	{
-		Zmey::Modules::ResourceLoader->FreeResource(m_MeshName);
 	}
 private:
 	Zmey::Utilities::ConstructorInitializable<Zmey::Name> m_WorldName;
-	Zmey::Utilities::ConstructorInitializable<Zmey::Name> m_MeshName;
 	Zmey::Utilities::ConstructorInitializable<Zmey::Name> m_ScriptName;
 };
 
