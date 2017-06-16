@@ -31,9 +31,6 @@ public:
 	void AddClassToRegistry(Zmey::Hash className, const uint8_t* buffer, size_t size);
 	EntityId SpawnEntity(Zmey::Hash actorClass);
 	void Simulate(float deltaTime);
-
-	// TODO(alex): remove this after we have an mesh component manager
-	stl::unordered_map<EntityId, Graphics::MeshHandle> Meshes;
 private:
 	EntityManager m_EntityManager;
 	stl::vector<Components::ComponentManager*> m_ComponentManagers;

@@ -42,13 +42,25 @@ void MeshComponentManager::InitializeFromBlob(const tmp::vector<EntityId>& entit
 		Graphics::MeshHandle meshHandle = *Zmey::Modules::ResourceLoader->AsMeshHandle(name);
 		m_Meshes.push_back(meshHandle);
 		m_EntityToIndex[entities[i]] = i;
-
-		GetWorld().Meshes.insert(std::make_pair(entities[i], meshHandle));
 	}
 }
 void MeshComponentManager::Simulate(float deltaTime)
 {
 }
+
+stl::vector<std::pair<EntityId, Graphics::MeshHandle>> MeshComponentManager::GetMeshes()
+{
+	stl::vector<std::pair<EntityId, Graphics::MeshHandle>> result;
+	result.reserve(m_EntityToIndex.size());
+	for (auto& en : m_EntityToIndex)
+	{
+		result.emplace_back(en.first, m_Meshes[en.second]);
+	}
+
+	return result;
+}
+
+
 DEFINE_COMPONENT_MANAGER(MeshComponentManager, Mesh, &MeshComponentDefaults, &MeshComponentToBlob);
 
 }

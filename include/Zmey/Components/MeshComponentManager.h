@@ -16,6 +16,9 @@ class MeshComponentManager : public ComponentManager
 public:
 	virtual void InitializeFromBlob(const tmp::vector<EntityId>&, Zmey::MemoryInputStream&) override;
 	virtual void Simulate(float deltaTime) override;
+
+	//TODO(alex): remove this after visibility objects are created
+	stl::vector<std::pair<EntityId, Graphics::MeshHandle>> GetMeshes();
 private:
 	stl::vector<Graphics::MeshHandle> m_Meshes;
 	stl::unordered_map<EntityId, EntityId::IndexType> m_EntityToIndex;

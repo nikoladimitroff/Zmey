@@ -5,6 +5,7 @@
 #include <Zmey/Graphics/Renderer.h>
 #include <Zmey/World.h>
 #include <Zmey/Components/TransformManager.h>
+#include <Zmey/Components/MeshComponentManager.h>
 
 namespace Zmey
 {
@@ -15,13 +16,15 @@ namespace Features
 
 void MeshRenderer::GatherData(FrameData& frameData, World& world)
 {
-	frameData.MeshHandles.reserve(world.Meshes.size());
-	frameData.MeshTransforms.reserve(world.Meshes.size());
+	auto& meshManager = world.GetManager<Components::MeshComponentManager>();
+	const auto& meshes = meshManager.GetMeshes();
+	frameData.MeshHandles.reserve(meshes.size());
+	frameData.MeshTransforms.reserve(meshes.size());
 	auto& transformManager = world.GetManager<Components::TransformManager>();
-	for (const auto& meshes : world.Meshes)
+	for (const auto& mesh : meshes)
 	{
-		frameData.MeshHandles.push_back(meshes.second);
-		const auto& transform = transformManager.Lookup(meshes.first);
+		frameData.MeshHandles.push_back(mesh.second);
+		const auto& transform = transformManager.Lookup(mesh.first);
 
 		frameData.MeshTransforms.push_back(
 			glm::translate(transform.Position()) *
