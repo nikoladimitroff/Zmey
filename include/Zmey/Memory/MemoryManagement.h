@@ -6,6 +6,10 @@
 #include <vector>
 #include <queue>
 #include <unordered_map>
+#pragma warning(push)
+#pragma warning(disable: 4530) // Exceptions
+#include <concurrent_vector.h>
+#pragma warning(pop)
 
 #include <Zmey/Config.h>
 #include <Zmey/Memory/Allocator.h>
@@ -206,6 +210,8 @@ namespace stl
 	using vector = std::vector<T, StlAllocatorTemplate<DefaultAllocator, T>>;
 	template<typename T>
 	using small_vector = vector<T>;
+	template<typename T>
+	using concurrent_vector = Concurrency::concurrent_vector<T, StlAllocatorTemplate<TempAllocator, T>>;
 	template<typename T>
 	using deque = std::deque<T, StlAllocatorTemplate<DefaultAllocator, T>>;
 	template<typename T>

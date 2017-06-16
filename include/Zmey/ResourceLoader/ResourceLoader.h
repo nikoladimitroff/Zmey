@@ -17,7 +17,8 @@ class World;
 class ResourceLoader
 {
 	template<typename T>
-	typename stl::vector<std::pair<Zmey::Name, T>>::iterator FindResourceIteratorInCollection(Zmey::Name name, stl::vector<std::pair<Zmey::Name, T>>& collection) const
+	typename stl::concurrent_vector<std::pair<Zmey::Name, T>>::iterator
+		FindResourceIteratorInCollection(Zmey::Name name, stl::concurrent_vector<std::pair<Zmey::Name, T>>& collection) const
 	{
 		auto it = std::find_if(collection.begin(), collection.end(), [name](const std::pair<Zmey::Name, T>& data)
 		{
@@ -26,7 +27,8 @@ class ResourceLoader
 		return it;
 	}
 	template<typename T>
-	typename stl::vector<std::pair<Zmey::Name, T>>::const_iterator FindResourceIteratorInCollection(Zmey::Name name, const stl::vector<std::pair<Zmey::Name, T>>& collection) const
+	typename stl::concurrent_vector<std::pair<Zmey::Name, T>>::const_iterator
+		FindResourceIteratorInCollection(Zmey::Name name, const stl::concurrent_vector<std::pair<Zmey::Name, T>>& collection) const
 	{
 		auto it = std::find_if(collection.cbegin(), collection.cend(), [name](const std::pair<Zmey::Name, T>& data)
 		{
@@ -35,7 +37,8 @@ class ResourceLoader
 		return it;
 	}
 	template<typename T>
-	const T* FindResourceInCollection(Zmey::Name name, const stl::vector<std::pair<Zmey::Name, T>>& collection) const
+	const T* FindResourceInCollection(Zmey::Name name,
+		const stl::concurrent_vector<std::pair<Zmey::Name, T>>& collection) const
 	{
 		auto it = FindResourceIteratorInCollection(name, collection);
 		if (it != collection.end())
@@ -83,19 +86,19 @@ public:
 	ZMEY_API void FreeResource(Zmey::Name name);
 private:
 	template<typename T>
-	bool TryFreeFromCollection(Zmey::Name name, stl::vector<std::pair<Zmey::Name, T>>& collection);
+	bool TryFreeFromCollection(Zmey::Name name, stl::concurrent_vector<std::pair<Zmey::Name, T>>& collection);
 	template<typename T>
-	bool ResourceExistsInCollection(Zmey::Name name, const stl::vector<std::pair<Zmey::Name, T>>& collection);
+	bool ResourceExistsInCollection(Zmey::Name name, const stl::concurrent_vector<std::pair<Zmey::Name, T>>& collection);
 	// Callback for the task system
 	friend void OnResourceLoaded(ResourceLoader*, Zmey::Name, const aiScene*);
 	friend void OnResourceLoaded(ResourceLoader*, Zmey::Name, const tmp::string&);
 	friend void OnResourceLoaded(ResourceLoader*, Zmey::Name, World*);
 	friend void OnResourceLoaded(ResourceLoader*, Zmey::Name, stl::vector<uint8_t>&&);
 
-	stl::vector<std::pair<Zmey::Name, Graphics::MeshHandle>> m_Meshes;
-	stl::vector<std::pair<Zmey::Name, stl::string>> m_TextContents;
-	stl::vector<std::pair<Zmey::Name, World*>> m_Worlds;
-	stl::vector<std::pair<Zmey::Name, stl::vector<uint8_t>>> m_BufferedData;
+	stl::concurrent_vector<std::pair<Zmey::Name, Graphics::MeshHandle>> m_Meshes;
+	stl::concurrent_vector<std::pair<Zmey::Name, stl::string>> m_TextContents;
+	stl::concurrent_vector<std::pair<Zmey::Name, World*>> m_Worlds;
+	stl::concurrent_vector<std::pair<Zmey::Name, stl::vector<uint8_t>>> m_BufferedData;
 };
 
 }

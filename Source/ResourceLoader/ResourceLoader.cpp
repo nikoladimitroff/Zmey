@@ -46,7 +46,10 @@ void ResourceLoader::ReleaseOwnershipOver(Zmey::Name name)
 	});
 	if (it != m_Worlds.end())
 	{
-		m_Worlds.erase(it);
+		// concurrent_vector doesn't support erase, so swap and resize
+		// TODO Are the following 3 operations thread transactional?
+		std::swap(it, m_Worlds.end() - 1);
+		m_Worlds.resize(m_Worlds.size() - 1);
 	}
 }
 #define FIRST_IN_ALL_RESOURCE_COLLECTIONS(Function, Name) \
@@ -56,7 +59,7 @@ void ResourceLoader::ReleaseOwnershipOver(Zmey::Name name)
 	Function(Name, m_BufferedData)
 
 template<typename T>
-bool ResourceLoader::ResourceExistsInCollection(Zmey::Name name, const stl::vector<std::pair<Zmey::Name, T>>& collection)
+bool ResourceLoader::ResourceExistsInCollection(Zmey::Name name, const stl::concurrent_vector<std::pair<Zmey::Name, T>>& collection)
 {
 	return FindResourceIteratorInCollection(name, collection) != collection.end();
 }
@@ -67,14 +70,16 @@ bool ResourceLoader::IsResourceReady(Zmey::Name name)
 }
 
 template<typename T>
-bool ResourceLoader::TryFreeFromCollection(Zmey::Name name, stl::vector<std::pair<Zmey::Name, T>>& collection)
+bool ResourceLoader::TryFreeFromCollection(Zmey::Name name, stl::concurrent_vector<std::pair<Zmey::Name, T>>& collection)
 {
 	auto it = FindResourceIteratorInCollection(name, collection);
 	if (it != collection.end())
 	{
 		auto& lastPair = collection[collection.size() - 1];
+		// concurrent_vector doesn't support erase, so swap and resize
+		// TODO Are the following 3 operations thread transactional?
 		it->swap(lastPair);
-		collection.pop_back();
+		collection.resize(collection.size() - 1);
 		return true;
 	}
 	return false;
