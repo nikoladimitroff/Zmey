@@ -74,6 +74,11 @@ void DefineProperty(JsValueRef object, const wchar_t* propertyName, JsNativeFunc
 void DefineProperty(JsValueRef object, const wchar_t* propertyName, JsNativeFunction getter, JsNativeFunction setter);
 void ProjectNativeClass(const wchar_t *className, JsNativeFunction constructor, JsValueRef &prototype, const tmp::vector<const wchar_t *>& memberNames, const tmp::vector<JsNativeFunction>& memberFuncs);
 void ProjectGlobal(const wchar_t* globalName, void* objectToProject, Zmey::Hash classNameHash);
+template<typename T>
+void FinalizeCallback(void* data)
+{
+	delete reinterpret_cast<T*>(data);
+}
 
 struct AnyTypeData
 {

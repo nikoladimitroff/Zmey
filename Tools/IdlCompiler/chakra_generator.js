@@ -185,7 +185,7 @@ JsValueRef CALLBACK Js${uniqueInterfaceName}Constructor(JsValueRef callee, bool 
 	JsValueRef output = JS_INVALID_REFERENCE;
 	${argParsingCode}
 	${qualifiedName}* object = new ${qualifiedName}(${argConstructorCode});
-	JsCreateExternalObject(object, nullptr, &output);
+	JsCreateExternalObject(object, &Zmey::Chakra::Binding::FinalizeCallback<${qualifiedName}>, &output);
 	JsSetPrototype(output, Js${uniqueInterfaceName}Prototype);
 	Js${uniqueInterfaceName}DefineProperties(output);
 	return output;
