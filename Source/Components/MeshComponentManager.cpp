@@ -15,8 +15,8 @@ namespace Components
 
 void MeshComponentDefaults(IDataBlob& blob)
 {
-	char buffer[] = { 0, 0 };
-	blob.WriteData("mesh", reinterpret_cast<uint8_t*>(buffer), sizeof(buffer));
+	Zmey::Name nullName(Zmey::Name::NullName());
+	blob.WriteData("mesh", reinterpret_cast<uint8_t*>(&nullName), sizeof(nullName));
 }
 
 void MeshComponentToBlob(const nlohmann::json& rawJson, IDataBlob& blob)
@@ -26,7 +26,8 @@ void MeshComponentToBlob(const nlohmann::json& rawJson, IDataBlob& blob)
 		ASSERT_FATAL(rawJson["mesh"].is_string());
 		std::string meshPath = rawJson["mesh"];
 		uint16_t pathLength = static_cast<uint16_t>(meshPath.size());
-		blob.WriteData("mesh", meshPath.c_str(), pathLength);
+		Zmey::Name name(meshPath.c_str());
+		blob.WriteData("mesh", reinterpret_cast<uint8_t*>(&name), sizeof(name));
 		blob.RequestResource(meshPath.c_str(), pathLength);
 	}
 }
@@ -35,9 +36,8 @@ void MeshComponentManager::InitializeFromBlob(const tmp::vector<EntityId>& entit
 {
 	for (EntityId::IndexType i = 0u; i < entities.size(); ++i)
 	{
-		tmp::string meshPath;
-		stream >> meshPath;
-		Zmey::Name name(meshPath.c_str());
+		Zmey::Name name;
+		stream >> name;
 		ASSERT(Zmey::Modules::ResourceLoader->IsResourceReady(name));
 		Graphics::MeshHandle meshHandle = *Zmey::Modules::ResourceLoader->AsMeshHandle(name);
 		m_Meshes.push_back(meshHandle);
