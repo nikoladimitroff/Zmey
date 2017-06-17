@@ -51,13 +51,18 @@ void Incinerator::Incinerate(const Options& options)
 	const std::string compiledDir = options.GameDirectory + "/IncineratedDataCache/";
 	const std::string worldExtension = "*.world";
 	const std::string classExtension = "*.type";
-	const std::string binaryExtension = ".bin";
 
 	auto classDescriptors = FindAllFiles(contentDir, classExtension);
 	BuildClassIndex(classDescriptors);
 	for (const auto& classDescriptorFile : classDescriptors)
 	{
-		IncinerateClass(compiledDir, "Magician");
+		auto filenameStart = classDescriptorFile.find_last_of('/') + 1;
+		auto filenameLength = classDescriptorFile.find_last_of('.') - filenameStart;
+		std::string withoutExtension = classDescriptorFile.substr(
+			filenameStart,
+			filenameLength
+		);
+		IncinerateClass(compiledDir, withoutExtension);
 	}
 
 	auto mkdirResult = ::CreateDirectory(compiledDir.c_str(), NULL);
@@ -137,7 +142,6 @@ void Incinerator::ComponentEntry::RequestResource(const char* resourcePath, uint
 void Incinerator::IncinerateClass(const std::string& destinationFolder, const std::string& className)
 {
 	Zmey::MemoryOutputStream memstream;
-	memstream << (char)0; // 0 for class descriptor marker; TODO REPLACE WITH ENUM
 	memstream << "1.0"; // Version
 	Zmey::Hash classNameHash(Zmey::HashHelpers::CaseInsensitiveStringWrapper(className.c_str()));
 	memstream << static_cast<uint64_t>(classNameHash);
@@ -159,7 +163,7 @@ void Incinerator::IncinerateClass(const std::string& destinationFolder, const st
 			memstream.Write(dataPtr, dataSize);
 		}
 	}
-	std::ofstream outputFile(destinationFolder + "/TestClass.bin", std::ios::binary | std::ios::out | std::ios::trunc);
+	std::ofstream outputFile(destinationFolder + className + ".typebin", std::ios::binary | std::ios::out | std::ios::trunc);
 	outputFile.write(reinterpret_cast<const char*>(memstream.GetData()), memstream.GetDataSize());
 }
 
@@ -226,10 +230,15 @@ void Incinerator::IncinerateWorld(const std::string& destinationFolder, const st
 				std::inserter(resourceList, resourceList.begin()));
 		}
 	}
+	// Add resources for all class types
+	for (const auto& classData : m_ClassIndex)
+	{
+		std::string classPath = "IncineratedDataCache/" + classData.first + ".typebin";
+		resourceList.insert(classPath);
+	}
 
 	// Serialization time
 	Zmey::MemoryOutputStream memstream;
-	memstream << (char)1; // 1 for world marker; TODO REPLACE WITH ENUM
 	memstream << "1.0"; // Version
 
 	// Resources
@@ -270,6 +279,6 @@ void Incinerator::IncinerateWorld(const std::string& destinationFolder, const st
 		}
 	}
 
-	std::ofstream outputFile(destinationFolder + "/testworld.bin", std::ios::binary | std::ios::out | std::ios::trunc);
+	std::ofstream outputFile(destinationFolder + "/testworld.worldbin", std::ios::binary | std::ios::out | std::ios::trunc);
 	outputFile.write(reinterpret_cast<const char*>(memstream.GetData()), memstream.GetDataSize());
 }

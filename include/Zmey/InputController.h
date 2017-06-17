@@ -134,6 +134,7 @@ struct ActionMapping
 	ActionMapping(const char* actionName, const tmp::small_vector<Binding> bindings);
 	const Zmey::Name ActionName;
 	static constexpr uint8_t MaxKeyBindingsPerAction = 2u;
+	const uint8_t ActiveBindingsCount;
 	const Binding ActionBindings[MaxKeyBindingsPerAction];
 };
 

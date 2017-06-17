@@ -133,36 +133,36 @@ Zmey::Name ResourceLoader::LoadResource(const stl::string& path)
 		return name;
 	}
 
-	if (Utilities::EndsWith(path, ".bin"))
+	if (Utilities::EndsWith(path, ".typebin"))
 	{
 		Modules::TaskSystem->SpawnTask("Loading file", [path, this, name]()
 		{
 			std::ifstream stream(path.c_str());
+			ASSERT(stream.good());
 			stream.seekg(0, std::ios::end);
 			size_t size = stream.tellg();
 			stream.seekg(0);
-			BinaryFileTypes markerType;
-			stream >> (char&) markerType;
-			size--; // Take 1 for the markerType
+
+			stl::vector<uint8_t> data(size);
+			stream.read((char*)data.data(), size);
+			OnResourceLoaded(this, name, std::move(data));
+		});
+	}
+	else if (Utilities::EndsWith(path, ".worldbin"))
+	{
+		Modules::TaskSystem->SpawnTask("Loading file", [path, this, name]()
+		{
+			std::ifstream stream(path.c_str());
+			ASSERT(stream.good());
+			stream.seekg(0, std::ios::end);
+			size_t size = stream.tellg();
+			stream.seekg(0);
 
 			stl::unique_array<uint8_t> buffer = stl::make_unique_array<uint8_t>(size);
 			stream.read((char*)buffer.get(), size);
-			if (markerType == BinaryFileTypes::ClassDescriptor)
-			{
-				stl::vector<uint8_t> data(size);
-				std::memcpy(&data[0], buffer.get(), size);
-				OnResourceLoaded(this, name, std::move(data));
-			}
-			else if (markerType == BinaryFileTypes::WorldSection)
-			{
-				World* world = new World();
-				world->InitializeFromBuffer(buffer.get(), size);
-				OnResourceLoaded(this, name, world);
-			}
-			else
-			{
-				NOT_REACHED();
-			}
+			World* world = new World();
+			world->InitializeFromBuffer(buffer.get(), size);
+			OnResourceLoaded(this, name, world);
 		});
 	}
 	else if (Utilities::EndsWith(path, ".js"))

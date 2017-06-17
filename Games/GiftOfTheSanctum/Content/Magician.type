@@ -2,9 +2,7 @@
     "version": "1.0",
     "name": "Magician",
     "extends": "",
-    "components": [ {
-        "name": "rectangle"
-    }, {
+    "components": [{
         "name": "transform",
         "scale": [0.05, 0.05, 0.05]
     }, {

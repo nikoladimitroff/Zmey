@@ -15,7 +15,7 @@ class TransformManager : public ComponentManager
 	DECLARE_COMPONENT_MANAGER(TransformManager);
 public:
 
-	struct TransformInstance& Lookup(EntityId);
+	ZMEY_API struct TransformInstance Lookup(EntityId);
 
 	ZMEY_API void AddNewEntity(EntityId id, Vector3 pos, Vector3 scale, Quaternion rot);
 	virtual void InitializeFromBlob(const tmp::vector<EntityId>&, Zmey::MemoryInputStream&) override;

@@ -8,3 +8,8 @@ using ComponentIndex = uint16_t;
 	public: \
 		##ClassName(World& world) : ComponentManager(world) {} \
 		ZMEY_API const static Zmey::ComponentIndex SZmeyComponentManagerIndex
+
+#define DECLARE_EXTERNAL_COMPONENT_MANAGER(ClassName) \
+	public: \
+		##ClassName(World& world) : ComponentManager(world) {} \
+		const static Zmey::ComponentIndex SZmeyComponentManagerIndex

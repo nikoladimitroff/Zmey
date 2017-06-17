@@ -79,4 +79,4 @@ inline void ForceCrash()
 		} \
 	} while(0, 0)
 
-#define NOT_REACHED() ASSERT_FATAL("Shouldn't be reached!")
+#define NOT_REACHED() ASSERT_FATAL(false && "Shouldn't be reached!")

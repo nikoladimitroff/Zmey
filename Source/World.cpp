@@ -4,6 +4,7 @@
 #include <Zmey/MemoryStream.h>
 #include <Zmey/Components/ComponentRegistry.h>
 #include <Zmey/Modules.h>
+#include <Zmey/Utilities.h>
 
 namespace Zmey
 {
@@ -29,14 +30,31 @@ void World::InitializeFromBuffer(const uint8_t* buffer, size_t size)
 	uint64_t resourceCount;
 	stream >> resourceCount;
 	tmp::vector<Zmey::Name> dependentResources;
+	tmp::vector<Zmey::Name> classNames;
+	tmp::vector<stl::string> classPaths;
 	for (uint64_t i = 0u; i < resourceCount; i++)
 	{
 		stl::string resourcePath; // TODO Use tmp strings?
 		stream >> resourcePath;
+		if (Zmey::Utilities::EndsWith(resourcePath, ".typebin"))
+		{
+			auto filenameStart = resourcePath.find_last_of('/') + 1;
+			auto filenameLength = resourcePath.find_last_of('.') - filenameStart;
+			stl::string withoutExtension = resourcePath.substr(
+				filenameStart,
+				filenameLength
+			);
+			classNames.push_back(Zmey::Name(withoutExtension));
+			classPaths.push_back(resourcePath);
+		}
 		dependentResources.push_back(Zmey::Modules::ResourceLoader->LoadResource(resourcePath));
 	}
 	Zmey::Modules::ResourceLoader->WaitForAllResources(dependentResources);
-
+	for (auto i = 0; i < classNames.size(); ++i)
+	{
+		auto buffer = Zmey::Modules::ResourceLoader->AsBuffer(classPaths[i]);
+		AddClassToRegistry(classNames[i], buffer->data(), buffer-> size());
+	}
 	// Read entities
 	using EntityIndex = Zmey::EntityId::IndexType;
 	EntityIndex entityCount;
@@ -80,14 +98,14 @@ void World::Simulate(float deltaTime)
 }
 
 
-void World::AddClassToRegistry(Zmey::Hash className, const uint8_t* buffer, size_t size)
+void World::AddClassToRegistry(Zmey::Name className, const uint8_t* buffer, size_t size)
 {
 	stl::vector<uint8_t> bufferContainer(size);
 	std::memcpy(&bufferContainer[0], buffer, size);
 	m_ClassRegistry[className] = std::move(bufferContainer);
 }
 
-EntityId World::SpawnEntity(Zmey::Hash actorType)
+EntityId World::SpawnEntity(Zmey::Name actorType)
 {
 	auto it = m_ClassRegistry.find(actorType);
 	ASSERT_FATAL(it != m_ClassRegistry.end());

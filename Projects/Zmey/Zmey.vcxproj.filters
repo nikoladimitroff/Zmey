@@ -260,6 +260,9 @@
     <ClInclude Include="..\..\include\Zmey\Components\MeshComponentManager.h">
       <Filter>include\Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Components\ProjectileComponent.h">
+      <Filter>include\Components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\EngineLoop.cpp">
@@ -350,6 +353,9 @@
       <Filter>Source\ResourceLoader</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Components\MeshComponentManager.cpp">
+      <Filter>Source\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Components\ProjectileComponent.cpp">
       <Filter>Source\Components</Filter>
     </ClCompile>
   </ItemGroup>

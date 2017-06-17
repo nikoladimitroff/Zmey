@@ -9,19 +9,25 @@
             "position": [0.0, -5.0, 15.0]
         }, {
             "name": "tag",
-            "tags": ["Player1"]
+            "tags": ["Player0"]
         }]
     },{
         "type": "Magician", "compiler-id": 1,
         "components": [{
             "name": "transform",
             "position": [0.0, 0.0, 15.0]
+        }, {
+            "name": "tag",
+            "tags": ["Player1"]
         }]
     }, {
         "type": "Magician", "compiler-id": 2,
         "components": [{
             "name": "transform",
             "position": [0.0, 5.0, 15.0]
+        }, {
+            "name": "tag",
+            "tags": ["Player2"]
         }]
     }]
 }

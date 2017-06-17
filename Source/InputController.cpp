@@ -14,6 +14,7 @@ namespace Zmey
 
 ActionMapping::ActionMapping(const char* actionName, const tmp::small_vector<Binding> bindings)
 	: ActionName(actionName)
+	, ActiveBindingsCount(static_cast<uint8_t>(bindings.size()))
 {
 	size_t sizeToCopy = std::min(bindings.size(), static_cast<size_t>(MaxKeyBindingsPerAction)) * sizeof(Binding);
 	std::memcpy(const_cast<Binding*>(&ActionBindings[0]), bindings.data(), sizeToCopy);
@@ -237,8 +238,8 @@ void InputController::DispatchActionEventsForPlayerInCurrentFrame(uint8_t player
 	for (const auto& mapping : m_ActionMappings)
 	{
 		float axisValue;
-		bool actionFired = std::any_of(std::begin(mapping.ActionBindings),
-			std::end(mapping.ActionBindings),
+		bool actionFired = std::any_of(mapping.ActionBindings,
+			mapping.ActionBindings + mapping.ActiveBindingsCount,
 			[&previousState, &currentState, &axisValue](const ActionMapping::Binding& binding)
 		{ return binding.MatchesInput(currentState, previousState, axisValue); });
 		if (actionFired)
@@ -246,14 +247,13 @@ void InputController::DispatchActionEventsForPlayerInCurrentFrame(uint8_t player
 			// Find the first delegate with the same action and index
 			PlayerInputAction baseAction{ mapping.ActionName, playerIndex, nullptr };
 			auto lowerBound = std::lower_bound(m_ActionHandlers.begin(), m_ActionHandlers.end(), baseAction);
-			for (auto it = lowerBound; it->Action == mapping.ActionName && it->PlayerIndex == playerIndex; ++it)
+			for (auto it = lowerBound; it != m_ActionHandlers.end() && it->Action == mapping.ActionName && it->PlayerIndex == playerIndex; ++it)
 			{
 				it->Delegate(axisValue);
 			}
 		}
 	}
 	previousState = currentState;
-
 }
 void InputController::AddListenerForAction(Zmey::Name actionName, uint8_t playerIndex, InputActionDelegate actionHandler)
 {

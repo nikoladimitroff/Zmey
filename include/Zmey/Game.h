@@ -12,7 +12,8 @@ public:
 	{}
 	virtual ~Game() {}
 	// Initializes the game and returns the name of the initial world
-	virtual Zmey::Name Initialize() = 0;
+	virtual Zmey::Name LoadResources() = 0;
+	virtual void Initialize() = 0;
 	virtual void Simulate(float deltaTime) = 0;
 	virtual void Uninitialize() = 0;
 	class World* GetWorld()

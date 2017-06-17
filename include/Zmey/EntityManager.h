@@ -6,6 +6,10 @@ namespace Zmey
 
 struct EntityId
 {
+	EntityId()
+		: EntityId(0xFFFFFFFFFFFFFFFF)
+	{}
+
 	EntityId(const EntityId& other) = default;
 	EntityId& operator=(const EntityId& rhs)
 	{

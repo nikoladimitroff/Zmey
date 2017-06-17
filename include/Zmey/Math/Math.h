@@ -21,4 +21,14 @@ inline bool FloatClose(float x, float y, float epsilon = 0.001f)
 	return fabsf(x - y) < epsilon;
 }
 
+template<typename NumberType>
+inline NumberType Clamp(NumberType value, NumberType min, NumberType max)
+{
+	if (value < min)
+		return min;
+	if (value > max)
+		return max;
+	return value;
+}
+
 }

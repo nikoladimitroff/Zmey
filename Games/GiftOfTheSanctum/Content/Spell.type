@@ -1,0 +1,14 @@
+{
+    "version": "1.0",
+    "name": "Spell",
+    "extends": "",
+    "components": [{
+        "name": "transform",
+        "scale": [0.01, 0.01, 0.01]
+    }, {
+        "name": "mesh",
+        "mesh": "Content/Meshes/Vampire_A_Lusth/Vampire_A_Lusth.dae"
+    }, {
+        "name": "projectile"
+    }]
+}

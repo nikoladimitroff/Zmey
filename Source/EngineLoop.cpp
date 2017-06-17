@@ -93,15 +93,17 @@ void EngineLoop::Run()
 	playerView.SetupProjection(width, height, glm::radians(60.0f), 0.1f, 1000.0f);
 	playerView.SetupView(Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f));
 
-	Zmey::Name worldName = m_Game->Initialize();
+	Zmey::Name worldName = m_Game->LoadResources();
 	Modules::ResourceLoader->WaitForResource(worldName);
 	const World* world = Modules::ResourceLoader->AsWorld(worldName);
+	ASSERT_FATAL(world);
 	Modules::ResourceLoader->ReleaseOwnershipOver(worldName);
 	m_World = const_cast<World*>(world);
 	Zmey::Chakra::Binding::ProjectGlobal(L"world", m_World, Zmey::Hash("world"));
 	Zmey::Modules::ProjectToScripting();
 	m_Game->SetWorld(m_World);
 
+	m_Game->Initialize();
 	while (g_Run)
 	{
 		auto frameScope = TempAllocator::GetTlsAllocator().ScopeNow();
@@ -138,7 +140,7 @@ void EngineLoop::Run()
 		Modules::Renderer->RenderFrame(frameData);
 		lastFrameTmestamp = currentFrameTimestamp;
 	}
-
+	m_Game->Uninitialize();
 	Modules::Renderer->Unitialize();
 	Modules::Platform->KillWindow(windowHandle);
 }

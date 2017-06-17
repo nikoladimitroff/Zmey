@@ -134,6 +134,7 @@
     <ClInclude Include="..\..\include\Zmey\Components\ComponentRegistry.h" />
     <ClInclude Include="..\..\include\Zmey\Components\ComponentRegistryCommon.h" />
     <ClInclude Include="..\..\include\Zmey\Components\MeshComponentManager.h" />
+    <ClInclude Include="..\..\include\Zmey\Components\ProjectileComponent.h" />
     <ClInclude Include="..\..\include\Zmey\Components\RectangleManager.h" />
     <ClInclude Include="..\..\include\Zmey\Components\TagManager.h" />
     <ClInclude Include="..\..\include\Zmey\Components\TransformManager.h" />
@@ -204,6 +205,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\Source\Components\ComponentRegistry.cpp" />
     <ClCompile Include="..\..\Source\Components\MeshComponentManager.cpp" />
+    <ClCompile Include="..\..\Source\Components\ProjectileComponent.cpp" />
     <ClCompile Include="..\..\Source\Components\RectangleManager.cpp" />
     <ClCompile Include="..\..\Source\Components\TagManager.cpp" />
     <ClCompile Include="..\..\Source\Components\TransformManager.cpp" />

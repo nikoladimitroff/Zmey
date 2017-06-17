@@ -28,13 +28,13 @@ public:
 		return *m_ComponentManagers[index];
 	}
 	void InitializeFromBuffer(const uint8_t* buffer, size_t size);
-	void AddClassToRegistry(Zmey::Hash className, const uint8_t* buffer, size_t size);
-	EntityId SpawnEntity(Zmey::Hash actorClass);
+	void AddClassToRegistry(Zmey::Name className, const uint8_t* buffer, size_t size);
+	ZMEY_API EntityId SpawnEntity(Zmey::Name actorClass);
 	void Simulate(float deltaTime);
 private:
 	EntityManager m_EntityManager;
 	stl::vector<Components::ComponentManager*> m_ComponentManagers;
-	stl::unordered_map<Zmey::Hash, stl::vector<uint8_t>> m_ClassRegistry;
+	stl::unordered_map<Zmey::Name, stl::vector<uint8_t>> m_ClassRegistry;
 };
 
 }
