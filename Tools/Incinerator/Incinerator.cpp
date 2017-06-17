@@ -159,7 +159,7 @@ void Incinerator::IncinerateClass(const std::string& destinationFolder, const st
 			memstream.Write(dataPtr, dataSize);
 		}
 	}
-	std::ofstream outputFile(destinationFolder + "/TestClass.bin", std::ios::binary | std::ios::out);
+	std::ofstream outputFile(destinationFolder + "/TestClass.bin", std::ios::binary | std::ios::out | std::ios::trunc);
 	outputFile.write(reinterpret_cast<const char*>(memstream.GetData()), memstream.GetDataSize());
 }
 
@@ -270,6 +270,6 @@ void Incinerator::IncinerateWorld(const std::string& destinationFolder, const st
 		}
 	}
 
-	std::ofstream outputFile(destinationFolder + "/testworld.bin", std::ios::binary | std::ios::out);
+	std::ofstream outputFile(destinationFolder + "/testworld.bin", std::ios::binary | std::ios::out | std::ios::trunc);
 	outputFile.write(reinterpret_cast<const char*>(memstream.GetData()), memstream.GetDataSize());
 }
