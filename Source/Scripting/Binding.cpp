@@ -110,10 +110,10 @@ void Initialize()
 void SetCallback(JsValueRef object, const wchar_t *propertyName, JsNativeFunction callback, void *callbackState)
 {
 	JsPropertyIdRef propertyId;
-	JsGetPropertyIdFromName(propertyName, &propertyId);
+	CHECKCHAKRA(JsGetPropertyIdFromName(propertyName, &propertyId));
 	JsValueRef function;
-	JsCreateFunction(callback, callbackState, &function);
-	JsSetProperty(object, propertyId, function, true);
+	CHECKCHAKRA(JsCreateFunction(callback, callbackState, &function));
+	CHECKCHAKRA(JsSetProperty(object, propertyId, function, true));
 }
 
 void SetProperty(JsValueRef object, const wchar_t *propertyName, JsValueRef property)
@@ -162,9 +162,9 @@ void ProjectNativeClass(const wchar_t *className, JsNativeFunction constructor, 
 	if (constructor)
 	{
 		JsValueRef globalObject;
-		JsGetGlobalObject(&globalObject);
+		CHECKCHAKRA(JsGetGlobalObject(&globalObject));
 		JsValueRef jsConstructor;
-		JsCreateFunction(constructor, nullptr, &jsConstructor);
+		CHECKCHAKRA(JsCreateFunction(constructor, nullptr, &jsConstructor));
 		SetProperty(globalObject, className, jsConstructor);
 		SetProperty(jsConstructor, L"prototype", prototype);
 	}
@@ -241,10 +241,10 @@ JsValueRef JSConsoleMessage(Zmey::LogSeverity severity, JsValueRef callee, bool 
 			message += ' ';
 		}
 		JsValueRef stringValue;
-		JsConvertValueToString(arguments[index], &stringValue);
+		CHECKCHAKRA(JsConvertValueToString(arguments[index], &stringValue));
 		const wchar_t* string;
 		size_t length;
-		JsStringToPointer(stringValue, &string, &length);
+		CHECKCHAKRA(JsStringToPointer(stringValue, &string, &length));
 		message.append(string);
 	}
 
@@ -258,7 +258,7 @@ JsValueRef CALLBACK Binding::JSSetTimeout(JsValueRef callee, bool isConstructCal
 	assert(!isConstructCall && argumentCount == 3);
 	JsValueRef func = arguments[1];
 	int delay = 0;
-	JsNumberToInt(arguments[2], &delay);
+	CHECKCHAKRA(JsNumberToInt(arguments[2], &delay));
 	auto host = static_cast<ChakraScriptEngine*>(Zmey::Modules::ScriptEngine);
 	host->m_ExecutionTasks.push_back(stl::make_unique<ExecutionTask>(func, delay, arguments[0], JS_INVALID_REFERENCE));
 	return JS_INVALID_REFERENCE;
@@ -270,7 +270,7 @@ JsValueRef CALLBACK Binding::JSSetInterval(JsValueRef callee, bool isConstructCa
 	assert(!isConstructCall && argumentCount == 3);
 	JsValueRef func = arguments[1];
 	int delay = 0;
-	JsNumberToInt(arguments[2], &delay);
+	CHECKCHAKRA(JsNumberToInt(arguments[2], &delay));
 	auto host = static_cast<ChakraScriptEngine*>(Zmey::Modules::ScriptEngine);
 	host->m_ExecutionTasks.push_back(stl::make_unique<ExecutionTask>(func, delay, arguments[0], JS_INVALID_REFERENCE, true));
 	return JS_INVALID_REFERENCE;
