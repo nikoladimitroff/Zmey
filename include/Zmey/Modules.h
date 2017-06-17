@@ -23,5 +23,6 @@ ZMEY_API extern Zmey::SettingsManager* SettingsManager;
 ZMEY_API extern Zmey::InputController* InputController;
 
 void Initialize();
+void ProjectToScripting();
 }
 }

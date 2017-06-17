@@ -99,6 +99,7 @@ void EngineLoop::Run()
 	Modules::ResourceLoader->ReleaseOwnershipOver(worldName);
 	m_World = const_cast<World*>(world);
 	Zmey::Chakra::Binding::ProjectGlobal(L"world", m_World, Zmey::Hash("world"));
+	Zmey::Modules::ProjectToScripting();
 	m_Game->SetWorld(m_World);
 
 	while (g_Run)

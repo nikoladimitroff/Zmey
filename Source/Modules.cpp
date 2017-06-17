@@ -27,5 +27,31 @@ void Initialize()
 	SettingsManager = StaticAlloc<Zmey::SettingsManager>();
 	InputController = StaticAlloc<Zmey::InputController>();
 }
+
+// Due to lack of better tooling, project modules by hand
+JsValueRef CALLBACK JsGetInputController(JsValueRef callee, bool isConstructCall, JsValueRef *arguments, unsigned short argumentCount, void *callbackState)
+{
+	assert(!isConstructCall && argumentCount == 1);
+	JsValueRef output = JS_INVALID_REFERENCE;
+	JsCreateExternalObject(Zmey::Modules::InputController, nullptr, &output);
+	auto hash = Zmey::Hash(Zmey::HashHelpers::CaseInsensitiveStringWrapper("InputController"));
+	JsSetPrototype(output, Zmey::Chakra::Binding::AutoNativeClassProjecter::GetPrototypeOf(hash));
+	return output;
+}
+
+void ProjectToScripting()
+{
+	using namespace Zmey::Chakra::Binding;
+
+	JsValueRef globalObject;
+	CHECKCHAKRA(JsGetGlobalObject(&globalObject));
+	JsValueRef object;
+	CHECKCHAKRA(JsCreateExternalObject(nullptr, nullptr, &object));
+
+	Zmey::Chakra::Binding::DefineProperty(object, L"inputController", &JsGetInputController);
+
+	SetProperty(globalObject, L"Modules", object);
+}
+
 }
 }

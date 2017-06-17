@@ -83,8 +83,6 @@ void CheckChakraCall(JsErrorCode error, const char* functionCall, const char* fi
 		FORMAT_LOG(Error, Scripting, "Chakra call %s failed at %s:%d with %d", functionCall, file, line, error);
 	}
 }
-#define CHECKCHAKRA(Call) \
-	CheckChakraCall(Call, #Call, __FILE__, __LINE__)
 
 void Initialize()
 {

@@ -14,6 +14,9 @@ const Common = {
 };
 
 class ChakraGlueGenerator {
+    constructor(delegateList) {
+        this.delegates = delegateList;
+    }
     generateRetrievingCastingOperatorForType(type) {
         switch (type) {
             case "string":
@@ -35,6 +38,11 @@ class ChakraGlueGenerator {
         return this.generatePassArgCastingOperatorForType(type);
     }
     generatePassArgCastingOperatorForType(type) {
+        let delegate = this.findDelegateInfo(type);
+        if (delegate) {
+            return "";
+        }
+
         switch (type) {
             case "string":
                 return `(Zmey::stl::string)`;
@@ -54,7 +62,19 @@ class ChakraGlueGenerator {
         }
         return this.generateRetrievingCastingOperatorForType(type);
     }
+    findDelegateInfo(delegateType) {
+        for (const delegate of this.delegates) {
+            if (delegate.qualifiedName === delegateType) {
+                return delegate;
+            }
+        }
+        return null;
+    }
     generateDefinitionForArg(arg) {
+        let delegate = this.findDelegateInfo(arg.type);
+        if (delegate) {
+            return `${arg.type} _${arg.name};`;
+        }
         switch (arg.type) {
             case "string":
                 return `Zmey::stl::string _${arg.name};`;
@@ -75,9 +95,44 @@ class ChakraGlueGenerator {
         }
         return this.generateDefinitionForArg(arg);
     }
+    generateDelegateArgList(argList) {
+        return argList.map(arg => `${arg.type} _${arg.name}`).join(",");
+    }
+    generateSerializerForArg(arg) {
+        switch (arg.type) {
+            case "float":
+            case "double":
+            case "Zmey::EntityId":
+                return `JsDoubleToNumber(_${arg.name}, &args[${arg.index}]);`;
+            case "int":
+                return `JsIntToNumber(_${arg.name}, &args[${arg.index}]);`;
+            default:
+                console.error(`No serializer implemented for ${arg.type}!`);
+                return "";
+        }
+    }
+    generateSerializerForArgList(argList) {
+        return argList.map(arg => `	${this.generateSerializerForArg(arg)}`).join(os.EOL);
+    }
     generateParserForArg(arg) {
         let code = null;
         const actualArgIndex = arg.index + 1; // arg[0] is always this
+
+        let delegate = this.findDelegateInfo(arg.type);
+        console.log(this.delegates);
+        if (delegate) {
+            code = `
+	JsValueRef _callbackFunc_${arg.name};
+	_${arg.name} = ([_callbackFunc_${arg.name}](${this.generateDelegateArgList(delegate.args)})
+	{
+		JsValueRef args[${delegate.args.length}];
+		${this.generateSerializerForArgList(delegate.args)};
+		JsCallFunction(_callbackFunc_${arg.name}, args, ${delegate.args.length}, nullptr);
+	});
+`;
+            return code;
+        }
+
         switch (arg.type) {
             case "float":
             case "double":

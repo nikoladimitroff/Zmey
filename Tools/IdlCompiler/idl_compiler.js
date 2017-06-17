@@ -15,6 +15,9 @@ const RegexLibrary = {
     // \(((:?(:?\s*[\w:]+\s+\w+,)*(:?\s*[\w:]+\s+\w+))?)\)
     // This matches all (type1 name1, type2 name2...) including the empty ()
     Method: /^(?:nameasis )?([\w:]+&?|anyof<[\w:]+>)\s+(\w+)\(((:?(:?\s*[\w:]+\s+\w+,)*(:?\s*[\w:]+\s+\w+))?)\);/g,
+    // This is basically the same as method above but with no attributes
+    // and the name can contan namespace delimiters (::)
+    Delegate: /\s*delegate\s+([\w:]+&?|anyof<[\w:]+>)\s+((?:\w|::)+)\(((:?(:?\s*[\w:]+\s+\w+,)*(:?\s*[\w:]+\s+\w+))?)\);/g,
     // Matches constructor(args..); Group 1 is args
     Constructor: /^constructor\(((:?(:?\s*[\w:]+\s+\w+,)*(:?\s*[\w:]+\s+\w+))?)\);/g
 };
@@ -33,11 +36,12 @@ class IdlCompiler {
         if (!fs.existsSync(destDir)){
             fs.mkdirSync(destDir);
         }
-        this.generator = new ChakraGlueGenerator();
         // We need to save the ctor, properties and methods as we need to rearrange them in the glue code
         this.constructorCode = null;
         this.propertyList = []; // {name, type, isReadonly}
         this.methodList = []; // name as string
+        this.delegates = []; // {qualifiedName, type, args: []}
+        this.generator = new ChakraGlueGenerator(this.delegates);
     }
     compile() {
         fs.readdir(this.srcDir, this.compileFiles.bind(this));
@@ -77,12 +81,26 @@ class IdlCompiler {
         }
         fileContents = fileContents.substring(RegexLibrary.ExtraHeaders.lastIndex).trim();
 
+        while (RegexLibrary.Delegate.lastIndex != fileContents.length) {
+            let delegateMatch = RegexLibrary.Delegate.exec(fileContents);
+            if (!delegateMatch) {
+                break;
+            }
+            const returnType = delegateMatch[1];
+            const qualifiedName = delegateMatch[2];
+            const args = this.parseArgs(delegateMatch[3]);
+            this.delegates.push({
+                qualifiedName: qualifiedName,
+                returnType: returnType,
+                args: args
+            });
+        }
+
         let interfaceCode = [];
         while (RegexLibrary.Interface.lastIndex != fileContents.length) {
             let interfaceMatch = RegexLibrary.Interface.exec(fileContents);
             if (!interfaceMatch) {
-                console.error("Couldn't find an interface in file!");
-                return;
+                break;
             }
             const qualifiedName = interfaceMatch[1];
             const uniqueInterfaceName = Common.convertQualifiedToUniqueTypename(qualifiedName);
@@ -98,6 +116,10 @@ class IdlCompiler {
             const projector = this.generator.generateProjection(qualifiedName, uniqueInterfaceName, this.constructorCode.length, this.methodList);
             const prototype = this.generator.generatePrototypeDefinition(uniqueInterfaceName);
             interfaceCode.push(code + propertiesSetup + prototype + this.constructorCode + projector);
+        }
+        console.log("ss", this.delegates);
+        if (this.delegates.length + interfaceCode.length === 0) {
+            console.error("Didn't find nothing to compile in file!");
         }
         const finalGlueCode = extraHeaders + interfaceCode.join(os.EOL);
         return finalGlueCode;

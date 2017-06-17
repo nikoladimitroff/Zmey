@@ -105,6 +105,10 @@ JsValueRef CALLBACK JSConsoleMessage(Zmey::LogSeverity severity, JsValueRef call
 JsValueRef CALLBACK JSSetTimeout(JsValueRef callee, bool isConstructCall, JsValueRef *arguments, unsigned short argumentCount, void *callbackState);
 JsValueRef CALLBACK JSSetInterval(JsValueRef callee, bool isConstructCall, JsValueRef *arguments, unsigned short argumentCount, void *callbackState);
 
+
+void CheckChakraCall(JsErrorCode error, const char* functionCall, const char* file, int line);
+#define CHECKCHAKRA(Call) \
+	Zmey::Chakra::Binding::CheckChakraCall(Call, #Call, __FILE__, __LINE__)
 }
 }
 }
