@@ -11,7 +11,7 @@ namespace Components
 {
 TransformInstance TransformManager::Lookup(EntityId id)
 {
-	return TransformInstance(*this, id);
+	return TransformInstance(*this, m_EntityToIndex.at(id));
 }
 
 void TransformManager::Simulate(float deltaTime)

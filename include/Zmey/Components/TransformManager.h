@@ -31,17 +31,17 @@ private:
 
 struct TransformInstance
 {
-	inline TransformInstance(TransformManager& manager, EntityId id)
+	inline TransformInstance(TransformManager& manager, EntityId::IndexType index)
 		: m_Manager(manager)
-		, m_Entity(id)
+		, m_EntityIndex(index)
 	{
 	}
-	inline Vector3& Position() const { return m_Manager.m_Positions[m_Manager.m_EntityToIndex.at(m_Entity)]; }
-	inline Vector3& Scale() const { return m_Manager.m_Scales[m_Manager.m_EntityToIndex.at(m_Entity)]; }
-	inline Quaternion& Rotation() const { return m_Manager.m_Rotations[m_Manager.m_EntityToIndex.at(m_Entity)]; }
+	inline Vector3& Position() const { return m_Manager.m_Positions[m_EntityIndex]; }
+	inline Vector3& Scale() const { return m_Manager.m_Scales[m_EntityIndex]; }
+	inline Quaternion& Rotation() const { return m_Manager.m_Rotations[m_EntityIndex]; }
 private:
 	TransformManager& m_Manager;
-	EntityId m_Entity;
+	EntityId::IndexType m_EntityIndex;
 };
 
 }
