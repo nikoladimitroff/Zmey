@@ -135,10 +135,10 @@ namespace tmp
 		auto ptr = new(TempAllocator::GetTlsAllocator().Malloc(sizeof(T)) T(std::forward<Args>(args)...));
 		return unique_ptr<T>(ptr);
 	}
-	template<typename T, typename... Args>
-	inline unique_array<T> make_unique_array(Args&&... args)
+	template<typename T>
+	inline unique_array<T> make_unique_array(size_t size)
 	{
-		auto ptr = new(TempAllocator::GetTlsAllocator().Malloc(sizeof(T)) T(std::forward<Args>(args)...));
+		auto ptr = new(TempAllocator::GetTlsAllocator().Malloc(size * sizeof(T), alignof(T))) T[size];
 		return unique_array<T>(ptr);
 	}
 	// Convert to intrusive ptr

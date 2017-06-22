@@ -105,6 +105,10 @@ public:
 	{
 		m_TaskQueue.Enqueue(stl::make_unique<SimpleTask<Functor>>(name, f));
 	}
+	inline uint8_t GetWorkerCount() const
+	{
+		return ThreadCount;
+	}
 	// Make StaticAlloc a friend so that the system can be initialized
 	template<typename T>
 	friend T* StaticAlloc();

@@ -119,6 +119,7 @@ void EngineLoop::Run()
 		clock::duration timeSinceLastFrame = currentFrameTimestamp - lastFrameTmestamp;
 		float deltaTime = timeSinceLastFrame.count() * 1e-9f;
 
+		Modules::PhysicsEngine->Tick(deltaTime);
 		Modules::ScriptEngine->ExecuteNextFrame(deltaTime);
 		Modules::InputController->DispatchActionEventsForFrame();
 
