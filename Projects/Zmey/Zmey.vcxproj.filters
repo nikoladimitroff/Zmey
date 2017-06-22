@@ -84,6 +84,12 @@
     <Filter Include="Source\Graphics\Managers">
       <UniqueIdentifier>{821632d7-a07c-4ab0-8721-79eb349be595}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Physics">
+      <UniqueIdentifier>{5b9bc6d9-b009-4d18-8497-d4749c1ba485}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\Physics">
+      <UniqueIdentifier>{2005c030-ed70-4009-b76d-6b0c6e2d8ee0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\Zmey\Config.h">
@@ -263,6 +269,9 @@
     <ClInclude Include="..\..\include\Zmey\Components\ProjectileComponent.h">
       <Filter>include\Components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Physics\PhysicsEngine.h">
+      <Filter>include\Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\EngineLoop.cpp">
@@ -357,6 +366,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\Components\ProjectileComponent.cpp">
       <Filter>Source\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Physics\PhysicsEngine.cpp">
+      <Filter>Source\Physics</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

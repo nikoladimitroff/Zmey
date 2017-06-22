@@ -14,6 +14,7 @@ ZMEY_API Zmey::ResourceLoader* ResourceLoader;
 ZMEY_API Zmey::IScriptEngine* ScriptEngine;
 ZMEY_API Zmey::SettingsManager* SettingsManager;
 ZMEY_API Zmey::InputController* InputController;
+ZMEY_API Zmey::Physics::PhysicsEngine* PhysicsEngine;
 
 void Initialize()
 {
@@ -26,6 +27,7 @@ void Initialize()
 	ScriptEngine = StaticAlloc<Zmey::Chakra::ChakraScriptEngine>();
 	SettingsManager = StaticAlloc<Zmey::SettingsManager>();
 	InputController = StaticAlloc<Zmey::InputController>();
+	PhysicsEngine = StaticAlloc<Zmey::Physics::PhysicsEngine>();
 }
 
 // Due to lack of better tooling, project modules by hand

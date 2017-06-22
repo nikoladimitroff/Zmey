@@ -61,7 +61,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)ThirdParty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)ThirdParty\include;$(SolutionDir)ThirdParty\include\PhysXShared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>ZMEY_EXPORTS;_HAS_EXCEPTIONS=0;_CRT_SECURE_NO_WARNINGS;_DEBUG%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
@@ -72,7 +72,7 @@
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)ThirdParty\libx64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>vulkan-1.lib;assimp-vc140-mt.lib;ChakraCore.lib;d3d12.lib;dxgi.lib;Xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PhysX3_x64.lib;PxFoundation_x64.lib;vulkan-1.lib;assimp-vc140-mt.lib;ChakraCore.lib;d3d12.lib;dxgi.lib;Xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <AdditionalOptions>/WHOLEARCHIVE:ScriptingGlue.lib %(AdditionalOptions)</AdditionalOptions>
     </Link>
@@ -98,7 +98,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)ThirdParty\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)ThirdParty\include;$(SolutionDir)ThirdParty\include\PhysXShared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>ZMEY_EXPORTS;_HAS_EXCEPTIONS=0;_CRT_SECURE_NO_WARNINGS;NDEBUG%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
@@ -110,7 +110,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(SolutionDir)ThirdParty\libx64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>vulkan-1.lib;assimp-vc140-mt.lib;ChakraCore.lib;d3d12.lib;dxgi.lib;Xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PhysX3_x64.lib;PxFoundation_x64.lib;vulkan-1.lib;assimp-vc140-mt.lib;ChakraCore.lib;d3d12.lib;dxgi.lib;Xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <AdditionalOptions>/WHOLEARCHIVE:ScriptingGlue.lib %(AdditionalOptions)</AdditionalOptions>
     </Link>
@@ -178,6 +178,7 @@
     <ClInclude Include="..\..\include\Zmey\Graphics\View.h" />
     <ClInclude Include="..\..\include\Zmey\Hash.h" />
     <ClInclude Include="..\..\include\Zmey\InputController.h" />
+    <ClInclude Include="..\..\include\Zmey\Physics\PhysicsEngine.h" />
     <ClInclude Include="..\..\include\Zmey\ResourceLoader\DDSLoader.h" />
     <ClInclude Include="..\..\include\Zmey\SettingsManager.h" />
     <ClInclude Include="..\..\include\Zmey\Logging.h" />
@@ -232,6 +233,7 @@
     <ClCompile Include="..\..\Source\Graphics\Renderer.cpp" />
     <ClCompile Include="..\..\Source\Graphics\View.cpp" />
     <ClCompile Include="..\..\Source\InputController.cpp" />
+    <ClCompile Include="..\..\Source\Physics\PhysicsEngine.cpp" />
     <ClCompile Include="..\..\Source\ResourceLoader\DDSLoader.cpp" />
     <ClCompile Include="..\..\Source\SettingsManager.cpp" />
     <ClCompile Include="..\..\Source\Logging.cpp" />
