@@ -141,6 +141,66 @@ void PhysicsEngine::FetchResults()
 	ASSERT(error == physx::PxErrorCode::eNO_ERROR);
 }
 
+stl::unique_ptr<Geometry> PhysicsEngine::CreateBoxGeometry(float width, float height, float depth) const
+{
+	physx::PxBoxGeometry box(width / 2, height / 2, depth / 2);
+	return stl::make_unique<physx::PxGeometryHolder>(std::move(box));
+}
+stl::unique_ptr<Geometry> PhysicsEngine::CreateSphereGeometry(float radius) const
+{
+	physx::PxSphereGeometry sphere(radius);
+	return stl::make_unique<physx::PxGeometryHolder>(sphere);
+
+}
+stl::unique_ptr<Geometry> PhysicsEngine::CreateCapsuleGeometry(float radius, float height) const
+{
+	physx::PxCapsuleGeometry capsule(radius, height / 2);
+	return stl::make_unique<physx::PxGeometryHolder>(capsule);
+}
+
+void PhysicsEngine::CreatePhysicsActor(EntityId entityId, const PhysicsActorDescription& actorDescription)
+{
+	const CombinedMaterialInfo* material = FindMaterial(actorDescription.Material);
+	ASSERT(material);
+	physx::PxRigidActor* actor = nullptr;
+	physx::PxTransform zeroTransform;
+	if (actorDescription.IsStatic)
+	{
+		actor = m_Physics->createRigidStatic(zeroTransform);
+	}
+	else
+	{
+		actor = m_Physics->createRigidDynamic(zeroTransform);
+	}
+	physx::PxShapeFlags flags = physx::PxShapeFlag::eSIMULATION_SHAPE | physx::PxShapeFlag::eVISUALIZATION |
+		static_cast<physx::PxShapeFlag::Enum>(actorDescription.IsTrigger * physx::PxShapeFlag::eTRIGGER_SHAPE) |
+		static_cast<physx::PxShapeFlag::Enum>(!actorDescription.IsTrigger * physx::PxShapeFlag::eSCENE_QUERY_SHAPE);
+	physx::PxShape* shape = m_Physics->createShape(actorDescription.Geometry->any(), *material->PhysxMaterial, true, flags);
+	actor->attachShape(*shape);
+	shape->release();
+
+	m_Actors.push_back(actor);
+	m_EntityToActor[entityId] = static_cast<EntityId::IndexType>(m_Actors.size() - 1u);
+}
+void PhysicsEngine::CreatePhysicsMaterial(Zmey::Name name, const PhysicsMaterialDescription& description)
+{
+	auto material = m_Physics->createMaterial(description.Friction, description.Friction, description.Restitution);
+	m_Materials.push_back(std::make_pair(name, CombinedMaterialInfo{ material, description }));
+}
+
+const PhysicsEngine::CombinedMaterialInfo* PhysicsEngine::FindMaterial(Zmey::Name name) const
+{
+	auto it = std::find_if(m_Materials.begin(), m_Materials.end(), [name](const std::pair<Zmey::Name, CombinedMaterialInfo>& materialNamePair)
+	{
+		return materialNamePair.first == name;
+	});
+	if (it != m_Materials.end())
+	{
+		return &it->second;
+	}
+	return nullptr;
+}
+
 }
 
 }
