@@ -126,13 +126,19 @@ void PhysicsEngine::SetupBroadphase()
 	m_Scene->addBroadPhaseRegion(region);
 }
 
-void PhysicsEngine::Tick(float deltaTime)
+void PhysicsEngine::Simulate(float deltaTime)
 {
 	TEMP_ALLOCATOR_SCOPE;
 	uint32_t scratchMemorySize = 1024 * 1024; // 1mb
 	tmp::unique_array<uint8_t> scratchMemory = tmp::make_unique_array<uint8_t>(scratchMemorySize);
 	m_Scene->simulate(deltaTime, nullptr, scratchMemory.get(), scratchMemorySize);
-	m_Scene->fetchResults(true); // TODO: Don't fetch immediately!
+}
+
+void PhysicsEngine::FetchResults()
+{
+	physx::PxU32 error;
+	m_Scene->fetchResults(true, &error);
+	ASSERT(error == physx::PxErrorCode::eNO_ERROR);
 }
 
 }

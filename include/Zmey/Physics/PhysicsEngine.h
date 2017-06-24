@@ -22,7 +22,8 @@ class PhysicsEngine
 public:
 	PhysicsEngine();
 
-	void Tick(float deltaTime);
+	void Simulate(float deltaTime);
+	void FetchResults();
 private:
 	void SetupBroadphase();
 

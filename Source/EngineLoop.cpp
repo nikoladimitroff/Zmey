@@ -108,6 +108,11 @@ void EngineLoop::Run()
 	{
 		auto frameScope = TempAllocator::GetTlsAllocator().ScopeNow();
 
+		clock::time_point currentFrameTimestamp = clock::now();
+		clock::duration timeSinceLastFrame = currentFrameTimestamp - lastFrameTmestamp;
+		float deltaTime = timeSinceLastFrame.count() * 1e-9f;
+		Modules::PhysicsEngine->Simulate(deltaTime);
+
 		Modules::Platform->PumpMessages(windowHandle);
 		while (frameIndex >= 2 && !Modules::Renderer->CheckIfFrameCompleted(frameIndex - 2))
 		{
@@ -115,16 +120,13 @@ void EngineLoop::Run()
 			Modules::Platform->PumpMessages(windowHandle);
 		}
 
-		clock::time_point currentFrameTimestamp = clock::now();
-		clock::duration timeSinceLastFrame = currentFrameTimestamp - lastFrameTmestamp;
-		float deltaTime = timeSinceLastFrame.count() * 1e-9f;
 
-		Modules::PhysicsEngine->Tick(deltaTime);
 		Modules::ScriptEngine->ExecuteNextFrame(deltaTime);
 		Modules::InputController->DispatchActionEventsForFrame();
 
 		m_Game->Simulate(deltaTime);
 		m_World->Simulate(deltaTime);
+		Modules::PhysicsEngine->FetchResults();
 
 		// Rendering stuff
 
