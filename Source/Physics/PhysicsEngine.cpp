@@ -8,6 +8,8 @@
 
 #include <Zmey/Logging.h>
 #include <Zmey/Modules.h>
+#include <Zmey/Components/TransformManager.h>
+#include <Zmey/World.h>
 
 namespace Zmey
 {
@@ -80,6 +82,7 @@ PhysicsEngine::PhysicsEngine()
 	: m_Allocator(StaticAlloc<PhysicsAllocator>())
 	, m_ErrorReporter(StaticAlloc<PhysicsErrorReporter>())
 	, m_CpuDispatcher(StaticAlloc<PhysicsCpuDispatcher>())
+	, m_World(nullptr)
 {
 	m_Foundation = PxCreateFoundation(PX_FOUNDATION_VERSION, *m_Allocator, *m_ErrorReporter);
 	ASSERT_FATAL(m_Foundation);
@@ -134,11 +137,33 @@ void PhysicsEngine::Simulate(float deltaTime)
 	m_Scene->simulate(deltaTime, nullptr, scratchMemory.get(), scratchMemorySize);
 }
 
+inline void SetZmeyTransformFromPhysx(Zmey::Components::TransformInstance& transform, const physx::PxTransform& pxTransform)
+{
+	transform.Position().x = pxTransform.p.x;
+	transform.Position().y = pxTransform.p.y;
+	transform.Position().z = pxTransform.p.z;
+	transform.Rotation().x = pxTransform.q.x;
+	transform.Rotation().y = pxTransform.q.y;
+	transform.Rotation().z = pxTransform.q.z;
+	transform.Rotation().w = pxTransform.q.w;
+}
+
 void PhysicsEngine::FetchResults()
 {
 	physx::PxU32 error;
 	m_Scene->fetchResults(true, &error);
 	ASSERT(error == physx::PxErrorCode::eNO_ERROR);
+
+	physx::PxU32 activeTransformsCount = -1;
+	auto activeTransforms = m_Scene->getActiveTransforms(activeTransformsCount);
+	auto& transformManager = m_World->GetManager<Zmey::Components::TransformManager>();
+	for (physx::PxU32 i = 0; i < activeTransformsCount; ++i)
+	{
+		auto entityId = static_cast<Zmey::EntityId>(reinterpret_cast<uint64_t>(activeTransforms[i].userData));
+		auto transform = transformManager.Lookup(entityId);
+		// TODO This currently copies transforms as an array of structs; change to SoA.
+		SetZmeyTransformFromPhysx(transform, activeTransforms[i].actor2World);
+	}
 }
 
 stl::unique_ptr<Geometry> PhysicsEngine::CreateBoxGeometry(float width, float height, float depth) const
@@ -177,6 +202,7 @@ void PhysicsEngine::CreatePhysicsActor(EntityId entityId, const PhysicsActorDesc
 		static_cast<physx::PxShapeFlag::Enum>(!actorDescription.IsTrigger * physx::PxShapeFlag::eSCENE_QUERY_SHAPE);
 	physx::PxShape* shape = m_Physics->createShape(actorDescription.Geometry->any(), *material->PhysxMaterial, true, flags);
 	actor->attachShape(*shape);
+	actor->userData = reinterpret_cast<void*>(static_cast<uint64_t>(entityId));
 	shape->release();
 
 	m_Actors.push_back(actor);

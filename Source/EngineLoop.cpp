@@ -104,6 +104,7 @@ void EngineLoop::Run()
 	m_Game->SetWorld(m_World);
 
 	m_Game->Initialize();
+	Modules::PhysicsEngine->SetWorld(*m_World);
 	while (g_Run)
 	{
 		auto frameScope = TempAllocator::GetTlsAllocator().ScopeNow();

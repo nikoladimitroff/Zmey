@@ -16,6 +16,8 @@ class PxGeometryHolder;
 }
 namespace Zmey
 {
+class World;
+
 namespace Physics
 {
 class PhysicsAllocator;
@@ -54,6 +56,7 @@ public:
 	
 	void Simulate(float deltaTime);
 	void FetchResults();
+	void SetWorld(Zmey::World& world) { m_World = &world; }
 private:
 	// This struct is neccessary because we'd like to add some properties to the material
 	// (such as density) instead of keeping them on the actor like physx does.
@@ -79,6 +82,8 @@ private:
 	stl::unique_ptr<PhysicsAllocator> m_Allocator;
 	stl::unique_ptr<PhysicsErrorReporter> m_ErrorReporter;
 	stl::unique_ptr<PhysicsCpuDispatcher> m_CpuDispatcher;
+
+	Zmey::World* m_World;
 };
 
 }
