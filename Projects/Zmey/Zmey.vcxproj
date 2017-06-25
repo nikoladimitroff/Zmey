@@ -178,6 +178,7 @@
     <ClInclude Include="..\..\include\Zmey\Graphics\View.h" />
     <ClInclude Include="..\..\include\Zmey\Hash.h" />
     <ClInclude Include="..\..\include\Zmey\InputController.h" />
+    <ClInclude Include="..\..\include\Zmey\Physics\PhysicsComponentManager.h" />
     <ClInclude Include="..\..\include\Zmey\Physics\PhysicsEngine.h" />
     <ClInclude Include="..\..\include\Zmey\ResourceLoader\DDSLoader.h" />
     <ClInclude Include="..\..\include\Zmey\SettingsManager.h" />
@@ -233,6 +234,7 @@
     <ClCompile Include="..\..\Source\Graphics\Renderer.cpp" />
     <ClCompile Include="..\..\Source\Graphics\View.cpp" />
     <ClCompile Include="..\..\Source\InputController.cpp" />
+    <ClCompile Include="..\..\Source\Physics\PhysicsComponentManager.cpp" />
     <ClCompile Include="..\..\Source\Physics\PhysicsEngine.cpp" />
     <ClCompile Include="..\..\Source\ResourceLoader\DDSLoader.cpp" />
     <ClCompile Include="..\..\Source\SettingsManager.cpp" />

@@ -189,6 +189,21 @@ namespace stl
 		}
 	};
 	template<typename Base>
+	struct StdDestructorlessDeleter
+	{
+		StdDestructorlessDeleter() {}
+		template<typename Derived>
+		StdDestructorlessDeleter(const StdDeleter<Derived>&)
+		{
+			static_assert(std::is_base_of<Base, Derived>::value, "Only inherited casting is allowed");
+			static_assert(std::has_virtual_destructor<Base>::value, "Type needs virtual destructor!");
+		}
+		void operator()(Base* ptr)
+		{
+			ZmeyFree(ptr);
+		}
+	};
+	template<typename Base>
 	struct StdDeleterArray
 	{
 		StdDeleterArray() {}
@@ -221,8 +236,8 @@ namespace stl
 	using string = std::basic_string<char, std::char_traits<char>, StlAllocatorTemplate<DefaultAllocator, char>>;
 	using wstring = std::basic_string<wchar_t, std::char_traits<wchar_t>, StlAllocatorTemplate<DefaultAllocator, wchar_t>>;
 	using small_string = string;
-	template<typename T>
-	using unique_ptr = std::unique_ptr<T, StdDeleter<T>>;
+	template<typename T, typename Deleter = StdDeleter<T>>
+	using unique_ptr = std::unique_ptr<T, Deleter>;
 	template<class T>
 	using unique_array = std::unique_ptr<T[], StdDeleterArray<T>>;
 	template<typename T>

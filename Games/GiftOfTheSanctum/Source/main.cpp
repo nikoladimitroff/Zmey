@@ -66,7 +66,7 @@ public:
 		auto transform = transformManager.Lookup(m_Players[playerIndex]);
 		auto spellId = GetWorld()->SpawnEntity(Zmey::Name("Spell"));
 		auto spellTransform = transformManager.Lookup(spellId);
-		auto actorForwardVector = spellTransform.Rotation() * Zmey::Vector3(0.f, 0.f, 1.f);
+		auto actorForwardVector = spellTransform.Rotation() * Zmey::Vector3(0.f, 1.f, 0.f);
 		spellTransform.Position() = transform.Position() + actorForwardVector * 5.f;
 	}
 	virtual void Simulate(float deltaTime) override

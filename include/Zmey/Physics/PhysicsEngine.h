@@ -48,9 +48,10 @@ class PhysicsEngine
 public:
 	PhysicsEngine();
 
-	stl::unique_ptr<Geometry> CreateBoxGeometry(float width, float height, float depth) const;
-	stl::unique_ptr<Geometry> CreateSphereGeometry(float radius) const;
-	stl::unique_ptr<Geometry> CreateCapsuleGeometry(float radius, float height) const;
+	using GeometryPtr = stl::unique_ptr<Geometry, stl::StdDestructorlessDeleter<Geometry>>;
+	GeometryPtr CreateBoxGeometry(float width, float height, float depth) const;
+	GeometryPtr CreateSphereGeometry(float radius) const;
+	GeometryPtr CreateCapsuleGeometry(float radius, float height) const;
 	void CreatePhysicsActor(EntityId, const PhysicsActorDescription&);
 	void CreatePhysicsMaterial(Zmey::Name, const PhysicsMaterialDescription&);
 	
@@ -84,6 +85,9 @@ private:
 	stl::unique_ptr<PhysicsCpuDispatcher> m_CpuDispatcher;
 
 	Zmey::World* m_World;
+
+	static const float TimeStep;
+	float m_TimeAccumulator;
 };
 
 }

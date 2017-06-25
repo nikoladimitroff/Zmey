@@ -78,11 +78,14 @@ public:
 };
 
 
+const float PhysicsEngine::TimeStep = 1 / 60.f;
+
 PhysicsEngine::PhysicsEngine()
 	: m_Allocator(StaticAlloc<PhysicsAllocator>())
 	, m_ErrorReporter(StaticAlloc<PhysicsErrorReporter>())
 	, m_CpuDispatcher(StaticAlloc<PhysicsCpuDispatcher>())
 	, m_World(nullptr)
+	, m_TimeAccumulator(0.f)
 {
 	m_Foundation = PxCreateFoundation(PX_FOUNDATION_VERSION, *m_Allocator, *m_ErrorReporter);
 	ASSERT_FATAL(m_Foundation);
@@ -131,10 +134,17 @@ void PhysicsEngine::SetupBroadphase()
 
 void PhysicsEngine::Simulate(float deltaTime)
 {
+	m_TimeAccumulator += deltaTime;
+	if (m_TimeAccumulator < PhysicsEngine::TimeStep)
+	{
+		return;
+	}
+
+	m_TimeAccumulator -= PhysicsEngine::TimeStep;
 	TEMP_ALLOCATOR_SCOPE;
 	uint32_t scratchMemorySize = 1024 * 1024; // 1mb
 	tmp::unique_array<uint8_t> scratchMemory = tmp::make_unique_array<uint8_t>(scratchMemorySize);
-	m_Scene->simulate(deltaTime, nullptr, scratchMemory.get(), scratchMemorySize);
+	m_Scene->simulate(PhysicsEngine::TimeStep, nullptr, scratchMemory.get(), scratchMemorySize);
 }
 
 inline void SetZmeyTransformFromPhysx(Zmey::Components::TransformInstance& transform, const physx::PxTransform& pxTransform)
@@ -166,21 +176,23 @@ void PhysicsEngine::FetchResults()
 	}
 }
 
-stl::unique_ptr<Geometry> PhysicsEngine::CreateBoxGeometry(float width, float height, float depth) const
+PhysicsEngine::GeometryPtr PhysicsEngine::CreateBoxGeometry(float width, float height, float depth) const
 {
 	physx::PxBoxGeometry box(width / 2, height / 2, depth / 2);
-	return stl::make_unique<physx::PxGeometryHolder>(std::move(box));
+	GeometryPtr result(new physx::PxGeometryHolder(std::move(box)));
+	return result;
 }
-stl::unique_ptr<Geometry> PhysicsEngine::CreateSphereGeometry(float radius) const
+PhysicsEngine::GeometryPtr PhysicsEngine::CreateSphereGeometry(float radius) const
 {
 	physx::PxSphereGeometry sphere(radius);
-	return stl::make_unique<physx::PxGeometryHolder>(sphere);
-
+	GeometryPtr result(new physx::PxGeometryHolder(std::move(sphere)));
+	return result;
 }
-stl::unique_ptr<Geometry> PhysicsEngine::CreateCapsuleGeometry(float radius, float height) const
+PhysicsEngine::GeometryPtr PhysicsEngine::CreateCapsuleGeometry(float radius, float height) const
 {
 	physx::PxCapsuleGeometry capsule(radius, height / 2);
-	return stl::make_unique<physx::PxGeometryHolder>(capsule);
+	GeometryPtr result(new physx::PxGeometryHolder(std::move(capsule)));
+	return result;
 }
 
 void PhysicsEngine::CreatePhysicsActor(EntityId entityId, const PhysicsActorDescription& actorDescription)

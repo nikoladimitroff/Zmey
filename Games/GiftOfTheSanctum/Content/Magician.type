@@ -8,5 +8,7 @@
     }, {
         "name": "mesh",
         "mesh": "Content/Meshes/Vampire_A_Lusth/Vampire_A_Lusth.dae"
+    }, {
+        "name": "physics"
     }]
 }

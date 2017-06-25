@@ -272,6 +272,9 @@
     <ClInclude Include="..\..\include\Zmey\Physics\PhysicsEngine.h">
       <Filter>include\Physics</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Physics\PhysicsComponentManager.h">
+      <Filter>include\Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\EngineLoop.cpp">
@@ -368,6 +371,9 @@
       <Filter>Source\Components</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Physics\PhysicsEngine.cpp">
+      <Filter>Source\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Physics\PhysicsComponentManager.cpp">
       <Filter>Source\Physics</Filter>
     </ClCompile>
   </ItemGroup>
