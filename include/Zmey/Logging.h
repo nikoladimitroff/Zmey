@@ -44,7 +44,7 @@ inline void ForceCrash()
 		if (!(expression)) \
 		{ \
 			LOG(Error, Assert, "Assert failed: " #expression " at " __FILE__ ":" STRINGIFY_MACRO(__LINE__)); \
-			return; \
+			ForceCrash(); \
 		} \
 	} while(0, 0)
 #endif
