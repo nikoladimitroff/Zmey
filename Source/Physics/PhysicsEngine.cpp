@@ -91,7 +91,11 @@ PhysicsEngine::PhysicsEngine()
 	ASSERT_FATAL(m_Foundation);
 
 	physx::PxTolerancesScale scale;
-	bool recordMemoryAllocations = _DEBUG;
+#if defined(_DEBUG)
+	bool recordMemoryAllocations = true;
+#elif defined(NDEBUG)
+	bool recordMemoryAllocations = false;
+#endif
 	m_Physics = PxCreatePhysics(PX_PHYSICS_VERSION, *m_Foundation, scale, recordMemoryAllocations, nullptr); // TODO: Add pvd connection for debugging
 	ASSERT_FATAL(m_Physics);
 	

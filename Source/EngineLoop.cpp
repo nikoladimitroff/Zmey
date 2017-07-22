@@ -143,6 +143,11 @@ void EngineLoop::Run()
 		// TODO: From this point graphics stuff should be on render thread
 		Modules::Renderer->RenderFrame(frameData);
 		lastFrameTmestamp = currentFrameTimestamp;
+
+		// Set window title
+		char title[100];
+		snprintf(title, 100, "Zmey. Delta Time: %.1fms", deltaTime * 1e3f);
+		Modules::Platform->SetWindowTitle(windowHandle, title);
 	}
 	m_Game->Uninitialize();
 	Modules::Renderer->Unitialize();

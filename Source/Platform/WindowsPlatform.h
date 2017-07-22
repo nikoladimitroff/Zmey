@@ -11,5 +11,6 @@ public:
 	virtual WindowHandle SpawnWindow(unsigned width, unsigned height, const char* title) override;
 	virtual void PumpMessages(WindowHandle handle) override;
 	virtual void KillWindow(WindowHandle handle) override;
+	virtual void SetWindowTitle(WindowHandle handle, const char* title) override;
 };
 };
