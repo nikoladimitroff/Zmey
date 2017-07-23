@@ -72,7 +72,7 @@
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)ThirdParty\libx64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>PhysX3_x64.lib;PxFoundation_x64.lib;vulkan-1.lib;assimp-vc140-mt.lib;ChakraCore.lib;d3d12.lib;dxgi.lib;Xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PhysX3_x64.lib;PxFoundation_x64.lib;vulkan-1.lib;assimp-vc140-mt.lib;ChakraCore.lib;d3d12.lib;dxgi.lib;Xinput.lib;easy_profiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <AdditionalOptions>/WHOLEARCHIVE:ScriptingGlue.lib %(AdditionalOptions)</AdditionalOptions>
     </Link>
@@ -110,7 +110,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(SolutionDir)ThirdParty\libx64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>PhysX3_x64.lib;PxFoundation_x64.lib;vulkan-1.lib;assimp-vc140-mt.lib;ChakraCore.lib;d3d12.lib;dxgi.lib;Xinput.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PhysX3_x64.lib;PxFoundation_x64.lib;vulkan-1.lib;assimp-vc140-mt.lib;ChakraCore.lib;d3d12.lib;dxgi.lib;Xinput.lib;easy_profiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <AdditionalOptions>/WHOLEARCHIVE:ScriptingGlue.lib %(AdditionalOptions)</AdditionalOptions>
     </Link>
@@ -180,6 +180,7 @@
     <ClInclude Include="..\..\include\Zmey\InputController.h" />
     <ClInclude Include="..\..\include\Zmey\Physics\PhysicsComponentManager.h" />
     <ClInclude Include="..\..\include\Zmey\Physics\PhysicsEngine.h" />
+    <ClInclude Include="..\..\include\Zmey\Profile.h" />
     <ClInclude Include="..\..\include\Zmey\ResourceLoader\DDSLoader.h" />
     <ClInclude Include="..\..\include\Zmey\SettingsManager.h" />
     <ClInclude Include="..\..\include\Zmey\Logging.h" />

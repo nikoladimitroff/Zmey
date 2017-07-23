@@ -16,6 +16,8 @@
 
 #include <Zmey/Graphics/FrameData.h>
 
+#include <Zmey/Profile.h>
+
 namespace Zmey
 {
 
@@ -73,6 +75,7 @@ EngineLoop::EngineLoop(Game* game)
 
 void EngineLoop::Run()
 {
+	PROFILE_INITIALIZE;
 	// TODO(alex): get this params from somewhere
 	auto width = 1280u;
 	auto height = 720u;
@@ -107,6 +110,8 @@ void EngineLoop::Run()
 	Modules::PhysicsEngine->SetWorld(*m_World);
 	while (g_Run)
 	{
+		PROFILE_SCOPE;
+
 		auto frameScope = TempAllocator::GetTlsAllocator().ScopeNow();
 
 		clock::time_point currentFrameTimestamp = clock::now();
@@ -152,6 +157,8 @@ void EngineLoop::Run()
 	m_Game->Uninitialize();
 	Modules::Renderer->Unitialize();
 	Modules::Platform->KillWindow(windowHandle);
+
+	PROFILE_DESTROY;
 }
 
 EngineLoop::~EngineLoop()

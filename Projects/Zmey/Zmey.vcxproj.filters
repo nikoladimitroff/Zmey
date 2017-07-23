@@ -275,6 +275,9 @@
     <ClInclude Include="..\..\include\Zmey\Physics\PhysicsComponentManager.h">
       <Filter>include\Physics</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Profile.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\EngineLoop.cpp">
