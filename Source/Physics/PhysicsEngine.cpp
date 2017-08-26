@@ -62,18 +62,23 @@ class PhysicsErrorReporter : public physx::PxErrorCallback
 class PhysicsCpuDispatcher : public physx::PxCpuDispatcher
 {
 public:
+	static void CPUJobEntryPoint(void* data)
+	{
+		physx::PxBaseTask* task = reinterpret_cast<physx::PxBaseTask*>(data);
+
+		task->run();
+		task->release();
+	}
+
 	virtual void submitTask(physx::PxBaseTask& task) override
 	{
-		Zmey::Modules::TaskSystem->SpawnTask(task.getName(), [&task]()
-		{
-			task.run();
-			task.release();
-		});
+		Job::JobDecl job{ CPUJobEntryPoint, &task };
+		Zmey::Modules::JobSystem->RunJobs("PhysX CPU Task", &job, 1, nullptr);
 	}
 
 	virtual uint32_t getWorkerCount() const override
 	{
-		return Zmey::Modules::TaskSystem->GetWorkerCount();
+		return 3; // TODO: get this from somewhere
 	}
 };
 

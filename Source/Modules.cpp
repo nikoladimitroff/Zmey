@@ -7,7 +7,7 @@ namespace Zmey
 {
 namespace Modules
 {
-ZMEY_API Zmey::TaskSystem<4>* TaskSystem;
+ZMEY_API Zmey::Job::IJobSystem* JobSystem;
 ZMEY_API Zmey::IPlatform* Platform;
 ZMEY_API Zmey::Graphics::RendererInterface* Renderer;
 ZMEY_API Zmey::ResourceLoader* ResourceLoader;
@@ -18,7 +18,8 @@ ZMEY_API Zmey::Physics::PhysicsEngine* PhysicsEngine;
 
 void Initialize()
 {
-	TaskSystem = StaticAlloc<Zmey::TaskSystem<4>>();
+	// TODO: Num fibers and fiber stack size should be configurable
+	JobSystem = Job::CreateJobSystem(std::thread::hardware_concurrency(), 64, 2 * 1024 * 1024);
 
 	Platform = StaticAlloc<Zmey::WindowsPlatform>();
 	Renderer = StaticAlloc<Zmey::Graphics::RendererInterface>();

@@ -13,6 +13,8 @@ public:
 	void Run();
 	~EngineLoop();
 private:
+	static void RunJobEntryPoint(void* data);
+	void RunImpl();
 	class World* m_World;
 	class Game* m_Game;
 };

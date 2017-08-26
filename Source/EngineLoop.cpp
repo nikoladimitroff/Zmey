@@ -71,11 +71,26 @@ EngineLoop::EngineLoop(Game* game)
 	Zmey::GLogHandler = StaticAlloc<StdOutLogHandler>();
 	Zmey::Modules::Initialize();
 	Zmey::Components::ExportComponentsToScripting();
+	PROFILE_INITIALIZE;
+}
+
+void EngineLoop::RunJobEntryPoint(void* data)
+{
+	auto loop = reinterpret_cast<EngineLoop*>(data);
+	loop->RunImpl();
 }
 
 void EngineLoop::Run()
 {
-	PROFILE_INITIALIZE;
+	Job::JobDecl runJob{ RunJobEntryPoint, this };
+	Zmey::Modules::JobSystem->RunJobs("Main Job", &runJob, 1, nullptr);
+	// TODO: This is needed so we wait for all jobs to finish. Change to something better API wise
+	Zmey::Modules::JobSystem->Destroy();
+	profiler::dumpBlocksToFile("test_profile.prof");
+}
+
+void EngineLoop::RunImpl()
+{
 	// TODO(alex): get this params from somewhere
 	auto width = 1280u;
 	auto height = 720u;
@@ -126,8 +141,8 @@ void EngineLoop::Run()
 			Modules::Platform->PumpMessages(windowHandle);
 		}
 
-
-		Modules::ScriptEngine->ExecuteNextFrame(deltaTime);
+		// TODO(alex): disabled scripting for now
+		//Modules::ScriptEngine->ExecuteNextFrame(deltaTime);
 		Modules::InputController->DispatchActionEventsForFrame();
 
 		m_Game->Simulate(deltaTime);
@@ -157,11 +172,12 @@ void EngineLoop::Run()
 	m_Game->Uninitialize();
 	Modules::Renderer->Unitialize();
 	Modules::Platform->KillWindow(windowHandle);
-
-	PROFILE_DESTROY;
+	Modules::JobSystem->Quit();
 }
 
 EngineLoop::~EngineLoop()
-{}
+{
+	PROFILE_DESTROY;
+}
 
 }
