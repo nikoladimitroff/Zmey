@@ -37,12 +37,12 @@ public:
 	// Can be called only from a Job
 	virtual void WaitForCounter(Counter* counter, uint32_t value) = 0;
 
+	// Will set internal flag to quit all fibers after they finish their current task
+	// After that worker threads will stop.
 	virtual void Quit() = 0;
 
 	// Waits for all threads to finish
 	virtual void Destroy() = 0;
-
-	// TODO: implement way to quit the system
 };
 
 IJobSystem* CreateJobSystem(uint32_t numWorkerThreads, uint32_t numFibers, uint32_t fiberStackSize);

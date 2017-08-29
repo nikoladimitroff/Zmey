@@ -128,27 +128,28 @@ void JobSystemImpl::RunJobs(const char* name, JobDecl* jobs, uint32_t numJobs, C
 
 void JobSystemImpl::WaitForCounter(Counter* counter, uint32_t value)
 {
-	assert(counter);
-	// Fast out
-	if (counter->Value.load() == value)
-	{
-		return;
-	}
-
 	PROFILE_END_BLOCK;
-
-	assert(counter->Value.load() > value);
-
+	assert(counter);
 	assert(tlsWorkerThreadData.CurrentJobName);
 	{
+		std::lock_guard<std::mutex> lock(m_WaitingFibersMutex);
+		// Fast out
+		if (counter->Value.load() == value)
+		{
+			return;
+		}
+
+		assert(counter->Value.load() > value);
+
 		// TODO: change this mutex with something better
 		// NB: if a counter is waited twice this will fail epicly.
-		std::lock_guard<std::mutex> lock(m_WaitingFibersMutex);
-		m_WaitingFibers[counter] = WaitingFiber{
-			tlsWorkerThreadData.CurrentFiberId,
-			value,
-			tlsWorkerThreadData.CurrentJobName
-		};
+		auto& waitingFiber = m_WaitingFibers[counter];
+		waitingFiber.FiberId = tlsWorkerThreadData.CurrentFiberId;
+		waitingFiber.TargetValue = value;
+		waitingFiber.JobName = tlsWorkerThreadData.CurrentJobName;
+		waitingFiber.CanBeMadeReady = false;
+
+		tlsWorkerThreadData.CanBeMadeReadyFlag = &waitingFiber.CanBeMadeReady;
 	}
 
 	auto freeFiber = GetNextFreeFiber();
@@ -219,6 +220,13 @@ void JobSystemImpl::FiberEntryPoint(void* params)
 					{
 						if (jobData.Counter->Value.load() <= findIt->second.TargetValue)
 						{
+							// Busy loop on this flag. If it is false, it means that
+							// this waiting thread has not switched to another fiber
+							// Adding it in the readyFibersList will expose a chance
+							// to corrupt the stack of the fiber if we switch to it before
+							// it has switched
+							while (!findIt->second.CanBeMadeReady.load());
+
 							system->m_ReadyFibers.Enqueue(ReadyFiber{ findIt->second.FiberId, findIt->second.JobName });
 							system->m_WaitingFibers.erase(findIt);
 						}
@@ -241,6 +249,13 @@ void JobSystemImpl::CleanUpOldFiber()
 	{
 		m_FreeFibers.Enqueue(tlsWorkerThreadData.FiberToPushToFreeList);
 		tlsWorkerThreadData.FiberToPushToFreeList = INVALID_FIBER_ID;
+	}
+	else if (tlsWorkerThreadData.CanBeMadeReadyFlag)
+	{
+		// Flag that we have switched the thread and it is safe to be put in
+		// ready fibers list
+		tlsWorkerThreadData.CanBeMadeReadyFlag->store(true);
+		tlsWorkerThreadData.CanBeMadeReadyFlag = nullptr;
 	}
 }
 

@@ -63,6 +63,7 @@ private:
 		unsigned FiberId;
 		unsigned TargetValue;
 		const char* JobName;
+		std::atomic<bool> CanBeMadeReady;
 	};
 
 	NextFreeFiber GetNextFreeFiber();
@@ -88,6 +89,7 @@ private:
 		FiberHandle InitialFiber = nullptr;
 		unsigned CurrentFiberId = INVALID_FIBER_ID;
 		unsigned FiberToPushToFreeList = INVALID_FIBER_ID;
+		std::atomic<bool>* CanBeMadeReadyFlag = nullptr;
 	};
 
 	static thread_local WorkerThreadData tlsWorkerThreadData;

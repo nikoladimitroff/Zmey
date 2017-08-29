@@ -125,8 +125,6 @@ void EngineLoop::RunImpl()
 	Modules::PhysicsEngine->SetWorld(*m_World);
 	while (g_Run)
 	{
-		PROFILE_SCOPE;
-
 		auto frameScope = TempAllocator::GetTlsAllocator().ScopeNow();
 
 		clock::time_point currentFrameTimestamp = clock::now();
@@ -164,10 +162,13 @@ void EngineLoop::RunImpl()
 		Modules::Renderer->RenderFrame(frameData);
 		lastFrameTmestamp = currentFrameTimestamp;
 
-		// Set window title
-		char title[100];
-		snprintf(title, 100, "Zmey. Delta Time: %.1fms", deltaTime * 1e3f);
-		Modules::Platform->SetWindowTitle(windowHandle, title);
+		// TODO: add some text drawing and draw it onto the screen
+		// We cannot use SetWindowTitle because we are changing threads all the time
+		// because of our job system and SetWindowTitle can be called only on the thread
+		// that created the window or it will hang
+		//char title[100];
+		//snprintf(title, 100, "Zmey. Delta Time: %.1fms", deltaTime * 1e3f);
+		//Modules::Platform->SetWindowTitle(windowHandle, title);
 	}
 	m_Game->Uninitialize();
 	Modules::Renderer->Unitialize();
