@@ -24,7 +24,7 @@ struct JobDecl
 // Do not modify or set Value. The JobSystem will use it
 struct Counter
 {
-	std::atomic<unsigned> Value;
+	std::atomic<unsigned> Value = 0u;
 };
 
 class IJobSystem

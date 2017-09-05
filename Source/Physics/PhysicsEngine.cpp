@@ -169,7 +169,7 @@ inline void SetZmeyTransformFromPhysx(Zmey::Components::TransformInstance& trans
 
 void PhysicsEngine::FetchResults()
 {
-	physx::PxU32 error;
+	physx::PxU32 error(physx::PxErrorCode::eNO_ERROR);
 	m_Scene->fetchResults(true, &error);
 	ASSERT(error == physx::PxErrorCode::eNO_ERROR);
 

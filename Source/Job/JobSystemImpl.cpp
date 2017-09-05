@@ -128,7 +128,6 @@ void JobSystemImpl::RunJobs(const char* name, JobDecl* jobs, uint32_t numJobs, C
 
 void JobSystemImpl::WaitForCounter(Counter* counter, uint32_t value)
 {
-	PROFILE_END_BLOCK;
 	assert(counter);
 	assert(tlsWorkerThreadData.CurrentJobName);
 	{
@@ -138,6 +137,7 @@ void JobSystemImpl::WaitForCounter(Counter* counter, uint32_t value)
 		{
 			return;
 		}
+		PROFILE_END_BLOCK;
 
 		assert(counter->Value.load() > value);
 
