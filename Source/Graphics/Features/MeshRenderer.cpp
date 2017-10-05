@@ -6,6 +6,7 @@
 #include <Zmey/World.h>
 #include <Zmey/Components/TransformManager.h>
 #include <Zmey/Components/MeshComponentManager.h>
+#include <Zmey/Modules.h>
 
 namespace Zmey
 {
@@ -14,24 +15,55 @@ namespace Graphics
 namespace Features
 {
 
+namespace
+{
+struct MeshRendererGatherJobData
+{
+	MeshHandle& HandleSlot;
+	Matrix4x4& MatrixSlot;
+
+	Components::TransformManager& TransformManager;
+	EntityId Id;
+	MeshHandle Handle;
+};
+
+void GatherDataEntryPoint(void* param)
+{
+	auto data = (MeshRendererGatherJobData*)param;
+
+	data->HandleSlot = data->Handle;
+	const auto& transform = data->TransformManager.Lookup(data->Id);
+
+	data->MatrixSlot =
+		glm::translate(transform.Position()) *
+		glm::toMat4(transform.Rotation()) *
+		glm::scale(transform.Scale());
+}
+}
+
 void MeshRenderer::GatherData(FrameData& frameData, World& world)
 {
 	auto& meshManager = world.GetManager<Components::MeshComponentManager>();
 	const auto& meshes = meshManager.GetMeshes();
-	frameData.MeshHandles.reserve(meshes.size());
-	frameData.MeshTransforms.reserve(meshes.size());
+	frameData.MeshHandles.resize(meshes.size());
+	frameData.MeshTransforms.resize(meshes.size());
 	auto& transformManager = world.GetManager<Components::TransformManager>();
-	for (const auto& mesh : meshes)
-	{
-		frameData.MeshHandles.push_back(mesh.second);
-		const auto& transform = transformManager.Lookup(mesh.first);
 
-		frameData.MeshTransforms.push_back(
-			glm::translate(transform.Position()) *
-			glm::toMat4(transform.Rotation()) *
-			glm::scale(transform.Scale())
-		);
+	TEMP_ALLOCATOR_SCOPE;
+	tmp::vector<Job::JobDecl> jobs;
+	tmp::vector<MeshRendererGatherJobData> jobsData;
+	jobs.reserve(meshes.size());
+	jobsData.reserve(meshes.size());
+
+	for (auto i = 0u; i < meshes.size(); ++i)
+	{
+		jobsData.push_back(MeshRendererGatherJobData{ frameData.MeshHandles[i], frameData.MeshTransforms[i], transformManager, meshes[i].first, meshes[i].second });
+		jobs.push_back(Job::JobDecl{ GatherDataEntryPoint, &jobsData[i] });
 	}
+
+	Job::Counter counter;
+	Modules::JobSystem->RunJobs("Mesh Gather Data", jobs.data(), uint32_t(jobs.size()), &counter);
+	Modules::JobSystem->WaitForCounter(&counter, 0);
 }
 
 void MeshRenderer::PrepareData(FrameData& frameData, RendererData& data)

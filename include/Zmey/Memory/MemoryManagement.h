@@ -75,8 +75,12 @@ inline void ZmeyDestroyArray(const T* ptr)
 	const ArraySizeType* counterPtr = reinterpret_cast<const ArraySizeType*>(ptr);
 	const auto count = *counterPtr;
 
-	for (int i = int(count - 1); i >= 0; --i) {
-		(ptr + i)->~T();
+	if (!std::is_fundamental<T>::value)
+	{
+		for (int i = int(count - 1); i >= 0; --i)
+		{
+			(ptr + i)->~T();
+		}
 	}
 }
 

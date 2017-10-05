@@ -21,8 +21,5 @@ public:
 
 	// Destroys the window
 	virtual void KillWindow(WindowHandle handle) = 0;
-
-	virtual void SetWindowTitle(WindowHandle handle, const char* title) = 0;
-
 };
 };

@@ -69,6 +69,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
       <EnablePREfast>false</EnablePREfast>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)ThirdParty\libx64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -105,6 +106,7 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <EnablePREfast>false</EnablePREfast>
+      <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -178,6 +180,9 @@
     <ClInclude Include="..\..\include\Zmey\Graphics\View.h" />
     <ClInclude Include="..\..\include\Zmey\Hash.h" />
     <ClInclude Include="..\..\include\Zmey\InputController.h" />
+    <ClInclude Include="..\..\include\Zmey\Job\JobSystem.h" />
+    <ClInclude Include="..\..\include\Zmey\Job\JobSystemImpl.h" />
+    <ClInclude Include="..\..\include\Zmey\Job\Queue.h" />
     <ClInclude Include="..\..\include\Zmey\Physics\PhysicsComponentManager.h" />
     <ClInclude Include="..\..\include\Zmey\Physics\PhysicsEngine.h" />
     <ClInclude Include="..\..\include\Zmey\Profile.h" />
@@ -197,8 +202,6 @@
     <ClInclude Include="..\..\include\Zmey\ResourceLoader\ResourceLoader.h" />
     <ClInclude Include="..\..\include\Zmey\Scripting\Binding.h" />
     <ClInclude Include="..\..\include\Zmey\Scripting\ScriptEngine.h" />
-    <ClInclude Include="..\..\include\Zmey\Tasks\BlockingQueue.h" />
-    <ClInclude Include="..\..\include\Zmey\Tasks\TaskSystem.h" />
     <ClInclude Include="..\..\include\Zmey\Utilities.h" />
     <ClInclude Include="..\..\include\Zmey\World.h" />
     <ClInclude Include="..\..\Source\Platform\WindowsPlatform.h" />
@@ -235,6 +238,7 @@
     <ClCompile Include="..\..\Source\Graphics\Renderer.cpp" />
     <ClCompile Include="..\..\Source\Graphics\View.cpp" />
     <ClCompile Include="..\..\Source\InputController.cpp" />
+    <ClCompile Include="..\..\Source\Job\JobSystemImpl.cpp" />
     <ClCompile Include="..\..\Source\Physics\PhysicsComponentManager.cpp" />
     <ClCompile Include="..\..\Source\Physics\PhysicsEngine.cpp" />
     <ClCompile Include="..\..\Source\ResourceLoader\DDSLoader.cpp" />

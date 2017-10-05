@@ -166,8 +166,4 @@ void WindowsPlatform::KillWindow(WindowHandle handle)
 	DestroyWindow(HWND(handle));
 }
 
-void WindowsPlatform::SetWindowTitle(WindowHandle handle, const char* title)
-{
-	::SetWindowText(HWND(handle), title);
-}
 };

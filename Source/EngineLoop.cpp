@@ -71,11 +71,69 @@ EngineLoop::EngineLoop(Game* game)
 	Zmey::GLogHandler = StaticAlloc<StdOutLogHandler>();
 	Zmey::Modules::Initialize();
 	Zmey::Components::ExportComponentsToScripting();
+	PROFILE_INITIALIZE;
+}
+
+void EngineLoop::RunJobEntryPoint(void* data)
+{
+	auto loop = reinterpret_cast<EngineLoop*>(data);
+	loop->RunImpl();
 }
 
 void EngineLoop::Run()
 {
-	PROFILE_INITIALIZE;
+	Job::JobDecl runJob{ RunJobEntryPoint, this };
+	Zmey::Modules::JobSystem->RunJobs("Main Scheduler Loop", &runJob, 1, nullptr);
+	// TODO: This is needed so we wait for all jobs to finish. Change to something better API wise
+	Zmey::Modules::JobSystem->Destroy();
+	profiler::dumpBlocksToFile("test_profile.prof");
+}
+
+namespace
+{
+struct SimulateData
+{
+	Game* GameInstance;
+	World* WorldInstance;
+	float DeltaTime;
+};
+
+void SimulateFrame(void* data)
+{
+	auto simulateData = (SimulateData*)data;
+	Modules::PhysicsEngine->Simulate(simulateData->DeltaTime);
+
+	// TODO(alex): disabled scripting for now
+	//Modules::ScriptEngine->ExecuteNextFrame(deltaTime);
+	Modules::InputController->DispatchActionEventsForFrame();
+
+	simulateData->GameInstance->Simulate(simulateData->DeltaTime);
+	simulateData->WorldInstance->Simulate(simulateData->DeltaTime);
+	Modules::PhysicsEngine->FetchResults();
+}
+
+struct GatherDataData
+{
+	World* WorldInstance;
+	Graphics::FrameData& FrameData;
+};
+
+void GatherData(void* data)
+{
+	GatherDataData* gatherData = (GatherDataData*)data;
+	Modules::Renderer->GatherData(gatherData->FrameData, *gatherData->WorldInstance);
+}
+
+void RenderFrame(void* data)
+{
+	Graphics::FrameData* frameData = (Graphics::FrameData*)data;
+	Modules::Renderer->RenderFrame(*frameData);
+}
+
+}
+
+void EngineLoop::RunImpl()
+{
 	// TODO(alex): get this params from somewhere
 	auto width = 1280u;
 	auto height = 720u;
@@ -108,60 +166,70 @@ void EngineLoop::Run()
 
 	m_Game->Initialize();
 	Modules::PhysicsEngine->SetWorld(*m_World);
+
+	Job::Counter renderCounter;
+	Graphics::FrameData frameDatas[2]; // TODO: 2 seems fine for now
+	uint8_t currentFrameData = 0;
 	while (g_Run)
 	{
-		PROFILE_SCOPE;
-
 		auto frameScope = TempAllocator::GetTlsAllocator().ScopeNow();
 
 		clock::time_point currentFrameTimestamp = clock::now();
 		clock::duration timeSinceLastFrame = currentFrameTimestamp - lastFrameTmestamp;
 		float deltaTime = timeSinceLastFrame.count() * 1e-9f;
-		Modules::PhysicsEngine->Simulate(deltaTime);
 
 		Modules::Platform->PumpMessages(windowHandle);
-		while (frameIndex >= 2 && !Modules::Renderer->CheckIfFrameCompleted(frameIndex - 2))
-		{
-			// Wait for renderer to catch up
-			Modules::Platform->PumpMessages(windowHandle);
-		}
 
+		SimulateData simulateData{ m_Game, m_World, deltaTime };
 
-		Modules::ScriptEngine->ExecuteNextFrame(deltaTime);
-		Modules::InputController->DispatchActionEventsForFrame();
-
-		m_Game->Simulate(deltaTime);
-		m_World->Simulate(deltaTime);
-		Modules::PhysicsEngine->FetchResults();
-
-		// Rendering stuff
+		Job::Counter simulateCounter;
+		Job::JobDecl simulateJob{ SimulateFrame, &simulateData };
+		Modules::JobSystem->RunJobs("Simulate", &simulateJob, 1, &simulateCounter);
+		Modules::JobSystem->WaitForCounter(&simulateCounter, 0);
 
 		// TODO: Compute visibility
 
 		// Gather render data
-		Graphics::FrameData frameData;
+		frameDatas[currentFrameData].FrameIndex = frameIndex++;
+		playerView.GatherData(frameDatas[currentFrameData]);
 
-		frameData.FrameIndex = frameIndex++;
-		playerView.GatherData(frameData);
-		Modules::Renderer->GatherData(frameData, *m_World);
+		GatherDataData gatherData{ m_World, frameDatas[currentFrameData] };
 
-		// TODO: From this point graphics stuff should be on render thread
-		Modules::Renderer->RenderFrame(frameData);
+		Job::Counter gatherDataCounter;
+		Job::JobDecl gatherDataJob{ GatherData, &gatherData };
+		Modules::JobSystem->RunJobs("GatherData", &gatherDataJob, 1, &gatherDataCounter);
+		Modules::JobSystem->WaitForCounter(&gatherDataCounter, 0);
+
+		// Wait for previous Render World job in order to not get ahead more than 1 frame
+		Modules::JobSystem->WaitForCounter(&renderCounter, 0);
+
+		Job::JobDecl renderDataJob{ RenderFrame, &frameDatas[currentFrameData] };
+		Modules::JobSystem->RunJobs("Render World", &renderDataJob, 1, &renderCounter);
+		// There is a no wait here becase we can start next simulate before this has finished
+
 		lastFrameTmestamp = currentFrameTimestamp;
 
-		// Set window title
-		char title[100];
-		snprintf(title, 100, "Zmey. Delta Time: %.1fms", deltaTime * 1e3f);
-		Modules::Platform->SetWindowTitle(windowHandle, title);
+		currentFrameData = (currentFrameData + 1) % 2;
+
+		// TODO: add some text drawing and draw it onto the screen
+		// We cannot use SetWindowTitle because we are changing threads all the time
+		// because of our job system and SetWindowTitle can be called only on the thread
+		// that created the window or it will hang
+		//char title[100];
+		//snprintf(title, 100, "Zmey. Delta Time: %.1fms", deltaTime * 1e3f);
+		//Modules::Platform->SetWindowTitle(windowHandle, title);
 	}
+	Modules::JobSystem->WaitForCounter(&renderCounter, 0);
+
 	m_Game->Uninitialize();
 	Modules::Renderer->Unitialize();
 	Modules::Platform->KillWindow(windowHandle);
-
-	PROFILE_DESTROY;
+	Modules::JobSystem->Quit();
 }
 
 EngineLoop::~EngineLoop()
-{}
+{
+	PROFILE_DESTROY;
+}
 
 }

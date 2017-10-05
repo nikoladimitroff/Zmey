@@ -6,7 +6,6 @@
 #include <ChakraCore/ChakraCore.h>
 
 #include <Zmey/Scripting/Binding.h>
-#include <Zmey/Tasks/BlockingQueue.h>
 #include "Tasks.h"
 
 namespace Zmey

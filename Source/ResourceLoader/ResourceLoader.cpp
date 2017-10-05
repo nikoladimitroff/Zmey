@@ -135,7 +135,7 @@ Zmey::Name ResourceLoader::LoadResource(const stl::string& path)
 
 	if (Utilities::EndsWith(path, ".typebin"))
 	{
-		Modules::TaskSystem->SpawnTask("Loading file", [path, this, name]()
+		// TODO: Add task
 		{
 			std::ifstream stream(path.c_str());
 			ASSERT(stream.good());
@@ -146,11 +146,11 @@ Zmey::Name ResourceLoader::LoadResource(const stl::string& path)
 			stl::vector<uint8_t> data(size);
 			stream.read((char*)data.data(), size);
 			OnResourceLoaded(this, name, std::move(data));
-		});
+		}
 	}
 	else if (Utilities::EndsWith(path, ".worldbin"))
 	{
-		Modules::TaskSystem->SpawnTask("Loading file", [path, this, name]()
+		// TODO: add task
 		{
 			std::ifstream stream(path.c_str());
 			ASSERT(stream.good());
@@ -163,11 +163,11 @@ Zmey::Name ResourceLoader::LoadResource(const stl::string& path)
 			World* world = new World();
 			world->InitializeFromBuffer(buffer.get(), size);
 			OnResourceLoaded(this, name, world);
-		});
+		}
 	}
 	else if (Utilities::EndsWith(path, ".js"))
 	{
-		Modules::TaskSystem->SpawnTask("Loading file", [path, this, name]()
+		// TODO: add task
 		{
 			std::ifstream stream(path.c_str());
 			stream.seekg(0, std::ios::end);
@@ -176,18 +176,18 @@ Zmey::Name ResourceLoader::LoadResource(const stl::string& path)
 			tmp::string buffer(size, '\0');
 			stream.read(&buffer[0], size);
 			OnResourceLoaded(this, name, buffer);
-		});
+		}
 	}
 	else
 	{
-		Modules::TaskSystem->SpawnTask("Loading file", [path, this, name]()
+		// TODO: add task
 		{
 			const aiScene* scene = aiImportFile(path.c_str(), aiPostProcessSteps::aiProcess_ValidateDataStructure | aiProcess_MakeLeftHanded | aiProcess_FlipUVs | aiProcess_Triangulate);
 			if (scene)
 			{
 				OnResourceLoaded(this, name, scene);
 			}
-		});
+		}
 	}
 	return name;
 }
