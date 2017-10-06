@@ -26,6 +26,16 @@ void TransformManager::AddNewEntity(EntityId id, Vector3 pos, Vector3 scale, Qua
 	m_EntityToIndex[id] = unsigned(m_Positions.size() - 1);
 }
 
+void TransformManager::RemoveEntity(EntityId id)
+{
+	auto findIt = m_EntityToIndex.find(id);
+	if (findIt != m_EntityToIndex.end())
+	{
+		// TODO: remove data from entity indexes, or keep some kind of free list for this
+		m_EntityToIndex.erase(findIt);
+	}
+}
+
 void TransformComponentDefaults(IDataBlob& blob)
 {
 	float position[3] = { 0.f, 0.f, 0.f };
@@ -55,7 +65,7 @@ void TransformComponentToBlob(const nlohmann::json& rawJson, IDataBlob& blob)
 		rotation[0] = rawJson["rotation"][0];
 		rotation[1] = rawJson["rotation"][1];
 		rotation[2] = rawJson["rotation"][2];
-		rotation[2] = rawJson["rotation"][3];
+		rotation[3] = rawJson["rotation"][3];
 		blob.WriteData("rotation", reinterpret_cast<uint8_t*>(rotation), sizeof(rotation));
 	}
 

@@ -20,6 +20,7 @@ public:
 
 	virtual void InitializeFromBlob(const tmp::vector<EntityId>& entities, MemoryInputStream& blob) = 0;
 	virtual void Simulate(float deltaTime) = 0;
+	virtual void RemoveEntity(EntityId id) = 0;
 	inline World& GetWorld()
 	{
 		return m_World;

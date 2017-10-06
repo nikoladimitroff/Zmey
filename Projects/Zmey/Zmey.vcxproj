@@ -137,7 +137,6 @@
     <ClInclude Include="..\..\include\Zmey\Components\ComponentRegistryCommon.h" />
     <ClInclude Include="..\..\include\Zmey\Components\MeshComponentManager.h" />
     <ClInclude Include="..\..\include\Zmey\Components\ProjectileComponent.h" />
-    <ClInclude Include="..\..\include\Zmey\Components\RectangleManager.h" />
     <ClInclude Include="..\..\include\Zmey\Components\TagManager.h" />
     <ClInclude Include="..\..\include\Zmey\Components\TransformManager.h" />
     <ClInclude Include="..\..\include\Zmey\Config.h" />
@@ -169,7 +168,6 @@
     </ClInclude>
     <ClInclude Include="..\..\include\Zmey\Graphics\Features.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\Features\MeshRenderer.h" />
-    <ClInclude Include="..\..\include\Zmey\Graphics\Features\RectRenderer.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\FrameData.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\GraphicsObjects.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\Managers\BufferManager.h" />
@@ -212,7 +210,6 @@
     <ClCompile Include="..\..\Source\Components\ComponentRegistry.cpp" />
     <ClCompile Include="..\..\Source\Components\MeshComponentManager.cpp" />
     <ClCompile Include="..\..\Source\Components\ProjectileComponent.cpp" />
-    <ClCompile Include="..\..\Source\Components\RectangleManager.cpp" />
     <ClCompile Include="..\..\Source\Components\TagManager.cpp" />
     <ClCompile Include="..\..\Source\Components\TransformManager.cpp" />
     <ClCompile Include="..\..\Source\EngineLoop.cpp" />
@@ -232,7 +229,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\Source\Graphics\Features\MeshRenderer.cpp" />
-    <ClCompile Include="..\..\Source\Graphics\Features\RectRenderer.cpp" />
     <ClCompile Include="..\..\Source\Graphics\Managers\BufferManager.cpp" />
     <ClCompile Include="..\..\Source\Graphics\Managers\MeshManager.cpp" />
     <ClCompile Include="..\..\Source\Graphics\Renderer.cpp" />

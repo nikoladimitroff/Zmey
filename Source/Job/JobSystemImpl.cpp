@@ -212,9 +212,10 @@ void JobSystemImpl::FiberEntryPoint(void* params)
 			// This task is done. Decrement its counter
 			if (jobData.Counter)
 			{
-				jobData.Counter->Value.fetch_sub(1);
 				{
 					std::lock_guard<std::mutex> lock(system->m_WaitingFibersMutex);
+
+					jobData.Counter->Value.fetch_sub(1);
 					auto findIt = system->m_WaitingFibers.find(jobData.Counter);
 					if (findIt != system->m_WaitingFibers.end())
 					{

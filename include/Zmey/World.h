@@ -31,6 +31,8 @@ public:
 	void AddClassToRegistry(Zmey::Name className, const uint8_t* buffer, size_t size);
 	ZMEY_API EntityId SpawnEntity(Zmey::Name actorClass);
 	void Simulate(float deltaTime);
+
+	ZMEY_API void DestroyEntity(EntityId id);
 private:
 	EntityManager m_EntityManager;
 	stl::vector<Components::ComponentManager*> m_ComponentManagers;

@@ -4,7 +4,8 @@
     "extends": "",
     "components": [{
         "name": "transform",
-        "scale": [0.05, 0.05, 0.05]
+        "scale": [0.025, 0.025, 0.025],
+        "rotation": [0.0, -0.707, 0.707, 0.0]
     }, {
         "name": "mesh",
         "mesh": "Content/Meshes/Vampire_A_Lusth/Vampire_A_Lusth.dae"

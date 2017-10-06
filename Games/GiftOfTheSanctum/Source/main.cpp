@@ -76,6 +76,17 @@ public:
 			Zmey::Modules::ScriptEngine->ExecuteFromFile(m_ScriptName);
 			Zmey::Modules::ResourceLoader->FreeResource(m_ScriptName);
 		}
+
+		m_CurrentTime += deltaTime; // TODO: this has a lot of error
+		if (m_CurrentTime > 10.0f && m_CurrentRing) // every 10 seconds remove one ring
+		{
+			m_CurrentTime = 0.0f;
+			char buffer[30];
+			sprintf_s(buffer, "FloorRing%d", m_CurrentRing);
+			auto ring = GetWorld()->GetManager<Zmey::Components::TagManager>().FindFirstByTag(Zmey::Name(buffer));
+			GetWorld()->DestroyEntity(ring);
+			--m_CurrentRing;
+		}
 	}
 	virtual void Uninitialize() override
 	{
@@ -85,6 +96,8 @@ private:
 	Zmey::Utilities::ConstructorInitializable<Zmey::Name> m_ScriptName;
 	static const uint8_t MaxPlayers = 2;
 	Zmey::EntityId m_Players[MaxPlayers];
+	float m_CurrentTime = 0.0f;
+	uint8_t m_CurrentRing = 5;
 };
 
 

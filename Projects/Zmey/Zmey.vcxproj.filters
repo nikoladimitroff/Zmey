@@ -164,9 +164,6 @@
     <ClInclude Include="..\..\include\Zmey\Graphics\Features\MeshRenderer.h">
       <Filter>include\Graphics\Features</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Graphics\Features\RectRenderer.h">
-      <Filter>include\Graphics\Features</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\Zmey\EntityManager.h">
       <Filter>include</Filter>
     </ClInclude>
@@ -190,9 +187,6 @@
     </ClInclude>
     <ClInclude Include="..\..\include\Zmey\MemoryStream.h">
       <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Components\RectangleManager.h">
-      <Filter>include\Components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Backend.h">
       <Filter>include\Graphics\Backend</Filter>
@@ -319,9 +313,6 @@
     <ClCompile Include="..\..\Source\Graphics\Features\MeshRenderer.cpp">
       <Filter>Source\Graphics\Features</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Graphics\Features\RectRenderer.cpp">
-      <Filter>Source\Graphics\Features</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Source\EntityManager.cpp">
       <Filter>Source</Filter>
     </ClCompile>
@@ -333,9 +324,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\World.cpp">
       <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Source\Components\RectangleManager.cpp">
-      <Filter>Source\Components</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Graphics\Backend\Vulkan\VulkanShaders.cpp">
       <Filter>Source\Graphics\Backend\Vulkan</Filter>

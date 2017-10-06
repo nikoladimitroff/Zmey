@@ -64,7 +64,7 @@ private:
 		{
 			newCapacity *= 2;
 		}
-		if (newCapacity < requestedSize)
+		if (newCapacity != m_Capacity)
 		{
 			stl::unique_array<uint8_t> newBuffer = stl::make_unique_array<uint8_t>(newCapacity);
 			std::memcpy(newBuffer.get(), m_Buffer.get(), m_Size);

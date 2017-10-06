@@ -134,4 +134,13 @@ EntityId World::SpawnEntity(Zmey::Name actorType)
 	return entityId;
 }
 
+void World::DestroyEntity(EntityId id)
+{
+	m_EntityManager.Destroy(id);
+	for (auto& manager : m_ComponentManagers)
+	{
+		manager->RemoveEntity(id);
+	}
+}
+
 }

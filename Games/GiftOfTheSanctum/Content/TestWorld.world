@@ -6,7 +6,7 @@
         "type": "Magician", "compiler-id": 1,
         "components": [{
             "name": "transform",
-            "position": [0.0, -5.0, 15.0]
+            "position": [-2.0, 0, 0.0]
         }, {
             "name": "tag",
             "tags": ["Player0"]
@@ -15,7 +15,7 @@
         "type": "Magician", "compiler-id": 1,
         "components": [{
             "name": "transform",
-            "position": [0.0, 0.0, 15.0]
+            "position": [0.0, 0.0, 0.0]
         }, {
             "name": "tag",
             "tags": ["Player1"]
@@ -24,10 +24,64 @@
         "type": "Magician", "compiler-id": 2,
         "components": [{
             "name": "transform",
-            "position": [0.0, 5.0, 15.0]
+            "position": [2.0, 0.0, 0.0]
         }, {
             "name": "tag",
             "tags": ["Player2"]
+        }]
+    }, {
+        "type": "Floor", "compiler-id": 3,
+        "components": [{
+			"name": "mesh",
+			"mesh": "Content/Meshes/Floor/inner.obj"
+		}, {
+            "name": "tag",
+            "tags": ["FloorInner"]
+        }]
+    }, {
+        "type": "Floor", "compiler-id": 3,
+        "components": [{
+			"name": "mesh",
+			"mesh": "Content/Meshes/Floor/ring1.obj"
+		}, {
+            "name": "tag",
+            "tags": ["FloorRing1"]
+        }]
+    }, {
+        "type": "Floor", "compiler-id": 3,
+        "components": [{
+			"name": "mesh",
+			"mesh": "Content/Meshes/Floor/ring2.obj"
+		}, {
+            "name": "tag",
+            "tags": ["FloorRing2"]
+        }]
+    }, {
+        "type": "Floor", "compiler-id": 3,
+        "components": [{
+			"name": "mesh",
+			"mesh": "Content/Meshes/Floor/ring3.obj"
+		}, {
+            "name": "tag",
+            "tags": ["FloorRing3"]
+        }]
+    }, {
+        "type": "Floor", "compiler-id": 3,
+        "components": [{
+			"name": "mesh",
+			"mesh": "Content/Meshes/Floor/ring4.obj"
+		}, {
+            "name": "tag",
+            "tags": ["FloorRing4"]
+        }]
+    }, {
+        "type": "Floor", "compiler-id": 3,
+        "components": [{
+			"name": "mesh",
+			"mesh": "Content/Meshes/Floor/ring5.obj"
+		}, {
+            "name": "tag",
+            "tags": ["FloorRing5"]
         }]
     }]
 }

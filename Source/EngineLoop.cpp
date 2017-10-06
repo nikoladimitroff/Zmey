@@ -152,7 +152,7 @@ void EngineLoop::RunImpl()
 	// Create main Player view
 	Graphics::View playerView(Graphics::ViewType::PlayerView);
 	playerView.SetupProjection(width, height, glm::radians(60.0f), 0.1f, 1000.0f);
-	playerView.SetupView(Vector3(0.0f, 0.0f, 1.0f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f));
+	playerView.SetupView(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 8.0f, 10.0f));
 
 	Zmey::Name worldName = m_Game->LoadResources();
 	Modules::ResourceLoader->WaitForResource(worldName);
@@ -160,8 +160,8 @@ void EngineLoop::RunImpl()
 	ASSERT_FATAL(world);
 	Modules::ResourceLoader->ReleaseOwnershipOver(worldName);
 	m_World = const_cast<World*>(world);
-	Zmey::Chakra::Binding::ProjectGlobal(L"world", m_World, Zmey::Hash("world"));
-	Zmey::Modules::ProjectToScripting();
+	//Zmey::Chakra::Binding::ProjectGlobal(L"world", m_World, Zmey::Hash("world"));
+	//Zmey::Modules::ProjectToScripting();
 	m_Game->SetWorld(m_World);
 
 	m_Game->Initialize();

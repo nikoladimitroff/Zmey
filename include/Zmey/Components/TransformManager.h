@@ -20,6 +20,7 @@ public:
 	ZMEY_API void AddNewEntity(EntityId id, Vector3 pos, Vector3 scale, Quaternion rot);
 	virtual void InitializeFromBlob(const tmp::vector<EntityId>&, Zmey::MemoryInputStream&) override;
 	virtual void Simulate(float deltaTime) override;
+	virtual void RemoveEntity(EntityId id) override;
 private:
 	// TODO: Store all 3 vectors in sequential memory
 	stl::vector<Vector3> m_Positions;

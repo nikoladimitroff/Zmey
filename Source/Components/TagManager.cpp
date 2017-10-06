@@ -35,6 +35,7 @@ void TagComponentToBlob(const nlohmann::json& rawJson, IDataBlob& blob)
 		blob.WriteData("tags", reinterpret_cast<uint8_t*>(tags.data()), static_cast<uint16_t>(sizeof(Zmey::Name) * tags.size()));
 	}
 }
+
 void TagManager::InitializeFromBlob(const tmp::vector<EntityId>& entities, Zmey::MemoryInputStream& input)
 {
 	for (auto& entityId : entities)
@@ -52,12 +53,19 @@ void TagManager::InitializeFromBlob(const tmp::vector<EntityId>& entities, Zmey:
 	}
 }
 
+void TagManager::RemoveEntity(EntityId id)
+{
+	m_Tags.erase(std::remove_if(m_Tags.begin(), m_Tags.end(), [id](const EntityTagPair& pair) {
+		return pair.Entity == id;
+	}), m_Tags.end());
+}
 
 bool TagManager::HasTag(EntityId entity, Zmey::Name tag) const
 {
 	EntityTagPair pair{ entity, tag };
 	return std::find(m_Tags.cbegin(), m_Tags.cend(), pair) != m_Tags.cend();
 }
+
 EntityId TagManager::FindFirstByTag(Zmey::Name tag) const
 {
 	auto it = std::find_if(m_Tags.cbegin(), m_Tags.cend(), [tag](const EntityTagPair& pair)

@@ -20,6 +20,11 @@ void ProjectileComponent::InitializeFromBlob(const tmp::vector<EntityId>& entiti
 	std::memcpy(&m_Projectiles[currentEntities], entities.data(), entities.size() * sizeof(Zmey::EntityId));
 }
 
+void ProjectileComponent::RemoveEntity(EntityId id)
+{
+	m_Projectiles.erase(std::remove(m_Projectiles.begin(), m_Projectiles.end(), id), m_Projectiles.end());
+}
+
 void ProjectileComponent::Simulate(float deltaTime)
 {
 	auto& transformManager = GetWorld().GetManager<Zmey::Components::TransformManager>();

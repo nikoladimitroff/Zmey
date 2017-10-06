@@ -48,6 +48,16 @@ void MeshComponentManager::Simulate(float deltaTime)
 {
 }
 
+void MeshComponentManager::RemoveEntity(EntityId id)
+{
+	auto findIt = m_EntityToIndex.find(id);
+	if (findIt != m_EntityToIndex.end())
+	{
+		// TODO: remove data from entity indexes, or keep some kind of free list for this
+		m_EntityToIndex.erase(findIt);
+	}
+}
+
 stl::vector<std::pair<EntityId, Graphics::MeshHandle>> MeshComponentManager::GetMeshes()
 {
 	stl::vector<std::pair<EntityId, Graphics::MeshHandle>> result;
