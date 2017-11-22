@@ -23,7 +23,8 @@ class ZmeyComponent_Mesh(bpy.types.PropertyGroup):
         layout.prop(self, "mesh")
 
     def export(self):
-        return {"name": "mesh", "mesh" : "test.gltf"}
+        # This is special component, as it is exported explicitly
+        return None
 
 class ZmeyComponent_Tag(bpy.types.PropertyGroup):
     @classmethod

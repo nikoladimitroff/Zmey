@@ -58,17 +58,29 @@ class ExportZmey(bpy.types.Operator, ExportHelper):
 
         # Prepare objects
         entities_list = []
-        for obj in bpy.data.objects:
+        for i, obj in enumerate(bpy.data.objects):
             if obj.zmey_props.enabled:
+                type_object = zmey_scene.types[int(obj.zmey_props.type)]
                 entity = {
-                    "type" : zmey_scene.types[int(obj.zmey_props.type)].name,
+                    "type" : type_object.name,
                     "compiler-id" : 1, #WTF ?
                     "components" : obj.zmey_props.components.export()
                 }
 
+                # Export transformation
                 transform_component = prepare_object_transform(obj)
                 transform_component["name"] = "transform"
                 entity["components"].append(transform_component)
+
+                # Export mesh component
+                if obj.zmey_props.components.mesh_enabled or \
+                    type_object.components.mesh_enabled :
+                    # we are exporting all object with gltf so node index is the same as bpy.data.object
+                    mesh_component = {
+                        "name" : "mesh",
+                        "glTF_node_index" : i
+                    }
+                    entity["components"].append(mesh_component)
 
                 entities_list.append(entity)
 
@@ -85,6 +97,7 @@ class ExportZmey(bpy.types.Operator, ExportHelper):
         file.close()
 
         # Export glTF
+        bpy.ops.export_scene.gltf(filepath=self.filepath.rsplit(".", 1)[0] + ".gltf")
 
         bpy.context.window_manager.progress_end()
         return {'FINISHED'}

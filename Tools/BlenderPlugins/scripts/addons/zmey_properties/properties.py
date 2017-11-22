@@ -22,7 +22,9 @@ class ZmeyComponentHolder(bpy.types.PropertyGroup):
         for _, name in components.zmey_component_list:
             component_enabled_name = name + "_enabled"
             if getattr(self, component_enabled_name):
-                component_list.append(getattr(self, name).export())
+                exported = getattr(self, name).export()
+                if exported is not None:
+                    component_list.append(exported)
 
         return component_list
 
