@@ -11,6 +11,9 @@ class ZmeyComponent_Physics(bpy.types.PropertyGroup):
     def draw(self, layout):
         pass
 
+    def export(self):
+        return { "name" : "physics" }
+
 class ZmeyComponent_Mesh(bpy.types.PropertyGroup):
     @classmethod
     def register(cls):
@@ -18,6 +21,9 @@ class ZmeyComponent_Mesh(bpy.types.PropertyGroup):
 
     def draw(self, layout):
         layout.prop(self, "mesh")
+
+    def export(self):
+        return {"name": "mesh", "mesh" : "test.gltf"}
 
 class ZmeyComponent_Tag(bpy.types.PropertyGroup):
     @classmethod
@@ -27,6 +33,9 @@ class ZmeyComponent_Tag(bpy.types.PropertyGroup):
     def draw(self, layout):
         layout.prop(self, "tag")
 
+    def export(self):
+        return {"name": "tag", "tags" : [self.tag]}
+
 class ZmeyComponent_Projectile(bpy.types.PropertyGroup):
     @classmethod
     def register(cls):
@@ -34,6 +43,9 @@ class ZmeyComponent_Projectile(bpy.types.PropertyGroup):
 
     def draw(self, layout):
         pass
+
+    def export(self):
+        return { "name" : "projectile" }
 
 zmey_component_list = [
     (ZmeyComponent_Physics, "physics"),

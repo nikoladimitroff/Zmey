@@ -1,4 +1,5 @@
 import bpy
+
 from . import components
 
 class ZmeyComponentHolder(bpy.types.PropertyGroup):
@@ -16,11 +17,29 @@ class ZmeyComponentHolder(bpy.types.PropertyGroup):
             if getattr(self, component_enabled_name):
                 getattr(self, name).draw(innerbox)
 
+    def export(self):
+        component_list = []
+        for _, name in components.zmey_component_list:
+            component_enabled_name = name + "_enabled"
+            if getattr(self, component_enabled_name):
+                component_list.append(getattr(self, name).export())
+
+        return component_list
+
 class ZmeySceneType(bpy.types.PropertyGroup):
     @classmethod
     def register(cls):
         cls.name = bpy.props.StringProperty(name="Name", default="New Type")
         cls.components = bpy.props.PointerProperty(type=ZmeyComponentHolder)
+
+    def export(self):
+        data = { "version" : "1.0",
+         "name" : self.name,
+         "extends" : "",
+         "components" : self.components.export()
+        }
+
+        return data
 
 class ZmeySceneTypesProperty(bpy.types.PropertyGroup):
     @classmethod
@@ -58,6 +77,9 @@ class ZmeyObjectProperty(bpy.types.PropertyGroup):
             description="Zmey Object Properties",
             type=cls,
         )
+        cls.enabled = bpy.props.BoolProperty(
+            name="Object Enabled"
+        )
         cls.type = bpy.props.EnumProperty(
             name="Object Type",
             items=get_available_zmey_types,
@@ -67,6 +89,10 @@ class ZmeyObjectProperty(bpy.types.PropertyGroup):
             name="Object Name"
         )
         cls.components=bpy.props.PointerProperty(type=ZmeyComponentHolder)
+
+    @classmethod
+    def unregister(cls):
+        del bpy.types.Object.zmey_props
 
 def register():
     bpy.utils.register_class(ZmeyComponentHolder)

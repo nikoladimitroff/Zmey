@@ -52,9 +52,12 @@ class ZmeyObjectPropertiesPanel(bpy.types.Panel):
         layout = self.layout
         obj = context.object
 
-        layout.row().prop(obj.zmey_props, "name")
-        layout.row().prop(obj.zmey_props, "type")
-        obj.zmey_props.components.draw_type(layout.box())
+        layout.row().prop(obj.zmey_props, "enabled", toggle=True)
+
+        if obj.zmey_props.enabled:
+            layout.row().prop(obj.zmey_props, "name")
+            layout.row().prop(obj.zmey_props, "type")
+            obj.zmey_props.components.draw_type(layout.box())
 
 
 def register():
