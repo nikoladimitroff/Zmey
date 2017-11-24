@@ -90,7 +90,7 @@ private:
 	template<typename T>
 	bool ResourceExistsInCollection(Zmey::Name name, const stl::concurrent_vector<std::pair<Zmey::Name, T>>& collection);
 	// Callback for the task system
-	friend void OnResourceLoaded(ResourceLoader*, Zmey::Name, const aiScene*);
+	friend void OnResourceMeshLoaded(ResourceLoader*, Zmey::Name, stl::vector<uint8_t>&&);
 	friend void OnResourceLoaded(ResourceLoader*, Zmey::Name, const tmp::string&);
 	friend void OnResourceLoaded(ResourceLoader*, Zmey::Name, World*);
 	friend void OnResourceLoaded(ResourceLoader*, Zmey::Name, stl::vector<uint8_t>&&);

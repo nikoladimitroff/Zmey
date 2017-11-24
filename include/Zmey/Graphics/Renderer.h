@@ -51,7 +51,7 @@ public:
 
 	bool CheckIfFrameCompleted(uint64_t frameIndex);
 
-	MeshHandle MeshLoaded(const aiScene* mesh);
+	MeshHandle MeshLoaded(stl::vector<uint8_t>&& data);
 
 private:
 	void PrepareData(FrameData& frameData);

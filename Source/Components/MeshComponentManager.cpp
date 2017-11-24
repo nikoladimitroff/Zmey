@@ -21,10 +21,11 @@ void MeshComponentDefaults(IDataBlob& blob)
 
 void MeshComponentToBlob(const nlohmann::json& rawJson, IDataBlob& blob)
 {
-	if (rawJson.find("mesh") != rawJson.end())
+	if (rawJson.find("glTF_node_index") != rawJson.end())
 	{
-		ASSERT_FATAL(rawJson["mesh"].is_string());
-		std::string meshPath = rawJson["mesh"];
+		ASSERT_FATAL(rawJson["glTF_node_index"].is_number_integer());
+		unsigned meshIndex = rawJson["glTF_node_index"];
+		std::string meshPath("mesh_" + std::to_string(meshIndex) + ".mesh");
 		uint16_t pathLength = static_cast<uint16_t>(meshPath.size());
 		Zmey::Name name(meshPath.c_str());
 		blob.WriteData("mesh", reinterpret_cast<uint8_t*>(&name), sizeof(name));

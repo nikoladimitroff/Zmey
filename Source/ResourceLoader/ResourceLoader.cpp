@@ -2,13 +2,6 @@
 
 #include <fstream>
 #include <utility>
-// Use the C interface as the CPP interface at let's us destroy the aiScene when we decide we want to
-// and is also thread-safe
-#include <assimp/cimport.h>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
-#include <assimp/LogStream.hpp>
-#include <assimp/DefaultLogger.hpp>
 
 #include <Zmey/Modules.h>
 #include <Zmey/World.h>
@@ -16,25 +9,12 @@
 
 namespace Zmey
 {
-class AssimpLogStream :	public Assimp::LogStream
-{
-public:
-	// Write womethink using your own functionality
-	virtual void write(const char* message) override
-	{
-		LOG(Info, Assimp, message);
-	}
-};
-
 ResourceLoader::ResourceLoader()
 {
-	Assimp::DefaultLogger::create("", Assimp::Logger::VERBOSE);
-	Assimp::DefaultLogger::get()->attachStream(new AssimpLogStream(), Assimp::Logger::Info);
 }
 
 ResourceLoader::~ResourceLoader()
 {
-	Assimp::DefaultLogger::kill();
 }
 
 void ResourceLoader::ReleaseOwnershipOver(Zmey::Name name)
@@ -102,9 +82,9 @@ void ResourceLoader::WaitForAllResources(const tmp::vector<Zmey::Name>& resource
 	{}
 }
 
-void OnResourceLoaded(ResourceLoader* loader, Zmey::Name name, const aiScene* scene)
+void OnResourceMeshLoaded(ResourceLoader* loader, Zmey::Name name, stl::vector<uint8_t>&& data)
 {
-	auto handle = Modules::Renderer->MeshLoaded(scene);
+	auto handle = Modules::Renderer->MeshLoaded(std::move(data));
 	loader->m_Meshes.push_back(std::make_pair(name, handle));
 	FORMAT_LOG(Info, ResourceLoader, "Just loaded asset for name: %llu", static_cast<uint64_t>(name));
 }
@@ -182,11 +162,16 @@ Zmey::Name ResourceLoader::LoadResource(const stl::string& path)
 	{
 		// TODO: add task
 		{
-			const aiScene* scene = aiImportFile(path.c_str(), aiPostProcessSteps::aiProcess_ValidateDataStructure | aiProcess_MakeLeftHanded | aiProcess_FlipUVs | aiProcess_Triangulate);
-			if (scene)
-			{
-				OnResourceLoaded(this, name, scene);
-			}
+			// TODO: maybe temp memory ?
+			std::ifstream stream(path.c_str());
+			ASSERT(stream.good());
+			stream.seekg(0, std::ios::end);
+			size_t size = stream.tellg();
+			stream.seekg(0);
+
+			stl::vector<uint8_t> data(size);
+			stream.read((char*)data.data(), size);
+			OnResourceMeshLoaded(this, name, std::move(data));
 		}
 	}
 	return name;
