@@ -25,7 +25,7 @@ void MeshComponentToBlob(const nlohmann::json& rawJson, IDataBlob& blob)
 	{
 		ASSERT_FATAL(rawJson["glTF_node_index"].is_number_integer());
 		unsigned meshIndex = rawJson["glTF_node_index"];
-		std::string meshPath("mesh_" + std::to_string(meshIndex) + ".mesh");
+		std::string meshPath("IncineratedDataCache/mesh_" + std::to_string(meshIndex) + ".mesh");
 		uint16_t pathLength = static_cast<uint16_t>(meshPath.size());
 		Zmey::Name name(meshPath.c_str());
 		blob.WriteData("mesh", reinterpret_cast<uint8_t*>(&name), sizeof(name));

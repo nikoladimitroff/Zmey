@@ -269,7 +269,8 @@ void Incinerator::IncinerateWorld(const std::string& destinationFolder, const st
 		// TODO: better check
 		if (name.find(".mesh") != std::string::npos)
 		{
-			outMeshFiles.push_back(name);
+			auto filenameStart = name.find_last_of("/") + 1;
+			outMeshFiles.push_back(name.substr(filenameStart, name.size() - filenameStart));
 		}
 	}
 
@@ -318,23 +319,42 @@ public:
 	}
 };
 
+aiNode* FindNode(aiNode* node, const char* name)
+{
+	if (!::strcmp(node->mName.data, name))return node;
+	for (unsigned int i = 0; i < node->mNumChildren; ++i)
+	{
+		aiNode* const p = FindNode(node->mChildren[i], name);
+		if (p) {
+			return p;
+		}
+	}
+	// there is definitely no sub-node with this name
+	return nullptr;
+}
+
 void Incinerator::IncinerateScene(const std::string& destinationFolder, const std::string& gltf, const std::vector<std::string>& meshFiles)
 {
 	Assimp::DefaultLogger::create("", Assimp::Logger::VERBOSE);
 	Assimp::DefaultLogger::get()->attachStream(new AssimpLogStream(), Assimp::Logger::Info);
 
-	const aiScene* scene = aiImportFile(gltf.c_str(), aiPostProcessSteps::aiProcess_ValidateDataStructure | aiProcess_MakeLeftHanded | aiProcess_FlipUVs | aiProcess_Triangulate);
+	const aiScene* scene = aiImportFile(gltf.c_str(), aiProcess_MakeLeftHanded | aiProcess_FlipUVs | aiProcess_Triangulate);
+	assert(scene);
 
 	const auto extensionLen = strlen(".mesh");
 	const auto prefixLen = strlen("mesh_");
+	const auto& rootNode = scene->mRootNode;
 
 	for (const auto& meshName : meshFiles)
 	{
 		auto nameWithoutExtension = meshName.substr(0, meshName.size() - extensionLen);
 		unsigned meshIndex = std::stoi(nameWithoutExtension.substr(prefixLen, nameWithoutExtension.size() - prefixLen));
 
-		assert(scene->mNumMeshes > meshIndex);
-		auto& mesh = scene->mMeshes[meshIndex];
+		// meshIndex is actually node index
+		// TODO: why fond note is not here :/
+		const auto& node = FindNode(rootNode, (std::string("nodes_") + std::to_string(meshIndex)).c_str());
+		assert(node && node->mNumMeshes == 1);
+		const auto& mesh = scene->mMeshes[*node->mMeshes];
 		std::vector<Zmey::Graphics::MeshVertex> vertices;
 		vertices.reserve(mesh->mNumVertices);
 

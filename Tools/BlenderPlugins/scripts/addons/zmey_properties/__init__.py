@@ -22,15 +22,22 @@ from bpy_extras.io_utils import (ExportHelper)
 
 log = logging.getLogger("zmey")
 
+def blender_to_zmey_coord_translation(translation):
+    return [translation[0], translation[2], translation[1]]
+
+def blender_to_zmey_coord_scale(scale):
+    return [scale[0], scale[2], scale[1]]
+
+def blender_to_zmey_coord_rotation(rotation):
+    # W is first in blender, but we need it at the end
+    return [rotation[1], rotation[3], rotation[2], rotation[0]]
+
 def prepare_object_transform(obj):
     translation, rotation, scale = obj.matrix_world.decompose()
-    #TODO: check coordinate systems if correct
-    # Put w at the end
-    rotation = mathutils.Quaternion((rotation[1], rotation[2], rotation[3], rotation[0]))
     return_value = {
-        "translation" : [translation[0], translation[1], translation[2]],
-        "rotation" : [rotation[0], rotation[1], rotation[2], rotation[3]],
-        "scale" : [scale[0], scale[1], scale[2]]
+        "position" : blender_to_zmey_coord_translation(translation),
+        "rotation" : blender_to_zmey_coord_rotation(rotation),
+        "scale" : blender_to_zmey_coord_scale(scale)
     }
     return return_value
 

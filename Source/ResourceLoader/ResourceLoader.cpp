@@ -117,7 +117,7 @@ Zmey::Name ResourceLoader::LoadResource(const stl::string& path)
 	{
 		// TODO: Add task
 		{
-			std::ifstream stream(path.c_str());
+			std::ifstream stream(path.c_str(), std::ios::binary);
 			ASSERT(stream.good());
 			stream.seekg(0, std::ios::end);
 			size_t size = stream.tellg();
@@ -132,7 +132,7 @@ Zmey::Name ResourceLoader::LoadResource(const stl::string& path)
 	{
 		// TODO: add task
 		{
-			std::ifstream stream(path.c_str());
+			std::ifstream stream(path.c_str(), std::ios::binary);
 			ASSERT(stream.good());
 			stream.seekg(0, std::ios::end);
 			size_t size = stream.tellg();
@@ -163,7 +163,7 @@ Zmey::Name ResourceLoader::LoadResource(const stl::string& path)
 		// TODO: add task
 		{
 			// TODO: maybe temp memory ?
-			std::ifstream stream(path.c_str());
+			std::ifstream stream(path.c_str(), std::ios::binary);
 			ASSERT(stream.good());
 			stream.seekg(0, std::ios::end);
 			size_t size = stream.tellg();
