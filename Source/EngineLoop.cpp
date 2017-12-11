@@ -11,7 +11,6 @@
 #include <Zmey/Game.h>
 #include <Zmey/Components/ComponentRegistry.h>
 #include <Zmey/Components/TransformManager.h>
-#include <Zmey/Components/RectangleManager.h>
 #include <Zmey/Scripting/Binding.h>
 
 #include <Zmey/Graphics/FrameData.h>

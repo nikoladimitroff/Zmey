@@ -15,6 +15,14 @@ struct MeshVertex
 	Vector3 Normal;
 };
 
+struct MeshDataHeader
+{
+	uint64_t VerticesCount;
+	uint64_t IndicesCount;
+	// MeshVertex[VerticesCount]
+	// uint32_t[IndicesCount]
+};
+
 struct Mesh
 {
 	uint32_t IndexCount;

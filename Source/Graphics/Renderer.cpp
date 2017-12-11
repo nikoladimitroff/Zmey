@@ -8,8 +8,6 @@
 #include <Zmey/Graphics/Backend/Backend.h>
 #include <Zmey/Graphics/Backend/CommandList.h>
 
-#include <assimp/scene.h>
-
 //TODO(alex): remove this
 #include <Zmey/Graphics/Backend/Dx12/Dx12Shaders.h>
 
@@ -149,43 +147,26 @@ RendererInterface::RendererInterface()
 #undef REGISTER_FEATURE
 }
 
-MeshHandle RendererInterface::MeshLoaded(const aiScene* scene)
+MeshHandle RendererInterface::MeshLoaded(stl::vector<uint8_t>&& data)
 {
-	TEMP_ALLOCATOR_SCOPE;
-	if (scene->mNumMeshes > 0)
+	if (data.size() < sizeof(MeshDataHeader))
 	{
-		auto mesh = scene->mMeshes[0];
-		tmp::vector<MeshVertex> vertices;
-		vertices.reserve(mesh->mNumVertices);
-		for (auto i = 0u; i < mesh->mNumVertices; ++i)
-		{
-			auto& aiVector = mesh->mVertices[i];
-			auto& aiNormal = mesh->mNormals[i];
-			vertices.push_back(MeshVertex{
-				Vector3(aiVector.x, aiVector.y, aiVector.z),
-				Vector3{aiNormal.x, aiNormal.y, aiNormal.z}
-			});
-		}
-
-		tmp::vector<uint32_t> indices;
-		indices.reserve(mesh->mNumFaces * 3);
-		for (auto i = 0u; i < mesh->mNumFaces; ++i)
-		{
-			auto& face = mesh->mFaces[i];
-			assert(face.mNumIndices == 3);
-			indices.push_back(face.mIndices[0]);
-			indices.push_back(face.mIndices[1]);
-			indices.push_back(face.mIndices[2]);
-		}
-
-		Mesh newMesh;
-		newMesh.IndexCount = uint32_t(indices.size());
-		newMesh.VertexBuffer = m_Data.BufferManager.CreateStaticBuffer(uint32_t(vertices.size() * sizeof(MeshVertex)), vertices.data());
-		newMesh.IndexBuffer = m_Data.BufferManager.CreateStaticBuffer(uint32_t(indices.size() * sizeof(uint32_t)), indices.data());
-		return m_Data.MeshManager.CreateMesh(newMesh);
+		return MeshHandle(-1);
 	}
 
-	return MeshHandle(-1);
+	MeshDataHeader* header = reinterpret_cast<MeshDataHeader*>(data.data());
+
+	Mesh newMesh;
+	newMesh.IndexCount = uint32_t(header->IndicesCount);
+	newMesh.VertexBuffer = m_Data.BufferManager.CreateStaticBuffer(
+		uint32_t(header->VerticesCount * sizeof(MeshVertex)),
+		data.data() + sizeof(MeshDataHeader)
+	);
+	newMesh.IndexBuffer = m_Data.BufferManager.CreateStaticBuffer(
+		uint32_t(header->IndicesCount * sizeof(uint32_t)),
+		data.data() + sizeof(MeshDataHeader) + (header->VerticesCount * sizeof(MeshVertex))
+	);
+	return m_Data.MeshManager.CreateMesh(newMesh);
 }
 }
 }

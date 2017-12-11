@@ -85,7 +85,7 @@ void MeshRenderer::GenerateCommands(FrameData& frameData, RenderPass pass, ViewT
 
 	auto viewProjection = frameData.ProjectionMatrix * frameData.ViewMatrix;
 
-	Vector3 lightDir(-1.0, -1.0, -1.0);
+	Vector3 lightDir(-1.0, -1.0, 1.0);
 	lightDir = glm::normalize(lightDir);
 	list->SetPushConstants(data.MeshesPipelineState, 2 * sizeof(Matrix4x4), sizeof(Vector3), &lightDir);
 	list->SetPushConstants(data.MeshesPipelineState, 2 * sizeof(Matrix4x4) + sizeof(Vector4), sizeof(Vector3), &frameData.EyePosition);
