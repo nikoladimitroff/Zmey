@@ -154,6 +154,7 @@ void PhysicsEngine::Simulate(float deltaTime)
 	uint32_t scratchMemorySize = 1024 * 1024; // 1mb
 	tmp::unique_array<uint8_t> scratchMemory = tmp::make_unique_array<uint8_t>(scratchMemorySize);
 	m_Scene->simulate(PhysicsEngine::TimeStep, nullptr, scratchMemory.get(), scratchMemorySize);
+	m_HasIssuedSimulate = true;
 }
 
 inline void SetZmeyTransformFromPhysx(Zmey::Components::TransformInstance& transform, const physx::PxTransform& pxTransform)
@@ -169,9 +170,15 @@ inline void SetZmeyTransformFromPhysx(Zmey::Components::TransformInstance& trans
 
 void PhysicsEngine::FetchResults()
 {
+	if (!m_HasIssuedSimulate)
+	{
+		return;
+	}
+
 	physx::PxU32 error(physx::PxErrorCode::eNO_ERROR);
 	m_Scene->fetchResults(true, &error);
 	ASSERT(error == physx::PxErrorCode::eNO_ERROR);
+	m_HasIssuedSimulate = false;
 
 	physx::PxU32 activeTransformsCount = -1;
 	auto activeTransforms = m_Scene->getActiveTransforms(activeTransformsCount);

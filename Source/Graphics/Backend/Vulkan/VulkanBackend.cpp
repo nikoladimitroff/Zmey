@@ -93,13 +93,13 @@ VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const tmp::vector<VkSurfaceFormatKHR>
 
 VkPresentModeKHR ChooseSwapPresentMode(const tmp::vector<VkPresentModeKHR> availablePresentModes)
 {
-	for (const auto& mode : availablePresentModes)
-	{
-		if (mode == VK_PRESENT_MODE_MAILBOX_KHR)
-		{
-			return mode;
-		}
-	}
+	//for (const auto& mode : availablePresentModes)
+	//{
+	//	if (mode == VK_PRESENT_MODE_MAILBOX_KHR)
+	//	{
+	//		return mode;
+	//	}
+	//}
 
 	return VK_PRESENT_MODE_FIFO_KHR;
 }
@@ -777,7 +777,7 @@ PipelineState* VulkanBackend::CreatePipelineState(const PipelineStateDesc& desc)
 
 	VkPushConstantRange ranges[1];
 	ranges[0].stageFlags = VK_SHADER_STAGE_ALL_GRAPHICS;
-	ranges[0].size = 40 * sizeof(float);
+	ranges[0].size = 43 * sizeof(float);
 	ranges[0].offset = 0;
 
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};

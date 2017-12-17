@@ -88,6 +88,7 @@ private:
 
 	static const float TimeStep;
 	float m_TimeAccumulator;
+	bool m_HasIssuedSimulate;
 };
 
 }

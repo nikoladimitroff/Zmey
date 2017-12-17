@@ -17,6 +17,7 @@ cbuffer VertexPushs : register(b0) PUSH_CONSTANT
 {
 	float4x4 WorldViewProjectionMatrix;
 	float4x4 WorldMatrix;
+	float3 Color;
 	float3 LightDirection; // Directional Light
 	float3 EyePosition;
 };
@@ -34,7 +35,7 @@ VertexOutput VertexShaderMain(VertexInput input)
 float4 PixelShaderMain(VertexOutput input) : SV_TARGET
 {
 	// Simple diffuse lighting
-	float4 color = float4(0.75, 0.75, 0.75, 1.0);
+	float4 color = float4(Color, 1.0);
 
 	// diffuse
 	float diffuseFactor = saturate(dot(input.Normal, -LightDirection));

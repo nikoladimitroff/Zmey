@@ -58,6 +58,10 @@ class ExportZmey(bpy.types.Operator, ExportHelper):
         # Export types
         type_list = [(t.name, t.export()) for t in zmey_scene.types]
         for name, data in type_list:
+            # Add default transform component to type
+            transform_component = {"name" : "transform"}
+            data["components"].append(transform_component)
+
             file = open(self.directory + name + ".type", "w", encoding="utf8", newline="\n")
             file.write(json.dumps(data, indent=4, separators=(', ', ' : ')))
             file.write("\n")
@@ -82,11 +86,16 @@ class ExportZmey(bpy.types.Operator, ExportHelper):
                 # Export mesh component
                 if obj.zmey_props.components.mesh_enabled or \
                     type_object.components.mesh_enabled :
+
                     # we are exporting all object with gltf so node index is the same as bpy.data.object
                     mesh_component = {
                         "name" : "mesh",
                         "glTF_node_index" : i
                     }
+                    # check for color inside the material
+                    if len(obj.data.materials) > 0 and obj.data.materials[0].diffuse_color:
+                        c = obj.data.materials[0].diffuse_color
+                        mesh_component["color"] = [c.r, c.g, c.b]
                     entity["components"].append(mesh_component)
 
                 entities_list.append(entity)

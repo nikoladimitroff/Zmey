@@ -29,11 +29,8 @@
 #endif
 
 // Renderer config
-#if defined(ZMEY_USE_DX12)
-#define USE_DX12
-#elif defined(ZMEY_USE_VULKAN)
-#define USE_VULKAN
-#endif
+// Undef for Dx12
+//#define USE_DX12
 
 // Assume if we haven't choosen what to use that only vulkan is present
 // as Dx12 runs only on Win10

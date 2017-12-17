@@ -1,10 +1,13 @@
 {
-    "name" : "Floor", 
+    "version" : "1.0", 
     "components" : [
         {
             "name" : "physics"
+        }, 
+        {
+            "name" : "transform"
         }
     ], 
     "extends" : "", 
-    "version" : "1.0"
+    "name" : "Floor"
 }

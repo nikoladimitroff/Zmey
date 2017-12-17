@@ -34,6 +34,7 @@ struct FrameData
 	// Data for render
 	stl::vector<MeshHandle> MeshHandles;
 	stl::vector<Matrix4x4> MeshTransforms;
+	stl::vector<Vector3> MeshColors;
 
 	stl::vector<Rect> RectsToDraw;
 };

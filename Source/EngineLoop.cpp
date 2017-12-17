@@ -176,6 +176,7 @@ void EngineLoop::RunImpl()
 		clock::time_point currentFrameTimestamp = clock::now();
 		clock::duration timeSinceLastFrame = currentFrameTimestamp - lastFrameTmestamp;
 		float deltaTime = timeSinceLastFrame.count() * 1e-9f;
+		//FORMAT_LOG(Error, Zmey, "time %f", deltaTime);
 
 		Modules::Platform->PumpMessages(windowHandle);
 
