@@ -1,5 +1,8 @@
 #pragma once
 
+#include <Zmey/Config.h>
+#ifdef USE_DX12
+
 #include <stdint.h>
 
 #include <Zmey/Graphics/Backend/Dx12/Dx12Helpers.h>
@@ -27,3 +30,5 @@ namespace Mesh
 }
 }
 }
+
+#endif

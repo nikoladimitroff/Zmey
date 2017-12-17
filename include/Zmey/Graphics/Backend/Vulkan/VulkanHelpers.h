@@ -1,5 +1,8 @@
 #pragma once
 
+#include <Zmey/Config.h>
+#ifdef USE_VULKAN
+
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #define VK_USE_PLATFORM_WIN32_KHR
@@ -98,11 +101,11 @@ struct Vulkan##name##Deleter \
 #define DEFINE_DELETER_WITH_EXTRA(name, extra) \
 struct Vulkan##name##Deleter \
 { \
-	Vk##extra extra; \
-	Vulkan##name##Deleter(Vk##extra e) : extra(e) {} \
+	const Vk##extra* extra; \
+	Vulkan##name##Deleter(const Vk##extra* e) : extra(e) {} \
 	void operator()(Vk##name value) \
 	{ \
-		vkDestroy##name(extra, value, nullptr); \
+		vkDestroy##name(*extra, value, nullptr); \
 	} \
 }
 
@@ -136,3 +139,4 @@ DEFINE_DELETER_WITH_EXTRA(ShaderModule, Device);
 }
 }
 }
+#endif

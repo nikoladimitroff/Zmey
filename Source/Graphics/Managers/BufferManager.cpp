@@ -22,10 +22,10 @@ void BufferManager::DestroyResources()
 	}
 }
 
-BufferHandle BufferManager::CreateStaticBuffer(uint32_t size, void* data)
+BufferHandle BufferManager::CreateStaticBuffer(Backend::BufferUsage usage, uint32_t size, void* data)
 {
 	BufferHandle handle = s_BufferNextId++;
-	auto buffer = m_Backend->CreateBuffer(size);
+	auto buffer = m_Backend->CreateBuffer(size, usage);
 
 	auto memory = buffer->Map();
 	memcpy(memory, data, size);

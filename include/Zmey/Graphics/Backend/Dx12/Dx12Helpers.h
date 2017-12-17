@@ -1,5 +1,8 @@
 #pragma once
 
+#include <Zmey/Config.h>
+#ifdef USE_DX12
+
 #include <d3d12.h>
 #include <dxgi1_4.h>
 #include <wrl.h>
@@ -30,3 +33,5 @@ namespace Backend
 }
 }
 }
+
+#endif

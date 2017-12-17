@@ -1,4 +1,6 @@
 #include <Zmey/Graphics/Backend/Vulkan/VulkanCommandList.h>
+#ifdef USE_VULKAN
+
 #include <Zmey/Graphics/Backend/Vulkan/VulkanBackend.h>
 
 namespace Zmey
@@ -27,28 +29,30 @@ void VulkanCommandList::EndRecording()
 	}
 }
 
-void VulkanCommandList::BeginRenderPass(RenderPass* pass, Framebuffer* fb)
+void VulkanCommandList::BeginRenderPass(Framebuffer* fb)
 {
 	VkRenderPassBeginInfo renderPassInfo = {};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-	renderPassInfo.renderPass = reinterpret_cast<VulkanRenderPass*>(pass)->RenderPass;
+	renderPassInfo.renderPass = reinterpret_cast<VulkanFramebuffer*>(fb)->RenderPass;
 	renderPassInfo.framebuffer = reinterpret_cast<VulkanFramebuffer*>(fb)->Framebuffer;
 	renderPassInfo.renderArea.offset = { 0, 0 };
 	renderPassInfo.renderArea.extent = { 1264, 681 };
 
-	VkClearValue clearColor = { 0.0f, 0.0f, 0.0f, 0.0f };
-	renderPassInfo.clearValueCount = 1;
-	renderPassInfo.pClearValues = &clearColor;
+	VkClearValue clearColor[2];
+	clearColor[0].color = { 1.0f, 1.0f, 1.0f, 1.0f };
+	clearColor[1].depthStencil = { 1.0f, 0 };
+	renderPassInfo.clearValueCount = 2;
+	renderPassInfo.pClearValues = clearColor;
 
 	vkCmdBeginRenderPass(CmdBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 }
 
-void VulkanCommandList::EndRenderPass(RenderPass* pass, Framebuffer* fb)
+void VulkanCommandList::EndRenderPass(Framebuffer* fb)
 {
 	vkCmdEndRenderPass(CmdBuffer);
 }
 
-void VulkanCommandList::BindPipelineState(PipelineState* state)
+void VulkanCommandList::BindPipelineState(PipelineState* state, bool strip)
 {
 	vkCmdBindPipeline(CmdBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, reinterpret_cast<VulkanPipelineState*>(state)->Pipeline);
 }
@@ -68,6 +72,23 @@ void VulkanCommandList::SetPushConstants(PipelineState* layout, uint32_t offset,
 		data);
 }
 
+void VulkanCommandList::SetVertexBuffer(const Buffer* vbo, uint32_t vertexStride)
+{
+	auto buffer = reinterpret_cast<const VulkanBuffer*>(vbo);
+
+	VkDeviceSize offset[] = { 0 };
+	vkCmdBindVertexBuffers(CmdBuffer, 0, 1, &buffer->BufferHandle, offset);
+}
+
+void VulkanCommandList::SetIndexBuffer(const Buffer* ibo)
+{
+	auto buffer = reinterpret_cast<const VulkanBuffer*>(ibo);
+
+	vkCmdBindIndexBuffer(CmdBuffer, buffer->BufferHandle, 0, VK_INDEX_TYPE_UINT32);
+}
+
 }
 }
 }
+
+#endif

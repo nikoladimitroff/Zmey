@@ -22,9 +22,25 @@
 	#endif
 #endif
 
-
 #ifdef ZMEY_EXPORTS
 	#define ZMEY_API ZMEY_EXPORT_SYMBOL
 #else
 	#define ZMEY_API ZMEY_IMPORT_SYMBOL
+#endif
+
+// Renderer config
+#if defined(ZMEY_USE_DX12)
+#define USE_DX12
+#elif defined(ZMEY_USE_VULKAN)
+#define USE_VULKAN
+#endif
+
+// Assume if we haven't choosen what to use that only vulkan is present
+// as Dx12 runs only on Win10
+#if !defined(USE_DX12) && !defined(USE_VULKAN)
+#define USE_VULKAN
+#endif
+
+#if defined(USE_DX12) && defined(USE_VULKAN)
+#error Cannot Use Dx12 and Vulkan at the same time
 #endif

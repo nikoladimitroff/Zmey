@@ -17,8 +17,8 @@ static const std::string sCompilerDirectX = "C:\\Program Files (x86)\\Windows Ki
 #define PRINT_CMD_LINE 1
 #define FORCE_REBUILD 1
 
-#define DIRECTX
-//#define SPIRV
+//#define DIRECTX
+#define SPIRV
 
 #if defined(DIRECTX) && defined(SPIRV)
 #error "Cannot compile both DirectX and Spir-V"

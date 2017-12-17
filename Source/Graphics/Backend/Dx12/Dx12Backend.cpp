@@ -1,4 +1,9 @@
 #include <Zmey/Graphics/Backend/Dx12/Dx12Backend.h>
+
+#ifdef USE_DX12
+
+#pragma comment(lib, "d3d12.lib")
+
 #include <Zmey/Logging.h>
 
 #include <Zmey/Graphics/Backend/Dx12/Dx12Shaders.h>
@@ -323,7 +328,7 @@ void Dx12Backend::DestroyImageView(ImageView* imageView)
 
 }
 
-Buffer* Dx12Backend::CreateBuffer(uint32_t size)
+Buffer* Dx12Backend::CreateBuffer(uint32_t size, BufferUsage usage)
 {
 	D3D12_HEAP_PROPERTIES heapProperties;
 	heapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;
@@ -465,3 +470,5 @@ Backend* CreateBackend()
 }
 }
 }
+
+#endif

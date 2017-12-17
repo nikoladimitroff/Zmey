@@ -54,12 +54,6 @@ class Framebuffer
 class ImageView
 {};
 
-enum class BufferUsage
-{
-	Vertex,
-	Index
-};
-
 class Buffer
 {
 public:
@@ -92,7 +86,7 @@ public:
 	virtual ImageView* CreateImageView() = 0;
 	virtual void DestroyImageView(ImageView* imageView) = 0;
 
-	virtual Buffer* CreateBuffer(uint32_t size) = 0;
+	virtual Buffer* CreateBuffer(uint32_t size, BufferUsage usage) = 0;
 	virtual void DestroyBuffer(Buffer* buffer) = 0;
 
 	virtual uint32_t GetSwapChainBuffers() = 0;

@@ -1,4 +1,7 @@
 #include <Zmey/Graphics/Backend/Dx12/Dx12CommandList.h>
+
+#ifdef USE_DX12
+
 #include <Zmey/Graphics/Backend/Dx12/Dx12Backend.h>
 
 namespace Zmey
@@ -113,3 +116,6 @@ void Dx12CommandList::SetIndexBuffer(const Buffer* ibo)
 }
 }
 }
+
+
+#endif

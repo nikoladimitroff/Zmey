@@ -10,6 +10,7 @@
 
 //TODO(alex): remove this
 #include <Zmey/Graphics/Backend/Dx12/Dx12Shaders.h>
+#include <Zmey/Graphics/Backend/Vulkan/VulkanShaders.h>
 
 namespace Zmey
 {
@@ -21,13 +22,23 @@ bool RendererInterface::CreateWindowSurface(WindowHandle handle)
 	m_Backend->Initialize(handle);
 
 	Backend::PipelineStateDesc desc;
+#ifdef USE_DX12
 	desc.VertexShader = Backend::Shader{ Backend::Shaders::Rects::g_VertexShaderMain, sizeof(Backend::Shaders::Rects::g_VertexShaderMain) };
 	desc.PixelShader = Backend::Shader{ Backend::Shaders::Rects::g_PixelShaderMain, sizeof(Backend::Shaders::Rects::g_PixelShaderMain) };
+#else
+	desc.VertexShader = Backend::Shader{ (const unsigned char*)Backend::Shaders::g_MeshVS, Backend::Shaders::g_MeshVSSize };
+	desc.PixelShader = Backend::Shader{ (const unsigned char*)Backend::Shaders::g_MeshPS, Backend::Shaders::g_MeshPSSize };
+#endif
 
 	m_Data.RectsPipelineState = m_Backend->CreatePipelineState(desc);
 
+#ifdef USE_DX12
 	desc.VertexShader = Backend::Shader{ Backend::Shaders::Mesh::g_VertexShaderMain, sizeof(Backend::Shaders::Mesh::g_VertexShaderMain) };
 	desc.PixelShader = Backend::Shader{ Backend::Shaders::Mesh::g_PixelShaderMain, sizeof(Backend::Shaders::Mesh::g_PixelShaderMain) };
+#else
+	desc.VertexShader = Backend::Shader{ (const unsigned char*)Backend::Shaders::g_MeshVS, Backend::Shaders::g_MeshVSSize };
+	desc.PixelShader = Backend::Shader{ (const unsigned char*)Backend::Shaders::g_MeshPS, Backend::Shaders::g_MeshPSSize };
+#endif
 	desc.Layout.Elements.push_back(Backend::InputElement{ "POSITION", 0, Backend::InputElementFormat::Float3, 0, 0 });
 	desc.Layout.Elements.push_back(Backend::InputElement{ "NORMAL", 0, Backend::InputElementFormat::Float3, 0, 3 * sizeof(float)});
 	m_Data.MeshesPipelineState = m_Backend->CreatePipelineState(desc);
@@ -159,10 +170,12 @@ MeshHandle RendererInterface::MeshLoaded(stl::vector<uint8_t>&& data)
 	Mesh newMesh;
 	newMesh.IndexCount = uint32_t(header->IndicesCount);
 	newMesh.VertexBuffer = m_Data.BufferManager.CreateStaticBuffer(
+		Backend::BufferUsage::Vertex,
 		uint32_t(header->VerticesCount * sizeof(MeshVertex)),
 		data.data() + sizeof(MeshDataHeader)
 	);
 	newMesh.IndexBuffer = m_Data.BufferManager.CreateStaticBuffer(
+		Backend::BufferUsage::Index,
 		uint32_t(header->IndicesCount * sizeof(uint32_t)),
 		data.data() + sizeof(MeshDataHeader) + (header->VerticesCount * sizeof(MeshVertex))
 	);

@@ -1,5 +1,8 @@
 #pragma once
 
+#include <Zmey/Config.h>
+#ifdef USE_DX12
+
 #include <Zmey/Graphics/Backend/Backend.h>
 
 #include <Zmey/Graphics/Backend/Dx12/Dx12Helpers.h>
@@ -67,7 +70,7 @@ public:
 	virtual ImageView* CreateImageView() override;
 	virtual void DestroyImageView(ImageView* imageView) override;
 
-	virtual Buffer* CreateBuffer(uint32_t size) override;
+	virtual Buffer* CreateBuffer(uint32_t size, BufferUsage usage) override;
 	virtual void DestroyBuffer(Buffer* buffer) override;
 
 	virtual uint32_t GetSwapChainBuffers() override;
@@ -100,3 +103,5 @@ private:
 }
 }
 }
+
+#endif

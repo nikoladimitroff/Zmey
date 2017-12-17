@@ -20,6 +20,12 @@ class Backend;
 
 class Buffer;
 
+enum class BufferUsage
+{
+	Vertex,
+	Index
+};
+
 }
 }
 }

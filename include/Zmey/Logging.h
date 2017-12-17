@@ -20,8 +20,8 @@ ZMEY_API extern Zmey::ILogHandler* GLogHandler;
 	do \
 	{ \
 		auto scope = Zmey::TempAllocator::GetTlsAllocator().ScopeNow(); \
-		Zmey::tmp::string buffer(sizeof(Message) * 5, '\0'); \
-		sprintf_s(&buffer[0], sizeof(Message) * 5, Message, __VA_ARGS__); \
+		Zmey::tmp::string buffer(sizeof(Message) * 50, '\0'); \
+		sprintf_s(&buffer[0], sizeof(Message) * 50, Message, __VA_ARGS__); \
 		Zmey::GLogHandler->WriteLog(Zmey::LogSeverity::##Severity, #Channel, buffer.c_str()); \
 	}\
 	while(0, 0)
