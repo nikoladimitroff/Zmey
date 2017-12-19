@@ -69,7 +69,13 @@ class ExportZmey(bpy.types.Operator, ExportHelper):
 
         # Prepare objects
         entities_list = []
-        for i, obj in enumerate(bpy.data.objects):
+        current_index = -1
+        for obj in bpy.data.objects:
+            if obj.users == 0:
+                continue
+
+            current_index += 1
+
             if obj.zmey_props.enabled:
                 type_object = zmey_scene.types[int(obj.zmey_props.type)]
                 entity = {
@@ -90,7 +96,7 @@ class ExportZmey(bpy.types.Operator, ExportHelper):
                     # we are exporting all object with gltf so node index is the same as bpy.data.object
                     mesh_component = {
                         "name" : "mesh",
-                        "glTF_node_index" : i
+                        "glTF_node_index" : current_index
                     }
                     # check for color inside the material
                     if len(obj.data.materials) > 0 and obj.data.materials[0].diffuse_color:
