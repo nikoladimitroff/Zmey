@@ -10,5 +10,13 @@
     <ClCompile Include="..\..\Games\GiftOfTheSanctum\Source\main.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Games\GiftOfTheSanctum\Source\GiftOfTheSanctumGame.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Games\GiftOfTheSanctum\Source\GiftOfTheSanctumGame.h">
+      <Filter>Source</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
