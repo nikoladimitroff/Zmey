@@ -5,6 +5,8 @@
 #include <Zmey/EntityManager.h>
 #include <Zmey/Math/Math.h>
 
+using EntityVector = std::vector<Zmey::EntityId>;
+
 class GiftOfTheSanctumGame : public Zmey::Game
 {
 public:
@@ -14,11 +16,14 @@ public:
 	virtual void Simulate(float deltaTime) override;
 	virtual void Uninitialize() override;
 private:
+	void InitializePlayerController(unsigned index);
+	void UpdatePlayers();
+private:
 	Zmey::Utilities::ConstructorInitializable<Zmey::Name> m_WorldName;
-	Zmey::Utilities::ConstructorInitializable<Zmey::Name> m_ScriptName;
 	static const uint8_t MaxPlayers = 2;
-	Zmey::Vector2 PlayerVel[MaxPlayers];
+
 	Zmey::EntityId m_Players[MaxPlayers];
+	EntityVector m_SpawnPoints;
 	float m_CurrentTime = 0.0f;
 	uint8_t m_CurrentRing = 5;
 };

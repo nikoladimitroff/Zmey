@@ -148,8 +148,8 @@ void EngineLoop::RunImpl()
 
 	// Create main Player view
 	Graphics::View playerView(Graphics::ViewType::PlayerView);
-	playerView.SetupProjection(width, height, glm::radians(60.0f), 0.1f, 1000.0f);
-	playerView.SetupView(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 8.0f, 10.0f));
+	playerView.SetupProjection(width, height, glm::radians(90.0f), 0.1f, 1000.0f);
+	playerView.SetupView(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 14.0f, 1.0f));
 
 	Zmey::Name worldName = m_Game->LoadResources();
 	Modules::ResourceLoader->WaitForResource(worldName);
