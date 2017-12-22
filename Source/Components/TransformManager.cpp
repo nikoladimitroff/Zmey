@@ -102,7 +102,7 @@ void TransformManager::InitializeFromBlob(const tmp::vector<EntityId>& entities,
 	}
 }
 
-DEFINE_COMPONENT_MANAGER(TransformManager, Transform, &Zmey::Components::TransformComponentDefaults, &Zmey::Components::TransformComponentToBlob);
+DEFINE_COMPONENT_MANAGER_WITH_PRIORITY(TransformManager, Transform, &Zmey::Components::TransformComponentDefaults, &Zmey::Components::TransformComponentToBlob, 1);
 
 }
 }

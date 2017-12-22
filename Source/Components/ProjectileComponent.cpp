@@ -5,7 +5,8 @@
 
 #include <Zmey/MemoryStream.h>
 #include <Zmey/Components/ComponentRegistry.h>
-#include <Zmey/Components/TransformManager.h>
+#include <Zmey/Physics/PhysicsComponentManager.h>
+#include <Zmey/Physics/PhysicsActor.h>
 #include <Zmey/World.h>
 
 namespace Zmey
@@ -27,12 +28,14 @@ void ProjectileComponent::RemoveEntity(EntityId id)
 
 void ProjectileComponent::Simulate(float deltaTime)
 {
-	auto& transformManager = GetWorld().GetManager<Zmey::Components::TransformManager>();
+	auto& physicsManager = GetWorld().GetManager<Zmey::Physics::PhysicsComponentManager>();
 	for (const auto& entity : m_Projectiles)
 	{
-		auto transform = transformManager.Lookup(entity);
-		auto actorForwardVector = transform.Rotation() * Zmey::Vector3(0.f, 0.f, 1.f);
-		transform.Position() += actorForwardVector * 5.f * deltaTime;
+		auto physicsActor = physicsManager.Lookup(entity);
+		ASSERT(physicsActor);
+
+		auto actingForce = Zmey::Vector3(0.f, 0.f, 1.f) * 0.005f * deltaTime;
+		physicsActor->ApplyForce(actingForce);
 	}
 }
 
