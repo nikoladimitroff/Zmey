@@ -11,7 +11,6 @@
 #include <Zmey/Game.h>
 #include <Zmey/Components/ComponentRegistry.h>
 #include <Zmey/Components/TransformManager.h>
-#include <Zmey/Scripting/Binding.h>
 
 #include <Zmey/Graphics/FrameData.h>
 
@@ -69,7 +68,6 @@ EngineLoop::EngineLoop(Game* game)
 	Zmey::GAllocator = StaticAlloc<MallocAllocator>();
 	Zmey::GLogHandler = StaticAlloc<StdOutLogHandler>();
 	Zmey::Modules::Initialize();
-	Zmey::Components::ExportComponentsToScripting();
 	PROFILE_INITIALIZE;
 }
 

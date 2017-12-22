@@ -39,7 +39,6 @@ namespace Components
 		const ToBlobDelegate ToBlob;
 		const int8_t Priority;
 	};
-	void ExportComponentsToScripting();
 
 	ZMEY_API void EmptyDefaultsToBlobImplementation(IDataBlob& blob);
 	ZMEY_API void EmptyToBlobImplementation(const nlohmann::json&, IDataBlob& blob);

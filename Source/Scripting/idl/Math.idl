@@ -1,9 +1,0 @@
-#include <Zmey/Math/Math.h>
-
-interface Zmey::Vector3 {
-    constructor(float x, float y, float z);
-    nameasis attribute float x;
-    nameasis attribute float y;
-    nameasis attribute float z;
-    nameasis float length();
-}
