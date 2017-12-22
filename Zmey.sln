@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+VisualStudioVersion = 15.0.26430.6
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Zmey", "Projects\Zmey\Zmey.vcxproj", "{27824334-00A5-493D-94C8-25A013BBF4FB}"
 EndProject
@@ -14,8 +14,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ShaderCompiler", "Tools\ShaderCompiler\ShaderCompiler.vcxproj", "{D072EB4F-0C6A-4EC1-816E-D2066108DFC9}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Incinerator", "Tools\Incinerator\Incinerator.vcxproj", "{3CB0BF94-211B-46B7-B0AE-7E417FB17928}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ScriptingGlue", "Projects\ScriptingGlue\ScriptingGlue.vcxproj", "{8BC68403-1284-41FA-91EC-B7B75E5D524F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,14 +47,6 @@ Global
 		{3CB0BF94-211B-46B7-B0AE-7E417FB17928}.Release|x64.ActiveCfg = Release|x64
 		{3CB0BF94-211B-46B7-B0AE-7E417FB17928}.Release|x64.Build.0 = Release|x64
 		{3CB0BF94-211B-46B7-B0AE-7E417FB17928}.Release|x86.ActiveCfg = Release|x64
-		{8BC68403-1284-41FA-91EC-B7B75E5D524F}.Debug|x64.ActiveCfg = Debug|x64
-		{8BC68403-1284-41FA-91EC-B7B75E5D524F}.Debug|x64.Build.0 = Debug|x64
-		{8BC68403-1284-41FA-91EC-B7B75E5D524F}.Debug|x86.ActiveCfg = Debug|Win32
-		{8BC68403-1284-41FA-91EC-B7B75E5D524F}.Debug|x86.Build.0 = Debug|Win32
-		{8BC68403-1284-41FA-91EC-B7B75E5D524F}.Release|x64.ActiveCfg = Release|x64
-		{8BC68403-1284-41FA-91EC-B7B75E5D524F}.Release|x64.Build.0 = Release|x64
-		{8BC68403-1284-41FA-91EC-B7B75E5D524F}.Release|x86.ActiveCfg = Release|Win32
-		{8BC68403-1284-41FA-91EC-B7B75E5D524F}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

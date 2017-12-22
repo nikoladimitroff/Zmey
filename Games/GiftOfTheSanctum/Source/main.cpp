@@ -24,8 +24,6 @@ class GiftOfTheSanctumGame : public Zmey::Game
 public:
 	virtual Zmey::Name LoadResources() override
 	{
-		m_ScriptName = Zmey::Modules::ResourceLoader->LoadResource("Content\\Scripts\\main.js");
-
 		m_WorldName = Zmey::Modules::ResourceLoader->LoadResource("IncineratedDataCache/testworld.worldbin");
 		return m_WorldName;
 	}
@@ -73,7 +71,6 @@ public:
 	{
 		if (Zmey::Modules::ResourceLoader->IsResourceReady(m_ScriptName))
 		{
-			Zmey::Modules::ScriptEngine->ExecuteFromFile(m_ScriptName);
 			Zmey::Modules::ResourceLoader->FreeResource(m_ScriptName);
 		}
 

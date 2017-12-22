@@ -47,9 +47,6 @@ let main = function () {
     const buildOutputDir = process.argv[2];
     const isGame = process.argv[3] === "--game";
 
-    const idlScriptsDir = path.join(rootDir, "Source/Scripting/idl");
-    const idlCompiler = path.join(rootDir, "Tools/IdlCompiler/idl_compiler.js");
-
     const shadersDir = path.join(rootDir, "Source/Graphics/Shaders/Source");
     const shaderCompiler = path.join(buildOutputDir, "ShaderCompiler.exe");
 
@@ -57,7 +54,6 @@ let main = function () {
     const incineratorCompiler = path.join(buildOutputDir, "Incinerator.exe");
 
     const engineToolsToRun = [
-        { directory: idlScriptsDir, tool: `node ${idlCompiler}` },
         { directory: shadersDir, tool: shaderCompiler },
     ];
     const gameToolsToRun = [

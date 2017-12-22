@@ -27,9 +27,6 @@
     <Filter Include="include\ResourceLoader">
       <UniqueIdentifier>{bb476c33-dd08-42bd-9abd-686d15a51b1c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\Scripting">
-      <UniqueIdentifier>{43a597f5-d4cb-413b-8f0f-2187f7a0b39e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="include\Graphics">
       <UniqueIdentifier>{dad92acd-a865-44ab-ae9e-f15830e3ad2d}</UniqueIdentifier>
     </Filter>
@@ -62,9 +59,6 @@
     </Filter>
     <Filter Include="Source\Graphics\Backend\Vulkan">
       <UniqueIdentifier>{ff9155a6-0de9-44f4-8062-bf750eb84bb4}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\Scripting">
-      <UniqueIdentifier>{79eee9d1-5a73-43de-936b-825a5e824155}</UniqueIdentifier>
     </Filter>
     <Filter Include="include\Graphics\Backend\Dx12">
       <UniqueIdentifier>{d86348d2-3ef2-4251-8148-5bf5e33cb322}</UniqueIdentifier>
@@ -130,12 +124,6 @@
     </ClInclude>
     <ClInclude Include="..\..\include\Zmey\ResourceLoader\ResourceLoader.h">
       <Filter>include\ResourceLoader</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Scripting\ChakraScriptEngine.h">
-      <Filter>Source\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Scripting\Tasks.h">
-      <Filter>Source\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\Zmey\Memory\PoolAllocator.h">
       <Filter>include\Memory</Filter>
@@ -208,12 +196,6 @@
     </ClInclude>
     <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Vulkan\VulkanShaders.h">
       <Filter>include\Graphics\Backend\Vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Scripting\Binding.h">
-      <Filter>include\Scripting</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Scripting\ScriptEngine.h">
-      <Filter>include\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Dx12\Dx12Backend.h">
       <Filter>include\Graphics\Backend\Dx12</Filter>
@@ -300,15 +282,6 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\ResourceLoader\ResourceLoader.cpp">
       <Filter>Source\ResourceLoader</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Source\Scripting\ChakraScriptEngine.cpp">
-      <Filter>Source\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Source\Scripting\Tasks.cpp">
-      <Filter>Source\Scripting</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Source\Scripting\Binding.cpp">
-      <Filter>Source\Scripting</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Graphics\Renderer.cpp">
       <Filter>Source\Graphics</Filter>
