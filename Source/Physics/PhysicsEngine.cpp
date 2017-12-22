@@ -4,12 +4,14 @@
 #include <PhysX/PxPhysicsAPI.h>
 #include <PhysXShared/foundation/PxAllocatorCallback.h>
 #include <PhysX/common/PxTolerancesScale.h>
-#include <PhysX/gpu/PxGpu.h>
 
 #include <Zmey/Logging.h>
 #include <Zmey/Modules.h>
 #include <Zmey/Components/TransformManager.h>
+#include <Zmey/Physics/PhysicsActor.h>
 #include <Zmey/World.h>
+
+#include <Windows.h> // Included for GetTempPath; TODO: move to a platform-indepedent header
 
 namespace Zmey
 {
@@ -92,22 +94,24 @@ PhysicsEngine::PhysicsEngine()
 	, m_World(nullptr)
 	, m_TimeAccumulator(0.f)
 {
-	m_Foundation = PxCreateFoundation(PX_FOUNDATION_VERSION, *m_Allocator, *m_ErrorReporter);
+	m_Foundation.reset(PxCreateFoundation(PX_FOUNDATION_VERSION, *m_Allocator, *m_ErrorReporter));
 	ASSERT_FATAL(m_Foundation);
 
 	physx::PxTolerancesScale scale;
 #if defined(_DEBUG)
 	bool recordMemoryAllocations = true;
+	CreateDebuggerConnection();
 #elif defined(NDEBUG)
 	bool recordMemoryAllocations = false;
 #endif
-	m_Physics = PxCreatePhysics(PX_PHYSICS_VERSION, *m_Foundation, scale, recordMemoryAllocations, nullptr); // TODO: Add pvd connection for debugging
+	m_Physics.reset(PxCreatePhysics(PX_PHYSICS_VERSION, *m_Foundation, scale, recordMemoryAllocations, m_VisualDebugger.get()));
 	ASSERT_FATAL(m_Physics);
 	
 	physx::PxSceneDesc sceneDesc(m_Physics->getTolerancesScale());
 	sceneDesc.gravity = physx::PxVec3(0.0f, -9.81f, 0.0f);
 
 	sceneDesc.cpuDispatcher = m_CpuDispatcher.get();
+	sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
 
 	sceneDesc.frictionType = physx::PxFrictionType::eTWO_DIRECTIONAL;
 	sceneDesc.frictionType = physx::PxFrictionType::eONE_DIRECTIONAL;
@@ -115,14 +119,11 @@ PhysicsEngine::PhysicsEngine()
 	sceneDesc.flags |= physx::PxSceneFlag::eENABLE_STABILIZATION;
 	sceneDesc.flags |= physx::PxSceneFlag::eENABLE_ACTIVETRANSFORMS;
 	sceneDesc.flags |= physx::PxSceneFlag::eSUPPRESS_EAGER_SCENE_QUERY_REFIT;
-	sceneDesc.broadPhaseType = physx::PxBroadPhaseType::eGPU;
-	sceneDesc.gpuMaxNumPartitions = 8;
 
-	sceneDesc.broadPhaseType = physx::PxBroadPhaseType::eMBP;
+	sceneDesc.broadPhaseType = physx::PxBroadPhaseType::eSAP; // TODO: Switch to MBP
 
-	m_Scene = m_Physics->createScene(sceneDesc);
+	m_Scene.reset(m_Physics->createScene(sceneDesc));
 	ASSERT_FATAL(m_Scene);
-	SetupBroadphase();
 
 	{
 		physx::PxSceneWriteLock scopedLock(*m_Scene);
@@ -132,13 +133,35 @@ PhysicsEngine::PhysicsEngine()
 	LOG(Info, Physics, "Physics system initialized!");
 }
 
-void PhysicsEngine::SetupBroadphase()
+void PhysicsEngine::CreateDebuggerConnection()
 {
-	const float range = 1000.0f;
-	physx::PxBroadPhaseRegion region;
-	region.bounds.maximum = physx::PxVec3(range, range, range);
-	region.bounds.minimum = -region.bounds.maximum;
-	m_Scene->addBroadPhaseRegion(region);
+#if 0
+	auto scope = TempAllocator::GetTlsAllocator().ScopeNow();
+	auto neededSize = ::GetTempPathA(0, nullptr);
+	tmp::string path;
+	path.resize(neededSize);
+	::GetTempPathA(neededSize, &path[0]);
+	path.pop_back(); // GetTempPath adds a null-terminator so get rid of it
+	path.append("Zmey.pxd2");
+	physx::PxPvdTransport* transport = physx::PxDefaultPvdFileTransportCreate(path.c_str());
+#endif
+
+	//The normal way to connect to pvd.  PVD needs to be running at the time this function is called.
+	//We don't worry about the return value because we are already registered as a listener for connections
+	//and thus our onPvdConnected call will take care of setting up our basic connection state.
+	char ip[] = "127.0.0.1";
+	m_Transport.reset(physx::PxDefaultPvdSocketTransportCreate(ip, 5425, 1000));
+	if (!m_Transport)
+		return;
+
+	//Use these flags for a clean profile trace with minimal overhead
+	physx::PxPvdInstrumentationFlags flags = physx::PxPvdInstrumentationFlag::eALL;
+#ifdef NDEBUG
+	flags = physx::PxPvdInstrumentationFlag::ePROFILE;
+#endif
+
+	m_VisualDebugger.reset(physx::PxCreatePvd(*m_Foundation));
+	m_VisualDebugger->connect(*m_Transport, flags);
 }
 
 void PhysicsEngine::Simulate(float deltaTime)
@@ -166,6 +189,17 @@ inline void SetZmeyTransformFromPhysx(Zmey::Components::TransformInstance& trans
 	transform.Rotation().y = pxTransform.q.y;
 	transform.Rotation().z = pxTransform.q.z;
 	transform.Rotation().w = pxTransform.q.w;
+}
+
+inline void SetPhysxTransformFromZmey(physx::PxTransform& pxTransform, const Zmey::Components::TransformInstance& transform)
+{
+	pxTransform.p.x = transform.Position().x;
+	pxTransform.p.y = transform.Position().y;
+	pxTransform.p.z = transform.Position().z;
+	pxTransform.q.x = transform.Rotation().x;
+	pxTransform.q.y = transform.Rotation().y;
+	pxTransform.q.z = transform.Rotation().z;
+	pxTransform.q.w = transform.Rotation().w;
 }
 
 void PhysicsEngine::FetchResults()
@@ -211,19 +245,21 @@ PhysicsEngine::GeometryPtr PhysicsEngine::CreateCapsuleGeometry(float radius, fl
 	return result;
 }
 
-void PhysicsEngine::CreatePhysicsActor(EntityId entityId, const PhysicsActorDescription& actorDescription)
+stl::unique_ptr<PhysicsActor> PhysicsEngine::CreatePhysicsActor(EntityId entityId, const PhysicsActorDescription& actorDescription)
 {
 	const CombinedMaterialInfo* material = FindMaterial(actorDescription.Material);
 	ASSERT(material);
 	physx::PxRigidActor* actor = nullptr;
-	physx::PxTransform zeroTransform;
+	auto actorTransform = m_World->GetManager<Zmey::Components::TransformManager>().Lookup(entityId);
+	physx::PxTransform currentTransform;
+	SetPhysxTransformFromZmey(currentTransform, actorTransform);
 	if (actorDescription.IsStatic)
 	{
-		actor = m_Physics->createRigidStatic(zeroTransform);
+		actor = m_Physics->createRigidStatic(currentTransform);
 	}
 	else
 	{
-		actor = m_Physics->createRigidDynamic(zeroTransform);
+		actor = m_Physics->createRigidDynamic(currentTransform);
 	}
 	physx::PxShapeFlags flags = physx::PxShapeFlag::eSIMULATION_SHAPE | physx::PxShapeFlag::eVISUALIZATION |
 		static_cast<physx::PxShapeFlag::Enum>(actorDescription.IsTrigger * physx::PxShapeFlag::eTRIGGER_SHAPE) |
@@ -232,9 +268,10 @@ void PhysicsEngine::CreatePhysicsActor(EntityId entityId, const PhysicsActorDesc
 	actor->attachShape(*shape);
 	actor->userData = reinterpret_cast<void*>(static_cast<uint64_t>(entityId));
 	shape->release();
+	m_Scene->addActor(*actor);
 
-	m_Actors.push_back(actor);
-	m_EntityToActor[entityId] = static_cast<EntityId::IndexType>(m_Actors.size() - 1u);
+	stl::unique_ptr<Zmey::Physics::PhysicsActor> physicsActor(new Zmey::Physics::PhysicsActor(*actor, actorDescription.IsStatic));
+	return physicsActor;
 }
 void PhysicsEngine::CreatePhysicsMaterial(Zmey::Name name, const PhysicsMaterialDescription& description)
 {

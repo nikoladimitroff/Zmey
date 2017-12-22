@@ -17,11 +17,13 @@ void PhysicsComponentManager::Simulate(float deltaTime)
 
 void PhysicsComponentManager::InitializeFromBlob(const tmp::vector<EntityId>& entities, Zmey::MemoryInputStream& stream)
 {
+	auto& physEngine = *Zmey::Modules::PhysicsEngine;
+	physEngine.SetWorld(GetWorld());
+
 	Zmey::Physics::PhysicsMaterialDescription defaultMat;
 	defaultMat.Friction = 0.5;
 	defaultMat.Restitution = 0.5;
 	defaultMat.Density = 0.5;
-	auto& physEngine = *Zmey::Modules::PhysicsEngine;
 	physEngine.CreatePhysicsMaterial(Zmey::Name("default"), defaultMat);
 
 	Zmey::Physics::PhysicsActorDescription actorDescription;
@@ -33,8 +35,20 @@ void PhysicsComponentManager::InitializeFromBlob(const tmp::vector<EntityId>& en
 	actorDescription.Geometry = capsuleGeometry.get();
 	for (auto& entityId : entities)
 	{
-		physEngine.CreatePhysicsActor(entityId, actorDescription);
+		auto actor = physEngine.CreatePhysicsActor(entityId, actorDescription);
+		m_Actors.push_back(std::move(actor));
+		m_EntityToActor[entityId] = static_cast<EntityId::IndexType>(m_Actors.size() - 1u);
 	}
+}
+
+Zmey::Physics::PhysicsActor* PhysicsComponentManager::Lookup(EntityId entity)
+{
+	auto it = m_EntityToActor.find(entity);
+	if (it != m_EntityToActor.end())
+	{
+		return m_Actors[it->second].get();
+	}
+	return nullptr;
 }
 
 DEFINE_COMPONENT_MANAGER(PhysicsComponentManager, Physics, &Zmey::Components::EmptyDefaultsToBlobImplementation, &Zmey::Components::EmptyToBlobImplementation);

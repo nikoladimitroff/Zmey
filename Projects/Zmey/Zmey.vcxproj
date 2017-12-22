@@ -72,8 +72,8 @@
       <EnableFiberSafeOptimizations>true</EnableFiberSafeOptimizations>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(SolutionDir)ThirdParty\libx64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>PhysX3_x64.lib;PxFoundation_x64.lib;vulkan-1.lib;ChakraCore.lib;dxgi.lib;Xinput.lib;easy_profiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)ThirdParty\libx64;$(SolutionDir)ThirdParty\libx64\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>PxPvdSDK_x64.lib;PhysX3Extensions.lib;PhysX3_x64.lib;PxFoundation_x64.lib;vulkan-1.lib;assimp-vc140-mt.lib;ChakraCore.lib;d3d12.lib;dxgi.lib;Xinput.lib;easy_profiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <AdditionalOptions>/WHOLEARCHIVE:ScriptingGlue.lib %(AdditionalOptions)</AdditionalOptions>
     </Link>
@@ -111,8 +111,8 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>$(SolutionDir)ThirdParty\libx64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>PhysX3_x64.lib;PxFoundation_x64.lib;vulkan-1.lib;ChakraCore.lib;dxgi.lib;Xinput.lib;easy_profiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)ThirdParty\libx64;$(SolutionDir)ThirdParty\libx64\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>PhysX3Extensions.lib;PhysX3_x64.lib;PxFoundation_x64.lib;vulkan-1.lib;assimp-vc140-mt.lib;ChakraCore.lib;d3d12.lib;dxgi.lib;Xinput.lib;easy_profiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
       <AdditionalOptions>/WHOLEARCHIVE:ScriptingGlue.lib %(AdditionalOptions)</AdditionalOptions>
     </Link>
@@ -169,6 +169,7 @@
     <ClInclude Include="..\..\include\Zmey\Job\JobSystem.h" />
     <ClInclude Include="..\..\include\Zmey\Job\JobSystemImpl.h" />
     <ClInclude Include="..\..\include\Zmey\Job\Queue.h" />
+    <ClInclude Include="..\..\include\Zmey\Physics\PhysicsActor.h" />
     <ClInclude Include="..\..\include\Zmey\Physics\PhysicsComponentManager.h" />
     <ClInclude Include="..\..\include\Zmey\Physics\PhysicsEngine.h" />
     <ClInclude Include="..\..\include\Zmey\Profile.h" />
@@ -214,6 +215,7 @@
     <ClCompile Include="..\..\Source\Graphics\View.cpp" />
     <ClCompile Include="..\..\Source\InputController.cpp" />
     <ClCompile Include="..\..\Source\Job\JobSystemImpl.cpp" />
+    <ClCompile Include="..\..\Source\Physics\PhysicsActor.cpp" />
     <ClCompile Include="..\..\Source\Physics\PhysicsComponentManager.cpp" />
     <ClCompile Include="..\..\Source\Physics\PhysicsEngine.cpp" />
     <ClCompile Include="..\..\Source\ResourceLoader\DDSLoader.cpp" />

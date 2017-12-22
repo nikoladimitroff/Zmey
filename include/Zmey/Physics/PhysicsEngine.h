@@ -3,6 +3,7 @@
 #include <Zmey/EntityManager.h>
 #include <Zmey/Hash.h>
 #include <Zmey/Memory/MemoryManagement.h>
+#include <Zmey/Physics/PhysicsActor.h>
 
 namespace physx
 {
@@ -13,6 +14,8 @@ class PxMaterial;
 class PxPhysics;
 class PxScene;
 class PxGeometryHolder;
+class PxPvd;
+class PxPvdTransport;
 }
 namespace Zmey
 {
@@ -52,7 +55,7 @@ public:
 	GeometryPtr CreateBoxGeometry(float width, float height, float depth) const;
 	GeometryPtr CreateSphereGeometry(float radius) const;
 	GeometryPtr CreateCapsuleGeometry(float radius, float height) const;
-	void CreatePhysicsActor(EntityId, const PhysicsActorDescription&);
+	stl::unique_ptr<PhysicsActor> CreatePhysicsActor(EntityId, const PhysicsActorDescription&);
 	void CreatePhysicsMaterial(Zmey::Name, const PhysicsMaterialDescription&);
 	
 	void Simulate(float deltaTime);
@@ -66,17 +69,26 @@ private:
 		physx::PxMaterial* PhysxMaterial;
 		PhysicsMaterialDescription OriginalDescription;
 	};
+	template<typename T>
+	struct PhysxDeleter
+	{
+		void operator()(T* physxObj)
+		{
+			physxObj->release();
+		}
+	};
 
-	void SetupBroadphase();
 	const CombinedMaterialInfo* FindMaterial(Zmey::Name name) const;
+	void CreateDebuggerConnection();
 
-	physx::PxPhysics* m_Physics;
-	physx::PxFoundation* m_Foundation;
-	physx::PxScene* m_Scene;
-	physx::PxDefaultCpuDispatcher* m_DefaultCPUDispatcher;
-
-	stl::unordered_map<EntityId, EntityId::IndexType> m_EntityToActor;
-	stl::vector<physx::PxActor*> m_Actors;
+	template<typename T>
+	using physx_ptr = stl::unique_ptr<T, PhysxDeleter<T>>;
+	physx_ptr<physx::PxPhysics> m_Physics;
+	physx_ptr<physx::PxFoundation> m_Foundation;
+	physx_ptr<physx::PxScene> m_Scene;
+	physx_ptr<physx::PxDefaultCpuDispatcher> m_DefaultCPUDispatcher;
+	physx_ptr<physx::PxPvd> m_VisualDebugger;
+	physx_ptr<physx::PxPvdTransport> m_Transport;
 
 	stl::vector<std::pair<Zmey::Name, CombinedMaterialInfo>> m_Materials;
 
