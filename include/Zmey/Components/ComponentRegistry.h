@@ -27,7 +27,9 @@ namespace Components
 		using DefaultsToBlobDelegate = void(*)(IDataBlob& blob);
 		using ToBlobDelegate = void (*)(const nlohmann::json&, IDataBlob& blob);
 
-		ZMEY_API ComponentManagerEntry(const char* fullName, const char* shortName, ComponentIndex componentManagerIndex, InstantiateDelegate, DefaultsToBlobDelegate, ToBlobDelegate);
+		ZMEY_API ComponentManagerEntry(const char* fullName, const char* shortName, ComponentIndex componentManagerIndex,
+				InstantiateDelegate, DefaultsToBlobDelegate, ToBlobDelegate,
+				int8_t priority);
 		const char* FullName;
 		const char* ShortName;
 		const Hash ShortNameHash;
@@ -35,6 +37,7 @@ namespace Components
 		const InstantiateDelegate Instantiate;
 		const DefaultsToBlobDelegate DefaultsToBlob;
 		const ToBlobDelegate ToBlob;
+		const int8_t Priority;
 	};
 	void ExportComponentsToScripting();
 
@@ -52,12 +55,16 @@ namespace Components
 	}
 
 #define DEFINE_COMPONENT_MANAGER(Class, ShortName, DefaultsToBlob, ToBlob) \
+	DEFINE_COMPONENT_MANAGER_WITH_PRIORITY(Class, ShortName, DefaultsToBlob, ToBlob, 0)
+
+#define DEFINE_COMPONENT_MANAGER_WITH_PRIORITY(Class, ShortName, DefaultsToBlob, ToBlob, Priority) \
 	ZMEY_API const Zmey::ComponentIndex Class##::SZmeyComponentManagerIndex = Zmey::Components::GetNextComponentManagerIndex(); \
 	static Zmey::Components::ComponentManagerEntry G##ShortName##ComponentManagerRegistration(#Class, #ShortName, \
 		Class##::SZmeyComponentManagerIndex, \
 		&Zmey::Components::InstantiateManager<##Class##>, \
 		DefaultsToBlob, \
-		ToBlob)
+		ToBlob, \
+		Priority) \
 
 #define DEFINE_EXTERNAL_COMPONENT_MANAGER(Class, ShortName, DefaultsToBlob, ToBlob) \
 	const Zmey::ComponentIndex Class##::SZmeyComponentManagerIndex = Zmey::Components::GetNextComponentManagerIndex(); \

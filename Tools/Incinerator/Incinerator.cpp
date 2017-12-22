@@ -4,6 +4,7 @@
 #include <fstream>
 #include <vector>
 #include <unordered_set>
+#include <map>
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
 #include <Windows.h>
@@ -49,6 +50,19 @@ template <typename T, class... StreamArgs>
 inline std::basic_ostream<StreamArgs...>& operator <=(std::basic_ostream<StreamArgs...> & out, T const & data) {
 	out.write(reinterpret_cast<char const *>(&data), sizeof(T));
 	return out;
+}
+
+bool CompareComponentNames(const std::string& lhs, const std::string& rhs)
+{
+	Zmey::Hash lhsHash(Zmey::HashHelpers::CaseInsensitiveStringWrapper(lhs.c_str()));
+	auto lhsManager = Zmey::Components::GetComponentManager(lhsHash);
+	Zmey::Hash rhsHash(Zmey::HashHelpers::CaseInsensitiveStringWrapper(rhs.c_str()));
+	auto rhsManager = Zmey::Components::GetComponentManager(rhsHash);
+	if (lhsManager.Priority != rhsManager.Priority)
+	{
+		return rhsManager.Priority < lhsManager.Priority;
+	}
+	return lhsHash < rhsHash;
 }
 
 }
@@ -122,6 +136,10 @@ void Incinerator::BuildClassIndex(const std::vector<std::string>& classFiles)
 
 			classEntry.Components.push_back(binaryComponentData);
 		}
+		std::stable_sort(classEntry.Components.begin(), classEntry.Components.end(), [](const ComponentEntry& lhs, const ComponentEntry& rhs)
+		{
+			return CompareComponentNames(lhs.ComponentName, rhs.ComponentName);
+		});
 		m_ClassIndex[className] = classEntry;
 	}
 }
@@ -199,7 +217,14 @@ void Incinerator::IncinerateWorld(const std::string& destinationFolder, const st
 		Zmey::EntityId::IndexType EntityIndex;
 		ComponentEntry DataForComponent;
 	};
-	std::unordered_map<std::string, std::vector<EntityDataPerComponent>> entitiesForComponent;
+	struct ComponentMapComparator
+	{
+		bool operator()(const std::string& lhs, const std::string& rhs) const
+		{
+			return CompareComponentNames(lhs, rhs);
+		}
+	};
+	std::map<std::string, std::vector<EntityDataPerComponent>, ComponentMapComparator> entitiesForComponent;
 	Zmey::EntityId::IndexType maxEntityIndex = 0u;
 
 	std::unordered_set<std::string> resourceList;
@@ -240,6 +265,7 @@ void Incinerator::IncinerateWorld(const std::string& destinationFolder, const st
 				std::inserter(resourceList, resourceList.begin()));
 		}
 	}
+
 	// Add resources required by default type instances
 	for (const auto& classInfo : m_ClassIndex)
 	{
@@ -249,6 +275,7 @@ void Incinerator::IncinerateWorld(const std::string& destinationFolder, const st
 				std::inserter(resourceList, resourceList.begin()));
 		}
 	}
+
 	// Add resources for all class types
 	for (const auto& classData : m_ClassIndex)
 	{

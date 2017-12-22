@@ -26,7 +26,8 @@ ComponentManagerEntry::ComponentManagerEntry(const char* fullName, const char* s
 	ComponentIndex ComponentIndex,
 	InstantiateDelegate instantiate,
 	DefaultsToBlobDelegate defaultsToBlob,
-	ToBlobDelegate toBlob)
+	ToBlobDelegate toBlob,
+	int8_t priority)
 	: FullName(fullName)
 	, ShortName(shortName)
 	, ShortNameHash(Zmey::Hash(Zmey::HashHelpers::CaseInsensitiveStringWrapper(shortName)))
@@ -34,6 +35,7 @@ ComponentManagerEntry::ComponentManagerEntry(const char* fullName, const char* s
 	, Instantiate(instantiate)
 	, DefaultsToBlob(defaultsToBlob)
 	, ToBlob(toBlob)
+	, Priority(priority)
 {
 	GComponentRegistry[ComponentIndex] = this;
 }
