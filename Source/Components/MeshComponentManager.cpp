@@ -53,8 +53,8 @@ void MeshComponentManager::InitializeFromBlob(const tmp::vector<EntityId>& entit
 		stream >> name;
 		ASSERT(Zmey::Modules::ResourceLoader->IsResourceReady(name));
 		Graphics::MeshHandle meshHandle = *Zmey::Modules::ResourceLoader->AsMeshHandle(name);
+		m_EntityToIndex[entities[i]] = uint32_t(m_Meshes.size());
 		m_Meshes.push_back(meshHandle);
-		m_EntityToIndex[entities[i]] = i;
 	}
 
 	EntityId::IndexType currentEntities = static_cast<EntityId::IndexType>(m_MeshColors.size());

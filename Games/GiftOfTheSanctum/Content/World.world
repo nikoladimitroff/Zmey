@@ -1,8 +1,9 @@
 {
+    "name" : "city-of-township", 
     "version" : "1.0", 
+    "extends" : "city-template", 
     "entities" : [
         {
-            "type" : "Magician", 
             "components" : [
                 {
                     "name" : "tag", 
@@ -11,11 +12,7 @@
                     ]
                 }, 
                 {
-                    "scale" : [
-                        1.0, 
-                        1.0, 
-                        1.0
-                    ], 
+                    "name" : "transform", 
                     "rotation" : [
                         0.0, 
                         0.0, 
@@ -27,22 +24,26 @@
                         1.1397416591644287, 
                         0.0
                     ], 
-                    "name" : "transform"
+                    "scale" : [
+                        1.0, 
+                        1.0, 
+                        1.0
+                    ]
                 }, 
                 {
-                    "color" : [
-                        0.0, 
-                        0.02262183465063572, 
-                        0.8000000715255737
-                    ], 
                     "name" : "mesh", 
-                    "glTF_node_index" : 0
+                    "glTF_node_index" : 0, 
+                    "color" : [
+                        0.23029184341430664, 
+                        0.5058498382568359, 
+                        0.8000000715255737
+                    ]
                 }
             ], 
-            "compiler-id" : 1
+            "compiler-id" : 1, 
+            "type" : "Magician"
         }, 
         {
-            "type" : "Magician", 
             "components" : [
                 {
                     "name" : "tag", 
@@ -51,11 +52,7 @@
                     ]
                 }, 
                 {
-                    "scale" : [
-                        1.0, 
-                        1.0, 
-                        1.0
-                    ], 
+                    "name" : "transform", 
                     "rotation" : [
                         0.0, 
                         0.0, 
@@ -67,22 +64,26 @@
                         1.1397416591644287, 
                         0.0
                     ], 
-                    "name" : "transform"
+                    "scale" : [
+                        1.0, 
+                        1.0, 
+                        1.0
+                    ]
                 }, 
                 {
-                    "color" : [
-                        0.23029184341430664, 
-                        0.5058498382568359, 
-                        0.8000000715255737
-                    ], 
                     "name" : "mesh", 
-                    "glTF_node_index" : 1
+                    "glTF_node_index" : 1, 
+                    "color" : [
+                        0.0, 
+                        0.8000000715255737, 
+                        0.017685798928141594
+                    ]
                 }
             ], 
-            "compiler-id" : 1
+            "compiler-id" : 1, 
+            "type" : "Magician"
         }, 
         {
-            "type" : "Magician", 
             "components" : [
                 {
                     "name" : "tag", 
@@ -91,11 +92,7 @@
                     ]
                 }, 
                 {
-                    "scale" : [
-                        1.0, 
-                        1.0, 
-                        1.0
-                    ], 
+                    "name" : "transform", 
                     "rotation" : [
                         0.0, 
                         0.0, 
@@ -107,22 +104,26 @@
                         1.1397416591644287, 
                         0.0
                     ], 
-                    "name" : "transform"
+                    "scale" : [
+                        1.0, 
+                        1.0, 
+                        1.0
+                    ]
                 }, 
                 {
+                    "name" : "mesh", 
+                    "glTF_node_index" : 2, 
                     "color" : [
                         0.0, 
-                        0.8000000715255737, 
-                        0.017685798928141594
-                    ], 
-                    "name" : "mesh", 
-                    "glTF_node_index" : 2
+                        0.02262183465063572, 
+                        0.8000000715255737
+                    ]
                 }
             ], 
-            "compiler-id" : 1
+            "compiler-id" : 1, 
+            "type" : "Magician"
         }, 
         {
-            "type" : "Floor", 
             "components" : [
                 {
                     "name" : "tag", 
@@ -131,11 +132,7 @@
                     ]
                 }, 
                 {
-                    "scale" : [
-                        1.0, 
-                        1.0, 
-                        1.0
-                    ], 
+                    "name" : "transform", 
                     "rotation" : [
                         0.0, 
                         0.0, 
@@ -147,17 +144,21 @@
                         -0.250000536441803, 
                         0.0
                     ], 
-                    "name" : "transform"
+                    "scale" : [
+                        1.0, 
+                        1.0, 
+                        1.0
+                    ]
                 }, 
                 {
                     "name" : "mesh", 
                     "glTF_node_index" : 3
                 }
             ], 
-            "compiler-id" : 1
+            "compiler-id" : 1, 
+            "type" : "Floor"
         }, 
         {
-            "type" : "Floor", 
             "components" : [
                 {
                     "name" : "tag", 
@@ -166,11 +167,7 @@
                     ]
                 }, 
                 {
-                    "scale" : [
-                        1.0, 
-                        1.0, 
-                        1.0
-                    ], 
+                    "name" : "transform", 
                     "rotation" : [
                         0.0, 
                         0.0, 
@@ -182,17 +179,21 @@
                         -0.250000536441803, 
                         0.0
                     ], 
-                    "name" : "transform"
+                    "scale" : [
+                        1.0, 
+                        1.0, 
+                        1.0
+                    ]
                 }, 
                 {
                     "name" : "mesh", 
                     "glTF_node_index" : 4
                 }
             ], 
-            "compiler-id" : 1
+            "compiler-id" : 1, 
+            "type" : "Floor"
         }, 
         {
-            "type" : "Floor", 
             "components" : [
                 {
                     "name" : "tag", 
@@ -201,11 +202,7 @@
                     ]
                 }, 
                 {
-                    "scale" : [
-                        1.0, 
-                        1.0, 
-                        1.0
-                    ], 
+                    "name" : "transform", 
                     "rotation" : [
                         0.0, 
                         0.0, 
@@ -217,17 +214,21 @@
                         -0.250000536441803, 
                         0.0
                     ], 
-                    "name" : "transform"
+                    "scale" : [
+                        1.0, 
+                        1.0, 
+                        1.0
+                    ]
                 }, 
                 {
                     "name" : "mesh", 
                     "glTF_node_index" : 5
                 }
             ], 
-            "compiler-id" : 1
+            "compiler-id" : 1, 
+            "type" : "Floor"
         }, 
         {
-            "type" : "Floor", 
             "components" : [
                 {
                     "name" : "tag", 
@@ -236,11 +237,7 @@
                     ]
                 }, 
                 {
-                    "scale" : [
-                        1.0, 
-                        1.0, 
-                        1.0
-                    ], 
+                    "name" : "transform", 
                     "rotation" : [
                         0.0, 
                         0.0, 
@@ -252,17 +249,21 @@
                         -0.250000536441803, 
                         0.0
                     ], 
-                    "name" : "transform"
+                    "scale" : [
+                        1.0, 
+                        1.0, 
+                        1.0
+                    ]
                 }, 
                 {
                     "name" : "mesh", 
                     "glTF_node_index" : 6
                 }
             ], 
-            "compiler-id" : 1
+            "compiler-id" : 1, 
+            "type" : "Floor"
         }, 
         {
-            "type" : "Floor", 
             "components" : [
                 {
                     "name" : "tag", 
@@ -271,11 +272,7 @@
                     ]
                 }, 
                 {
-                    "scale" : [
-                        1.0, 
-                        1.0, 
-                        1.0
-                    ], 
+                    "name" : "transform", 
                     "rotation" : [
                         0.0, 
                         0.0, 
@@ -287,17 +284,21 @@
                         -0.250000536441803, 
                         0.0
                     ], 
-                    "name" : "transform"
+                    "scale" : [
+                        1.0, 
+                        1.0, 
+                        1.0
+                    ]
                 }, 
                 {
                     "name" : "mesh", 
                     "glTF_node_index" : 7
                 }
             ], 
-            "compiler-id" : 1
+            "compiler-id" : 1, 
+            "type" : "Floor"
         }, 
         {
-            "type" : "Floor", 
             "components" : [
                 {
                     "name" : "tag", 
@@ -306,11 +307,7 @@
                     ]
                 }, 
                 {
-                    "scale" : [
-                        1.0, 
-                        1.0, 
-                        1.0
-                    ], 
+                    "name" : "transform", 
                     "rotation" : [
                         0.0, 
                         0.0, 
@@ -322,16 +319,19 @@
                         -0.250000536441803, 
                         0.0
                     ], 
-                    "name" : "transform"
+                    "scale" : [
+                        1.0, 
+                        1.0, 
+                        1.0
+                    ]
                 }, 
                 {
                     "name" : "mesh", 
                     "glTF_node_index" : 8
                 }
             ], 
-            "compiler-id" : 1
+            "compiler-id" : 1, 
+            "type" : "Floor"
         }
-    ], 
-    "extends" : "city-template", 
-    "name" : "city-of-township"
+    ]
 }

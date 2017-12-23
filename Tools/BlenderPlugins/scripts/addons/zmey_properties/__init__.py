@@ -55,27 +55,39 @@ class ExportZmey(bpy.types.Operator, ExportHelper):
         bpy.context.window_manager.progress_update(0)
         zmey_scene = bpy.context.scene.world.zmey_scene_types
 
+        # get all objects which will be exported. This is the same as gltf exporter.
+        # we need this in order to use the same indices as in the gltf
+        blender_objects = [obj for obj in bpy.data.objects if obj.users != 0]
+
         # Export types
-        type_list = [(t.name, t.export()) for t in zmey_scene.types]
-        for name, data in type_list:
+        for t in zmey_scene.types:
+            data = t.export()
+
             # Add default transform component to type
             transform_component = {"name" : "transform"}
             data["components"].append(transform_component)
 
-            file = open(self.directory + name + ".type", "w", encoding="utf8", newline="\n")
+            # Check for mesh export for type
+            if t.mesh_reference != None:
+                obj = t.mesh_reference
+                mesh_component = {
+                    "name" : "mesh",
+                    "glTF_node_index" : blender_objects.index(obj)
+                }
+                # check for color inside the material
+                if len(obj.data.materials) > 0 and obj.data.materials[0].diffuse_color:
+                    c = obj.data.materials[0].diffuse_color
+                    mesh_component["color"] = [c.r, c.g, c.b]
+                data["components"].append(mesh_component)
+
+            file = open(self.directory + t.name + ".type", "w", encoding="utf8", newline="\n")
             file.write(json.dumps(data, indent=4, separators=(', ', ' : ')))
             file.write("\n")
             file.close()
 
         # Prepare objects
         entities_list = []
-        current_index = -1
-        for obj in bpy.data.objects:
-            if obj.users == 0:
-                continue
-
-            current_index += 1
-
+        for current_index, obj in enumerate(blender_objects):
             if obj.zmey_props.enabled:
                 type_object = zmey_scene.types[int(obj.zmey_props.type)]
                 entity = {
@@ -90,10 +102,7 @@ class ExportZmey(bpy.types.Operator, ExportHelper):
                 entity["components"].append(transform_component)
 
                 # Export mesh component
-                if obj.zmey_props.components.mesh_enabled or \
-                    type_object.components.mesh_enabled :
-
-                    # we are exporting all object with gltf so node index is the same as bpy.data.object
+                if obj.zmey_props.mesh_export:
                     mesh_component = {
                         "name" : "mesh",
                         "glTF_node_index" : current_index

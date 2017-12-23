@@ -7,7 +7,7 @@ class ZmeySceneTypeList(bpy.types.UIList):
             layout.prop(item, "name", text="", emboss=False)
 
 # Panels
-class ZmeySceneTypePropertiesPanel(bpy.types.Panel):
+class ZmeyWorldPropertyPanel(bpy.types.Panel):
     """Zmey Scene Type Properties"""
     bl_label = "Zmey World Types"
     bl_idname = "ZMEY_SCENE_TYPES"
@@ -38,6 +38,8 @@ class ZmeySceneTypePropertiesPanel(bpy.types.Panel):
 
     def draw_type(self, item, layout):
         layout.row().prop(item, "name")
+        mesh_box = layout.box()
+        mesh_box.row().prop(item, "mesh_reference")
         item.components.draw_type(layout)
 
 class ZmeyObjectPropertiesPanel(bpy.types.Panel):
@@ -55,17 +57,22 @@ class ZmeyObjectPropertiesPanel(bpy.types.Panel):
         layout.row().prop(obj.zmey_props, "enabled", toggle=True)
 
         if obj.zmey_props.enabled:
-            layout.row().prop(obj.zmey_props, "name")
             layout.row().prop(obj.zmey_props, "type")
-            obj.zmey_props.components.draw_type(layout.box())
+            box = layout.box()
+            zmey_type = bpy.context.scene.world.zmey_scene_types.types[int(obj.zmey_props.type)]
+            box.box().prop(
+                obj.zmey_props,
+                "mesh_export",
+                text="Export Mesh" if zmey_type.mesh_reference == None else "Override Type Mesh")
+            obj.zmey_props.components.draw_type(box)
 
 
 def register():
     bpy.utils.register_class(ZmeySceneTypeList)
-    bpy.utils.register_class(ZmeySceneTypePropertiesPanel)
+    bpy.utils.register_class(ZmeyWorldPropertyPanel)
     bpy.utils.register_class(ZmeyObjectPropertiesPanel)
 
 def unregister():
     bpy.utils.unregister_class(ZmeySceneTypeList)
-    bpy.utils.unregister_class(ZmeySceneTypePropertiesPanel)
+    bpy.utils.unregister_class(ZmeyWorldPropertyPanel)
     bpy.utils.unregister_class(ZmeyObjectPropertiesPanel)
