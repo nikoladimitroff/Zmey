@@ -27,11 +27,11 @@ void PhysicsComponentManager::InitializeFromBlob(const tmp::vector<EntityId>& en
 	physEngine.CreatePhysicsMaterial(Zmey::Name("default"), defaultMat);
 
 	Zmey::Physics::PhysicsActorDescription actorDescription;
-	actorDescription.IsStatic = false;
+	actorDescription.IsStatic = true;
 	actorDescription.Mass = 70;
 	actorDescription.IsTrigger = false;
 	actorDescription.Material = Zmey::Name("default");
-	auto capsuleGeometry = physEngine.CreateSphereGeometry(50.f);
+	auto capsuleGeometry = physEngine.CreateSphereGeometry(0.1f);
 	actorDescription.Geometry = capsuleGeometry.get();
 	for (auto& entityId : entities)
 	{
@@ -39,6 +39,14 @@ void PhysicsComponentManager::InitializeFromBlob(const tmp::vector<EntityId>& en
 		m_Actors.push_back(std::move(actor));
 		m_EntityToActor[entityId] = static_cast<EntityId::IndexType>(m_Actors.size() - 1u);
 	}
+}
+
+void PhysicsComponentManager::RemoveEntity(EntityId id)
+{
+	auto index = m_EntityToActor[id];
+	m_EntityToActor.erase(id);
+	// TODO: remove me from the actors list and refill m_EntityToActor map
+	m_Actors[index].reset();
 }
 
 Zmey::Physics::PhysicsActor* PhysicsComponentManager::Lookup(EntityId entity)

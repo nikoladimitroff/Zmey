@@ -23,17 +23,10 @@ struct EntityId
 		return std::memcmp(&lhs, &rhs, sizeof(EntityId)) == 0;
 	}
 
-	// Conversion to / from double for scripting purposes
-	explicit EntityId(double bits)
-		: Index(0u)
-		, Generation(0u)
-		, UnusedBits(0u)
+	operator uint64_t()
 	{
-		std::memcpy(const_cast<EntityId*>(this), &bits, sizeof(double));
-	}
-	operator double()
-	{
-		return *(double*)this;
+		static_assert(sizeof(EntityId) == sizeof(uint64_t), "EnitityId is more than uint64_t. Veryyy bad.");
+		return *(uint64_t*)this;
 	}
 
 	explicit EntityId(uint64_t bits)
