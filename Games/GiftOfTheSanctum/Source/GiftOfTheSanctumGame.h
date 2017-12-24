@@ -19,6 +19,7 @@ public:
 	virtual void Uninitialize() override;
 private:
 	void InitializePlayerController(unsigned index);
+	void SetupPlayersToSpawnPoints();
 	void UpdatePlayers();
 	void DoUI();
 private:
