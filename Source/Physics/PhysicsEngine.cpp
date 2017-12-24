@@ -135,17 +135,7 @@ PhysicsEngine::PhysicsEngine()
 
 void PhysicsEngine::CreateDebuggerConnection()
 {
-#if 0
-	auto scope = TempAllocator::GetTlsAllocator().ScopeNow();
-	auto neededSize = ::GetTempPathA(0, nullptr);
-	tmp::string path;
-	path.resize(neededSize);
-	::GetTempPathA(neededSize, &path[0]);
-	path.pop_back(); // GetTempPath adds a null-terminator so get rid of it
-	path.append("Zmey.pxd2");
-	physx::PxPvdTransport* transport = physx::PxDefaultPvdFileTransportCreate(path.c_str());
-#endif
-
+#ifndef NDEBUG
 	//The normal way to connect to pvd.  PVD needs to be running at the time this function is called.
 	//We don't worry about the return value because we are already registered as a listener for connections
 	//and thus our onPvdConnected call will take care of setting up our basic connection state.
@@ -156,12 +146,10 @@ void PhysicsEngine::CreateDebuggerConnection()
 
 	//Use these flags for a clean profile trace with minimal overhead
 	physx::PxPvdInstrumentationFlags flags = physx::PxPvdInstrumentationFlag::eALL;
-#ifdef NDEBUG
-	flags = physx::PxPvdInstrumentationFlag::ePROFILE;
-#endif
 
 	m_VisualDebugger.reset(physx::PxCreatePvd(*m_Foundation));
 	m_VisualDebugger->connect(*m_Transport, flags);
+#endif
 }
 
 void PhysicsEngine::Simulate(float deltaTime)
