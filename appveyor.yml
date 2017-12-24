@@ -14,5 +14,5 @@ build_script:
   - set PATH=%PYTHONPATH%;%PATH%
   # Print python version as a sanity check
   - python --version
-  - msbuild Zmey.sln /t:Tools\ShaderCompiler;Tools\Incinerator;Zmey;Games\GiftOfTheSanctum /p:Configuration=Debug;Platform=x64 /maxcpucount /verbosity:minimal
-  - msbuild Zmey.sln /t:Tools\ShaderCompiler;Tools\Incinerator;Zmey;Games\GiftOfTheSanctum /p:Configuration=Release;Platform=x64 /maxcpucount /verbosity:minimal
+  - msbuild Zmey.sln /t:Tools\ShaderCompiler;Tools\Incinerator;Zmey;Games\GiftOfTheSanctum /p:AppVeyorCompilerOptions=/DUSE_DX12 /p:Configuration=Debug;Platform=x64 /maxcpucount /verbosity:minimal
+  - msbuild Zmey.sln /t:Tools\ShaderCompiler;Tools\Incinerator;Zmey;Games\GiftOfTheSanctum /p:AppVeyorCompilerOptions=/DUSE_DX12 /p:Configuration=Release;Platform=x64 /maxcpucount /verbosity:minimal

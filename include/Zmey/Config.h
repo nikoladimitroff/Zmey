@@ -29,11 +29,8 @@
 #endif
 
 // Renderer config
-// Use Dx12 by default on Windows10
-#include <winsdkver.h> // TODO: Don't include this header
-#if WINVER_MAXVER >= 0x0A00
-#define USE_DX12
-#endif
+// Uncomment for dx12
+//#define USE_DX12
 
 // Assume if we haven't choosen what to use that only vulkan is present
 // as Dx12 runs only on Win10
