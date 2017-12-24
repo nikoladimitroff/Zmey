@@ -132,7 +132,6 @@ int main()
 			if (compilRes != 0)
 			{
 				std::cerr << "Compilation error on shader vertex stage: " << shader << std::endl;
-				system("pause");
 				exit(1);
 			}
 		}
@@ -142,11 +141,9 @@ int main()
 			if (compilRes != 0)
 			{
 				std::cerr << "Compilation error on shader pixel stage: " << shader << std::endl;
-				system("pause");
 				exit(1);
 			}
 		}
 	}
-	system("pause");
 	return 0;
 }

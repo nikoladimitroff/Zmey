@@ -45,12 +45,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)Build\$(Configuration)_$(Platform)\bin\</OutDir>
     <IntDir>$(SolutionDir)Build\$(Configuration)_$(Platform)\obj\$(ProjectName)\</IntDir>
-    <CustomBuildBeforeTargets>PreBuildEvent</CustomBuildBeforeTargets>
+    <CustomBuildBeforeTargets>ClCompile</CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)Build\$(Configuration)_$(Platform)\bin\</OutDir>
     <IntDir>$(SolutionDir)Build\$(Configuration)_$(Platform)\obj\$(ProjectName)\</IntDir>
-    <CustomBuildBeforeTargets>PreBuildEvent</CustomBuildBeforeTargets>
+    <CustomBuildBeforeTargets>ClCompile</CustomBuildBeforeTargets>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -67,12 +67,15 @@
     <Link>
       <SubSystem>Console</SubSystem>
     </Link>
-    <PreBuildEvent>
-      <Command>
-      </Command>
-    </PreBuildEvent>
+    <PreBuildEvent />
+    <CustomBuildStep />
     <CustomBuildStep>
-      <Command>node ../Zmey/prebuild.js $(OutputPath) --game</Command>
+      <Command>python $(SOLUTIONDIR)Tools/BuildSteps/prebuild.py --output $(OutputPath) --game</Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Message>Processing game assets</Message>
+    </CustomBuildStep>
+    <CustomBuildStep>
       <Outputs>nonexistent-file-path-to-force-visual-studio-to-run-this-build-step</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>
@@ -94,12 +97,15 @@
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Console</SubSystem>
     </Link>
-    <PreBuildEvent>
-      <Command>
-      </Command>
-    </PreBuildEvent>
+    <PreBuildEvent />
+    <CustomBuildStep />
     <CustomBuildStep>
-      <Command>node ../Zmey/prebuild.js $(OutputPath) --game</Command>
+      <Command>python $(SOLUTIONDIR)Tools/BuildSteps/prebuild.py --output $(OutputPath) --game</Command>
+    </CustomBuildStep>
+    <CustomBuildStep>
+      <Message>Processing game assets</Message>
+    </CustomBuildStep>
+    <CustomBuildStep>
       <Outputs>nonexistent-file-path-to-force-visual-studio-to-run-this-build-step</Outputs>
     </CustomBuildStep>
   </ItemDefinitionGroup>

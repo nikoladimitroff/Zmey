@@ -45,16 +45,16 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)Build\$(Configuration)_$(Platform)\bin\</OutDir>
     <IntDir>$(SolutionDir)Build\$(Configuration)_$(Platform)\obj\$(ProjectName)\</IntDir>
-    <CustomBuildBeforeTargets>PreBuildEvent</CustomBuildBeforeTargets>
     <CodeAnalysisRuleSet>E:\Tools\VS2017\Team Tools\Static Analysis Tools\Rule Sets\NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>false</RunCodeAnalysis>
+    <CustomBuildBeforeTargets>ClCompile</CustomBuildBeforeTargets>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)Build\$(Configuration)_$(Platform)\bin\</OutDir>
     <IntDir>$(SolutionDir)Build\$(Configuration)_$(Platform)\obj\$(ProjectName)\</IntDir>
-    <CustomBuildBeforeTargets>PreBuildEvent</CustomBuildBeforeTargets>
     <CodeAnalysisRuleSet>E:\Tools\VS2017\Team Tools\Static Analysis Tools\Rule Sets\NativeRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <RunCodeAnalysis>false</RunCodeAnalysis>
+    <CustomBuildBeforeTargets>ClCompile</CustomBuildBeforeTargets>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -76,19 +76,14 @@
       <AdditionalDependencies>PxPvdSDK_x64.lib;PhysX3Extensions.lib;PhysX3_x64.lib;PxFoundation_x64.lib;vulkan-1.lib;assimp-vc140-mt.lib;d3d12.lib;dxgi.lib;Xinput.lib;easy_profiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
-    <PostBuildEvent>
-      <Command>postbuild.bat $(SolutionDir) $(OutDir)</Command>
-    </PostBuildEvent>
-    <PostBuildEvent>
-      <Message>Copying third party dependencies</Message>
-    </PostBuildEvent>
-    <PreBuildEvent>
-      <Command>
-      </Command>
-    </PreBuildEvent>
+    <PostBuildEvent />
+    <PostBuildEvent />
+    <PreBuildEvent />
+    <CustomBuildStep />
     <CustomBuildStep>
-      <Command>node prebuild.js $(OutputPath)</Command>
       <Outputs>nonexistent-file-path-to-force-visual-studio-to-run-this-build-step</Outputs>
+      <Message>Processing game assets</Message>
+      <Command>python $(SOLUTIONDIR)Tools/BuildSteps/prebuild.py --output $(OutputPath)</Command>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -114,19 +109,14 @@
       <AdditionalDependencies>PhysX3Extensions.lib;PhysX3_x64.lib;PxFoundation_x64.lib;vulkan-1.lib;assimp-vc140-mt.lib;d3d12.lib;dxgi.lib;Xinput.lib;easy_profiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
-    <PostBuildEvent>
-      <Command>postbuild.bat $(SolutionDir) $(OutDir)</Command>
-    </PostBuildEvent>
-    <PostBuildEvent>
-      <Message>Copying third party dependencies</Message>
-    </PostBuildEvent>
-    <PreBuildEvent>
-      <Command>
-      </Command>
-    </PreBuildEvent>
+    <PostBuildEvent />
+    <PostBuildEvent />
+    <PreBuildEvent />
+    <CustomBuildStep />
     <CustomBuildStep>
-      <Command>node prebuild.js $(OutputPath)</Command>
       <Outputs>nonexistent-file-path-to-force-visual-studio-to-run-this-build-step</Outputs>
+      <Message>Processing game assets</Message>
+      <Command>python $(SOLUTIONDIR)Tools/BuildSteps/prebuild.py --output $(OutputPath)</Command>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
