@@ -28,6 +28,17 @@ void PhysicsActor::ApplyImpulse(const Zmey::Vector3& impulse)
 	ASSERT(!m_IsStatic);
 	static_cast<physx::PxRigidBody&>(m_Actor).addForce(ZmeyVectorToPxVector(impulse), physx::PxForceMode::eIMPULSE);
 }
+
+void PhysicsActor::TeleportTo(const Zmey::Vector3& point)
+{
+	ASSERT(!m_IsStatic);
+	auto pose = m_Actor.getGlobalPose();
+	pose.p.x = point.x;
+	pose.p.y = point.y;
+	pose.p.z = point.z;
+	m_Actor.setGlobalPose(pose);
+}
+
 PhysicsActor::PhysicsActor(physx::PxRigidActor& pxActor, bool isStatic)
 	: m_Actor(pxActor)
 	, m_IsStatic(isStatic)

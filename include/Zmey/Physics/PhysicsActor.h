@@ -13,12 +13,13 @@ class World;
 namespace Physics
 {
 
-class PhysicsActor
+class ZMEY_API  PhysicsActor
 {
 public:
 	~PhysicsActor();
 	void ApplyForce(const Zmey::Vector3& force);
 	void ApplyImpulse(const Zmey::Vector3& force);
+	void TeleportTo(const Zmey::Vector3& point);
 private:
 	PhysicsActor(physx::PxRigidActor& pxActor, bool isStatic);
 	friend class PhysicsEngine;
