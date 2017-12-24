@@ -9,6 +9,7 @@
 #include <Zmey/World.h>
 #include <Zmey/Components/TransformManager.h>
 #include <Zmey/Components/TagManager.h>
+#include <Zmey/Physics/PhysicsComponentManager.h>
 
 namespace
 {
@@ -51,6 +52,7 @@ void GiftOfTheSanctumGame::InitializePlayerController(unsigned index)
 			CastSpell(index);
 		});
 	}
+
 }
 
 void GiftOfTheSanctumGame::Initialize()
@@ -71,28 +73,44 @@ void GiftOfTheSanctumGame::Initialize()
 		InitializePlayerController(playerIndex);
 	}
 
+	// Debug setup
+	{
+		Zmey::Modules::InputController->AddListenerForAction(Zmey::Name("RespawnPlayers"), 0, [this](float axisValue)
+		{
+			SetupPlayersToSpawnPoints();
+		});
+	}
+
 	// Gather spawn points
 	Zmey::tmp::vector<Zmey::EntityId> spawnPoints = tagManager.FindAllByTag(Zmey::Name("SpawnPoint"));
 	m_SpawnPoints = EntityVector(spawnPoints.begin(), spawnPoints.end());
-	// Setup player on spawn points
+
+	// SetupPlayersToSpawnPoints
+	SetupPlayersToSpawnPoints();
+}
+
+void GiftOfTheSanctumGame::SetupPlayersToSpawnPoints()
+{
+	auto& pxManager = GetWorld()->GetManager<Zmey::Physics::PhysicsComponentManager>();
+	auto& tfManager = GetWorld()->GetManager<Zmey::Components::TransformManager>();
+	for (uint8_t i = 0u; i < MaxPlayers; i++)
 	{
-		auto& tfManager = GetWorld()->GetManager<Zmey::Components::TransformManager>();
-		for (uint8_t i = 0u; i < MaxPlayers; i++)
-		{
-			auto playerPosition = tfManager.Lookup(m_Players[i]);
-			playerPosition.Position() = tfManager.Lookup(m_SpawnPoints[i]).Position();
-		}
+		auto actor = pxManager.Lookup(m_Players[i]);
+		actor->TeleportTo(tfManager.Lookup(m_SpawnPoints[i]).Position());
 	}
 }
 
 void GiftOfTheSanctumGame::CastSpell(uint8_t playerIndex)
 {
 	auto& transformManager = GetWorld()->GetManager<Zmey::Components::TransformManager>();
+	auto& pxManager = GetWorld()->GetManager<Zmey::Physics::PhysicsComponentManager>();
 	auto transform = transformManager.Lookup(m_Players[playerIndex]);
 	auto spellId = GetWorld()->SpawnEntity(Zmey::Name("Spell"));
-	auto spellTransform = transformManager.Lookup(spellId);
-	auto actorForwardVector = transform.Rotation() * Zmey::Vector3(0.f, 5.f, 0.f);
-	spellTransform.Position() = transform.Position() + actorForwardVector * 0.12f;
+	auto spell = pxManager.Lookup(spellId);
+	//auto actorForwardVector = transform.Rotation() * Zmey::Vector3(0.f, 5.f, 0.f);
+	auto actorForwardVector = Zmey::Vector3(0.f, 0.f, 1.f);
+	spell->TeleportTo(transform.Position() + actorForwardVector * 3.f);
+	spell->ApplyForce(actorForwardVector * 800.f);
 }
 
 void GiftOfTheSanctumGame::Simulate(float deltaTime)
