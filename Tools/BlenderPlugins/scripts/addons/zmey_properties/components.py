@@ -6,13 +6,13 @@ import bpy
 class ZmeyComponent_Physics(bpy.types.PropertyGroup):
     @classmethod
     def register(cls):
-        pass
+         cls.dynamic = bpy.props.BoolProperty(name="Dynamic")
 
     def draw(self, layout):
-        pass
+         layout.prop(self, "dynamic")
 
     def export(self):
-        return { "name" : "physics" }
+        return { "name" : "physics", "dynamic" : self.dynamic}
 
 class ZmeyComponent_Tag(bpy.types.PropertyGroup):
     @classmethod
