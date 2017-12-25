@@ -29,7 +29,7 @@
 #endif
 
 // Renderer config
-// Undef for Dx12
+// Uncomment for dx12
 //#define USE_DX12
 
 // Assume if we haven't choosen what to use that only vulkan is present

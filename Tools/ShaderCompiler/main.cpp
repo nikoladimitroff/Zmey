@@ -6,6 +6,8 @@
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 
+#include <Zmey/Config.h>
+
 static const std::string sSourceFolder = "Source/Graphics/Shaders/Source/";
 static const std::string sOutputCompilationFolder = "Source/Graphics/Shaders/Compiled/";
 static const std::string sOutputFolderSpirv = "Spir-V/";
@@ -17,8 +19,11 @@ static const std::string sCompilerDirectX = "C:\\Program Files (x86)\\Windows Ki
 #define PRINT_CMD_LINE 1
 #define FORCE_REBUILD 1
 
-//#define DIRECTX
+#if defined(USE_DX12)
+#define DIRECTX
+#elif defined(USE_VULKAN)
 #define SPIRV
+#endif
 
 #if defined(DIRECTX) && defined(SPIRV)
 #error "Cannot compile both DirectX and Spir-V"

@@ -1,0 +1,18 @@
+# http://www.appveyor.com/docs/appveyor-yml
+
+version: 0.0.{build}
+clone_depth: 500
+
+matrix:
+  fast_finish: false
+
+image: Visual Studio 2017
+
+build_script:
+  # Add python 3.6 to the path
+  - set PYTHONPATH=C:\Python36-x64\;C:\Python36-x64\Scripts
+  - set PATH=%PYTHONPATH%;%PATH%
+  # Print python version as a sanity check
+  - python --version
+  - msbuild Zmey.sln /t:Tools\ShaderCompiler;Tools\Incinerator;Zmey;Games\GiftOfTheSanctum /p:AppVeyorCompilerOptions=/DUSE_DX12 /p:Configuration=Debug;Platform=x64 /maxcpucount /verbosity:minimal
+  - msbuild Zmey.sln /t:Tools\ShaderCompiler;Tools\Incinerator;Zmey;Games\GiftOfTheSanctum /p:AppVeyorCompilerOptions=/DUSE_DX12 /p:Configuration=Release;Platform=x64 /maxcpucount /verbosity:minimal

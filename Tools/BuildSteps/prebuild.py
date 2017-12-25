@@ -1,13 +1,13 @@
+import sys
+assert (sys.version_info.major, sys.version_info.minor) >= (3, 6)
+
 import argparse
 from distutils import dir_util
 import json
 import os
 from os import path
 import subprocess
-import sys
 import time
-
-assert sys.version_info >= (3, 6)
 
 def find_repo_root():
     return subprocess.check_output(("git", "rev-parse", "--show-toplevel")).strip().decode("utf8")
@@ -39,8 +39,10 @@ def run_tools(tools):
         if last_recorded < last_changed:
             print(f"Detected that dir {tool_description.directory} has changed. "
                   f"Running {tool_description.cmd}...")
-            subprocess.run(tool_description.cmd, cwd=REPO_ROOT_DIR, timeout=20, check=True,
-                           stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            process_handle = subprocess.run(tool_description.cmd, cwd=REPO_ROOT_DIR, timeout=20,
+                                            stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            print(process_handle.stdout.decode("utf8"))
+            process_handle.check_returncode()
             data_storage[tool_description.directory] = time.asctime()
 
     with open(prebuild_data_path, mode="w", encoding="utf8") as prebuild_data_file:
