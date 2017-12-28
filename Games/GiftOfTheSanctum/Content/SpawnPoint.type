@@ -1,13 +1,10 @@
 {
     "components" : [
         {
-            "name" : "physics"
-        }, 
-        {
             "name" : "transform"
         }
     ], 
     "version" : "1.0", 
     "extends" : "", 
-    "name" : "Floor"
+    "name" : "SpawnPoint"
 }
