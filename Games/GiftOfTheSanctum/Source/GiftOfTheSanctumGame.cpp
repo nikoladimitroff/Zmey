@@ -30,9 +30,7 @@ Zmey::Name GiftOfTheSanctumGame::LoadResources()
 void GiftOfTheSanctumGame::InitializePlayerController(unsigned index)
 {
 	{
-		char eventName[10];
-		sprintf_s(eventName, "WalkX%d", index);
-		Zmey::Modules::InputController->AddListenerForAction(Zmey::Name(eventName), index, [this, index](float axisValue)
+		Zmey::Modules::InputController->AddListenerForAction(Zmey::Name("WalkX"), index, [this, index](float axisValue)
 		{
 			auto transform = GetWorld()->GetManager<Zmey::Components::TransformManager>().Lookup(m_Players[index]);
 			transform.Position().x += NullifyNearZero(axisValue);
@@ -40,9 +38,7 @@ void GiftOfTheSanctumGame::InitializePlayerController(unsigned index)
 	}
 
 	{
-		char eventName[10];
-		sprintf_s(eventName, "WalkZ%d", index);
-		Zmey::Modules::InputController->AddListenerForAction(Zmey::Name(eventName), index, [this, index](float axisValue)
+		Zmey::Modules::InputController->AddListenerForAction(Zmey::Name("WalkZ"), index, [this, index](float axisValue)
 		{
 			auto transform = GetWorld()->GetManager<Zmey::Components::TransformManager>().Lookup(m_Players[index]);
 			transform.Position().y += NullifyNearZero(axisValue);
@@ -50,9 +46,7 @@ void GiftOfTheSanctumGame::InitializePlayerController(unsigned index)
 	}
 
 	{
-		char eventName[10];
-		sprintf_s(eventName, "Cast%d", index);
-		Zmey::Modules::InputController->AddListenerForAction(Zmey::Name(eventName), index, [this, index](float axisValue)
+		Zmey::Modules::InputController->AddListenerForAction(Zmey::Name("Cast"), index, [this, index](float axisValue)
 		{
 			CastSpell(index);
 		});
@@ -80,7 +74,7 @@ void GiftOfTheSanctumGame::Initialize()
 	// Gather spawn points
 	Zmey::tmp::vector<Zmey::EntityId> spawnPoints = tagManager.FindAllByTag(Zmey::Name("SpawnPoint"));
 	m_SpawnPoints = EntityVector(spawnPoints.begin(), spawnPoints.end());
-	// Setup player on swapn points
+	// Setup player on spawn points
 	{
 		auto& tfManager = GetWorld()->GetManager<Zmey::Components::TransformManager>();
 		for (uint8_t i = 0u; i < MaxPlayers; i++)

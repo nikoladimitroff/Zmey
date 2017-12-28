@@ -5,6 +5,8 @@
 #include <Zmey/EntityManager.h>
 #include <Zmey/Math/Math.h>
 
+
+// TODO: Initialize game loop before game and we can use stl instead std
 using EntityVector = std::vector<Zmey::EntityId>;
 
 class GiftOfTheSanctumGame : public Zmey::Game
