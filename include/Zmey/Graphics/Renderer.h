@@ -8,6 +8,7 @@
 #include <Zmey/Graphics/View.h>
 
 #include <Zmey/Graphics/Managers/BufferManager.h>
+#include <Zmey/Graphics/Managers/TextureManager.h>
 #include <Zmey/Graphics/Managers/MeshManager.h>
 #include <cstdint>
 
@@ -28,9 +29,11 @@ struct RendererData
 {
 	RendererData(Backend::Device* device)
 		: BufferManager(device)
+		, TextureManager(device)
 	{}
 
 	BufferManager BufferManager;
+	TextureManager TextureManager;
 	MeshManager MeshManager;
 
 	// TODO(alex): Add PipelineState Manager and remove this
@@ -50,7 +53,9 @@ public:
 
 	bool CheckIfFrameCompleted(uint64_t frameIndex);
 
+	// TODO: This is very weird to be here.
 	MeshHandle MeshLoaded(stl::vector<uint8_t>&& data);
+	TextureHandle TextureLoaded(stl::vector<uint8_t>&& data);
 
 private:
 	void PrepareData(FrameData& frameData);

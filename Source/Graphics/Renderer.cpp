@@ -8,6 +8,8 @@
 #include <Zmey/Graphics/Backend/Device.h>
 #include <Zmey/Graphics/Backend/CommandList.h>
 
+#include <Zmey/ResourceLoader/DDSLoader.h>
+
 //TODO(alex): remove this
 #include <Zmey/Graphics/Backend/Dx12/Dx12Shaders.h>
 #include <Zmey/Graphics/Backend/Vulkan/VulkanShaders.h>
@@ -170,6 +172,28 @@ MeshHandle RendererInterface::MeshLoaded(stl::vector<uint8_t>&& data)
 		data.data() + sizeof(MeshDataHeader) + (header->VerticesCount * sizeof(MeshVertex))
 	);
 	return m_Data.MeshManager.CreateMesh(newMesh);
+}
+
+TextureHandle RendererInterface::TextureLoaded(stl::vector<uint8_t>&& data)
+{
+	DDSLoader loader(data.data(), data.size());
+
+	if (!loader.IsValid())
+	{
+		return TextureHandle(-1);
+	}
+
+	auto format = loader.GetPixelFormat();
+	if (format == PixelFormat::Unknown)
+	{
+		return TextureHandle(-1);
+	}
+
+	return m_Data.TextureManager.CreateTexture(
+		loader.GetWidth(),
+		loader.GetHeight(),
+		format,
+		loader.GetImageData());
 }
 }
 }

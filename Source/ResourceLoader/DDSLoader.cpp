@@ -55,6 +55,16 @@ Graphics::PixelFormat DDSLoader::GetPixelFormat()
 	return format;
 }
 
+uint32_t DDSLoader::GetWidth()
+{
+	return m_DDSHeader->Width;
+}
+
+uint32_t DDSLoader::GetHeight()
+{
+	return m_DDSHeader->Height;
+}
+
 uint8_t* DDSLoader::GetImageData()
 {
 	return reinterpret_cast<uint8_t*>(m_DDSHeader) + sizeof(DDS_HEADER);

@@ -24,6 +24,8 @@ float NullifyNearZero(float value)
 Zmey::Name GiftOfTheSanctumGame::LoadResources()
 {
 	m_WorldName = Zmey::Modules::ResourceLoader->LoadResource("IncineratedDataCache/testworld.worldbin");
+	// TODO: remove me
+	Zmey::Modules::ResourceLoader->LoadResource("Content/Meshes/Vampire_A_Lusth/textures/Vampire_diffuse.dds");
 	return m_WorldName;
 }
 

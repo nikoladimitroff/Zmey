@@ -47,6 +47,8 @@ public:
 	Graphics::PixelFormat GetPixelFormat();
 
 	uint8_t* GetImageData(); // 0 mip 0 array slice TODO(alex): make it take an argument
+	uint32_t GetWidth();
+	uint32_t GetHeight();
 private:
 	DDS_HEADER* m_DDSHeader = nullptr;
 };

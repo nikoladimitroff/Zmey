@@ -16,7 +16,7 @@ public:
 
 	void DestroyResources();
 
-	TextureHandle CreateTexture(uint32_t size, void* data);
+	TextureHandle CreateTexture(uint32_t width, uint32_t height, PixelFormat format, void* data);
 
 	const Backend::Texture* GetTexture(TextureHandle handle) const;
 private:

@@ -22,7 +22,7 @@ void TextureManager::DestroyResources()
 	}
 }
 
-TextureHandle TextureManager::CreateTexture(uint32_t size, void* data)
+TextureHandle TextureManager::CreateTexture(uint32_t width, uint32_t height, PixelFormat format, void* data)
 {
 	TextureHandle handle = s_TextureNextId++;
 	//auto Texture = m_Device->CreateTexture(size);

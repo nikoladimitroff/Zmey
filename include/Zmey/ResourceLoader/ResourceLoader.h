@@ -69,6 +69,10 @@ public:
 	{
 		return FindResourceInCollection(name, m_Meshes);
 	}
+	ZMEY_API const Graphics::TextureHandle* AsTextureHandle(Zmey::Name name) const
+	{
+		return FindResourceInCollection(name, m_Textures);
+	}
 	ZMEY_API const World* AsWorld(Zmey::Name name) const
 	{
 		World* const* world = FindResourceInCollection(name, m_Worlds);
@@ -91,11 +95,13 @@ private:
 	bool ResourceExistsInCollection(Zmey::Name name, const stl::concurrent_vector<std::pair<Zmey::Name, T>>& collection);
 	// Callback for the task system
 	friend void OnResourceMeshLoaded(ResourceLoader*, Zmey::Name, stl::vector<uint8_t>&&);
+	friend void OnResourceTextureLoaded(ResourceLoader*, Zmey::Name, stl::vector<uint8_t>&&);
 	friend void OnResourceLoaded(ResourceLoader*, Zmey::Name, const tmp::string&);
 	friend void OnResourceLoaded(ResourceLoader*, Zmey::Name, World*);
 	friend void OnResourceLoaded(ResourceLoader*, Zmey::Name, stl::vector<uint8_t>&&);
 
 	stl::concurrent_vector<std::pair<Zmey::Name, Graphics::MeshHandle>> m_Meshes;
+	stl::concurrent_vector<std::pair<Zmey::Name, Graphics::TextureHandle>> m_Textures;
 	stl::concurrent_vector<std::pair<Zmey::Name, stl::string>> m_TextContents;
 	stl::concurrent_vector<std::pair<Zmey::Name, World*>> m_Worlds;
 	stl::concurrent_vector<std::pair<Zmey::Name, stl::vector<uint8_t>>> m_BufferedData;
