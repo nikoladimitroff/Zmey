@@ -2,7 +2,7 @@
 
 #ifdef USE_DX12
 
-#include <Zmey/Graphics/Backend/Dx12/Dx12Backend.h>
+#include <Zmey/Graphics/Backend/Dx12/Dx12Device.h>
 
 namespace Zmey
 {
@@ -72,11 +72,27 @@ void Dx12CommandList::EndRenderPass(Framebuffer* fb)
 	CmdList->ResourceBarrier(1, &barrier);
 }
 
-void Dx12CommandList::BindPipelineState(PipelineState* state, bool strip)
+namespace
 {
-	CmdList->SetPipelineState(reinterpret_cast<Dx12PipelineState*>(state)->PipelineState);
-	CmdList->SetGraphicsRootSignature(reinterpret_cast<Dx12PipelineState*>(state)->RootSignature);
-	CmdList->IASetPrimitiveTopology(strip ? D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP : D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	D3D12_PRIMITIVE_TOPOLOGY ToDx12Topology(PrimitiveTopology topology)
+	{
+		switch (topology)
+		{
+		case PrimitiveTopology::TriangleList:
+			return D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+		default:
+			NOT_REACHED();
+			return D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
+		}
+	}
+}
+
+void Dx12CommandList::BindGraphicsPipelineState(GraphicsPipelineState* state)
+{
+	auto dx12State = reinterpret_cast<Dx12GraphicsPipelineState*>(state);
+	CmdList->SetPipelineState(dx12State->PipelineState);
+	CmdList->SetGraphicsRootSignature(dx12State->RootSignature);
+	CmdList->IASetPrimitiveTopology(ToDx12Topology(state->Desc.Topology));
 }
 
 void Dx12CommandList::Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t startVertex, uint32_t startInstance)
@@ -84,7 +100,7 @@ void Dx12CommandList::Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_
 	CmdList->DrawInstanced(vertexCount, instanceCount, startVertex, startInstance);
 }
 
-void Dx12CommandList::SetPushConstants(PipelineState* layout, uint32_t offset, uint32_t count, const void* data)
+void Dx12CommandList::SetPushConstants(GraphicsPipelineState* layout, uint32_t offset, uint32_t count, const void* data)
 {
 	CmdList->SetGraphicsRoot32BitConstants(0, count / sizeof(float), data, offset / sizeof(float));
 }

@@ -81,7 +81,7 @@ void MeshRenderer::GenerateCommands(FrameData& frameData, RenderPass pass, ViewT
 	if (view == ViewType::PlayerView
 		&& pass == RenderPass::Main)
 	{
-		list->BindPipelineState(data.MeshesPipelineState, false);
+		list->BindGraphicsPipelineState(data.MeshesPipelineState);
 	}
 	else
 	{

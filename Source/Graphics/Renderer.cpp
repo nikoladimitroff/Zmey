@@ -5,7 +5,7 @@
 
 #include <Zmey/Graphics/Features.h>
 
-#include <Zmey/Graphics/Backend/Backend.h>
+#include <Zmey/Graphics/Backend/Device.h>
 #include <Zmey/Graphics/Backend/CommandList.h>
 
 //TODO(alex): remove this
@@ -19,19 +19,9 @@ namespace Graphics
 
 bool RendererInterface::CreateWindowSurface(WindowHandle handle)
 {
-	m_Backend->Initialize(handle);
+	m_Device->Initialize(handle);
 
-	Backend::PipelineStateDesc desc;
-#ifdef USE_DX12
-	desc.VertexShader = Backend::Shader{ Backend::Shaders::Rects::g_VertexShaderMain, sizeof(Backend::Shaders::Rects::g_VertexShaderMain) };
-	desc.PixelShader = Backend::Shader{ Backend::Shaders::Rects::g_PixelShaderMain, sizeof(Backend::Shaders::Rects::g_PixelShaderMain) };
-#else
-	desc.VertexShader = Backend::Shader{ (const unsigned char*)Backend::Shaders::g_MeshVS, Backend::Shaders::g_MeshVSSize };
-	desc.PixelShader = Backend::Shader{ (const unsigned char*)Backend::Shaders::g_MeshPS, Backend::Shaders::g_MeshPSSize };
-#endif
-
-	m_Data.RectsPipelineState = m_Backend->CreatePipelineState(desc);
-
+	Backend::GraphicsPipelineStateDesc desc;
 #ifdef USE_DX12
 	desc.VertexShader = Backend::Shader{ Backend::Shaders::Mesh::g_VertexShaderMain, sizeof(Backend::Shaders::Mesh::g_VertexShaderMain) };
 	desc.PixelShader = Backend::Shader{ Backend::Shaders::Mesh::g_PixelShaderMain, sizeof(Backend::Shaders::Mesh::g_PixelShaderMain) };
@@ -41,15 +31,16 @@ bool RendererInterface::CreateWindowSurface(WindowHandle handle)
 #endif
 	desc.Layout.Elements.push_back(Backend::InputElement{ "POSITION", 0, Backend::InputElementFormat::Float3, 0, 0 });
 	desc.Layout.Elements.push_back(Backend::InputElement{ "NORMAL", 0, Backend::InputElementFormat::Float3, 0, 3 * sizeof(float)});
-	m_Data.MeshesPipelineState = m_Backend->CreatePipelineState(desc);
+	desc.Topology = Backend::PrimitiveTopology::TriangleList;
+	m_Data.MeshesPipelineState = m_Device->CreateGraphicsPipelineState(desc);
 
-	auto swapChainCount = m_Backend->GetSwapChainBuffers();
+	auto swapChainCount = m_Device->GetSwapChainBuffers();
 	m_SwapChainFramebuffers.reserve(swapChainCount);
 	m_CommandLists.reserve(swapChainCount);
 	for (auto i = 0u; i < swapChainCount; ++i)
 	{
-		m_SwapChainFramebuffers.push_back(m_Backend->CreateFramebuffer(m_Backend->GetSwapChainImageView(i)));
-		m_CommandLists.push_back(m_Backend->CreateCommandList());
+		m_SwapChainFramebuffers.push_back(m_Device->CreateFramebuffer(m_Device->GetSwapChainImageView(i)));
+		m_CommandLists.push_back(m_Device->CreateCommandList());
 	}
 
 	return true;
@@ -61,17 +52,16 @@ void RendererInterface::Unitialize()
 
 	for (auto& list : m_CommandLists)
 	{
-		m_Backend->DestroyCommandList(list);
+		m_Device->DestroyCommandList(list);
 	}
 
-	m_Backend->DestroyPipelineState(m_Data.RectsPipelineState);
-	m_Backend->DestroyPipelineState(m_Data.MeshesPipelineState);
+	m_Device->DestroyGraphicsPipelineState(m_Data.MeshesPipelineState);
 	for (auto& rtv : m_SwapChainFramebuffers)
 	{
-		m_Backend->DestroyFramebuffer(rtv);
+		m_Device->DestroyFramebuffer(rtv);
 	}
 
-	m_Backend.reset();
+	m_Device.reset();
 }
 
 void RendererInterface::GatherData(FrameData& frameData, World& world)
@@ -113,17 +103,17 @@ void RendererInterface::GenerateCommands(FrameData& frameData, uint32_t imageInd
 
 	m_CommandLists[imageIndex]->EndRecording();
 
-	m_Backend->SubmitCommandList(m_CommandLists[imageIndex]);
+	m_Device->SubmitCommandList(m_CommandLists[imageIndex]);
 }
 
 void RendererInterface::Present(FrameData& frameData, uint32_t imageIndex)
 {
-	m_Backend->Present(imageIndex);
+	m_Device->Present(imageIndex);
 }
 
 void RendererInterface::RenderFrame(FrameData& frameData)
 {
-	uint32_t imageIndex = m_Backend->AcquireNextSwapChainImage();
+	uint32_t imageIndex = m_Device->AcquireNextSwapChainImage();
 
 	PrepareData(frameData);
 
@@ -140,8 +130,8 @@ bool RendererInterface::CheckIfFrameCompleted(uint64_t frameIndex)
 }
 
 RendererInterface::RendererInterface()
-	: m_Backend(Backend::CreateBackend())
-	, m_Data(m_Backend.get())
+	: m_Device(Backend::CreateBackendDevice())
+	, m_Data(m_Device.get())
 {
 	// Initialize renderer features
 	m_Features.GatherDataPtrs.reserve(2);

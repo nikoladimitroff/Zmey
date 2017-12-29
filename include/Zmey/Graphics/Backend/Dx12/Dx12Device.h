@@ -3,7 +3,8 @@
 #include <Zmey/Config.h>
 #ifdef USE_DX12
 
-#include <Zmey/Graphics/Backend/Backend.h>
+#include <Zmey/Graphics/Backend/Device.h>
+#include <Zmey/Graphics/Backend/Buffer.h>
 
 #include <Zmey/Graphics/Backend/Dx12/Dx12Helpers.h>
 #include <Zmey/Memory/MemoryManagement.h>
@@ -15,7 +16,7 @@ namespace Graphics
 namespace Backend
 {
 
-class Dx12PipelineState : public PipelineState
+class Dx12GraphicsPipelineState : public GraphicsPipelineState
 {
 public:
 	ID3D12PipelineState* PipelineState;
@@ -48,17 +49,15 @@ public:
 	virtual void Unmap() override;
 };
 
-class Dx12Backend : public Backend
+class Dx12Device : public Device
 {
 public:
-	Dx12Backend();
+	Dx12Device();
 
 	virtual void Initialize(WindowHandle windowHandle) override;
 
-	virtual Shader* CreateShader() override;
-	virtual void DestroyShader(Shader* shader) override;
-	virtual PipelineState* CreatePipelineState(const PipelineStateDesc& desc) override;
-	virtual void DestroyPipelineState(PipelineState* state) override;
+	virtual GraphicsPipelineState* CreateGraphicsPipelineState(const GraphicsPipelineStateDesc& desc) override;
+	virtual void DestroyGraphicsPipelineState(GraphicsPipelineState* state) override;
 
 	virtual CommandList* CreateCommandList() override;
 	virtual void DestroyCommandList(CommandList* list) override;
@@ -66,9 +65,6 @@ public:
 
 	virtual Framebuffer* CreateFramebuffer(ImageView* imageView) override;
 	virtual void DestroyFramebuffer(Framebuffer* framebuffer) override;
-
-	virtual ImageView* CreateImageView() override;
-	virtual void DestroyImageView(ImageView* imageView) override;
 
 	virtual Buffer* CreateBuffer(uint32_t size, BufferUsage usage) override;
 	virtual void DestroyBuffer(Buffer* buffer) override;

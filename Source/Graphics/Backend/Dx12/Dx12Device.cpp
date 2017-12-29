@@ -1,4 +1,4 @@
-#include <Zmey/Graphics/Backend/Dx12/Dx12Backend.h>
+#include <Zmey/Graphics/Backend/Dx12/Dx12Device.h>
 
 #ifdef USE_DX12
 
@@ -34,7 +34,7 @@ namespace
 	}
 }
 
-Dx12Backend::Dx12Backend()
+Dx12Device::Dx12Device()
 {
 	UINT dxgiFactoryFlags = 0;
 
@@ -85,7 +85,7 @@ Dx12Backend::Dx12Backend()
 }
 
 
-void Dx12Backend::Initialize(WindowHandle windowHandle)
+void Dx12Device::Initialize(WindowHandle windowHandle)
 {
 	auto scope = TempAllocator::GetTlsAllocator().ScopeNow();
 
@@ -200,17 +200,7 @@ void Dx12Backend::Initialize(WindowHandle windowHandle)
 	}
 }
 
-Shader* Dx12Backend::CreateShader()
-{
-	return nullptr;
-}
-
-void Dx12Backend::DestroyShader(Shader* shader)
-{
-
-}
-
-PipelineState* Dx12Backend::CreatePipelineState(const PipelineStateDesc& psDesc)
+GraphicsPipelineState* Dx12Device::CreateGraphicsPipelineState(const GraphicsPipelineStateDesc& psDesc)
 {
 	TEMP_ALLOCATOR_SCOPE;
 
@@ -294,7 +284,7 @@ PipelineState* Dx12Backend::CreatePipelineState(const PipelineStateDesc& psDesc)
 	desc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
 
 	desc.SampleMask = UINT_MAX;
-	desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+	desc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE; // TODO: get this from desc
 	desc.NumRenderTargets = 1;
 	desc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
 	desc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -303,32 +293,23 @@ PipelineState* Dx12Backend::CreatePipelineState(const PipelineStateDesc& psDesc)
 	ID3D12PipelineState* state;
 	CHECK_SUCCESS(m_Device->CreateGraphicsPipelineState(&desc, IID_PPV_ARGS(&state)));
 
-	auto result = new Dx12PipelineState;
+	auto result = new Dx12GraphicsPipelineState;
+	result->Desc = psDesc;
 	result->PipelineState = state;
 	result->RootSignature = rootSignature;
 
 	return result;
 }
 
-void Dx12Backend::DestroyPipelineState(PipelineState* state)
+void Dx12Device::DestroyGraphicsPipelineState(GraphicsPipelineState* state)
 {
-	auto dx12state = reinterpret_cast<Dx12PipelineState*>(state);
+	auto dx12state = reinterpret_cast<Dx12GraphicsPipelineState*>(state);
 	dx12state->PipelineState->Release();
 	dx12state->RootSignature->Release();
 	delete state;
 }
 
-ImageView* Dx12Backend::CreateImageView()
-{
-	return nullptr;
-}
-
-void Dx12Backend::DestroyImageView(ImageView* imageView)
-{
-
-}
-
-Buffer* Dx12Backend::CreateBuffer(uint32_t size, BufferUsage usage)
+Buffer* Dx12Device::CreateBuffer(uint32_t size, BufferUsage usage)
 {
 	D3D12_HEAP_PROPERTIES heapProperties;
 	heapProperties.Type = D3D12_HEAP_TYPE_UPLOAD;
@@ -367,7 +348,7 @@ Buffer* Dx12Backend::CreateBuffer(uint32_t size, BufferUsage usage)
 	return result;
 }
 
-void Dx12Backend::DestroyBuffer(Buffer* buffer)
+void Dx12Device::DestroyBuffer(Buffer* buffer)
 {
 	reinterpret_cast<Dx12Buffer*>(buffer)->Buffer->Release();
 	delete buffer;
@@ -386,22 +367,22 @@ void Dx12Buffer::Unmap()
 	Buffer->Unmap(0, nullptr);
 }
 
-uint32_t Dx12Backend::GetSwapChainBuffers()
+uint32_t Dx12Device::GetSwapChainBuffers()
 {
 	return uint32_t(m_SwapChainImages.size());
 }
 
-ImageView* Dx12Backend::GetSwapChainImageView(uint32_t index)
+ImageView* Dx12Device::GetSwapChainImageView(uint32_t index)
 {
 	return reinterpret_cast<ImageView*>(&m_SwapChainImages[index]);
 }
 
-uint32_t Dx12Backend::AcquireNextSwapChainImage()
+uint32_t Dx12Device::AcquireNextSwapChainImage()
 {
 	return m_SwapChain->GetCurrentBackBufferIndex();
 }
 
-void Dx12Backend::Present(uint32_t imageIndex)
+void Dx12Device::Present(uint32_t imageIndex)
 {
 	m_SwapChain->Present(1, 0);
 
@@ -419,7 +400,7 @@ void Dx12Backend::Present(uint32_t imageIndex)
 	m_CommandAllocator->Reset();
 }
 
-Framebuffer* Dx12Backend::CreateFramebuffer(ImageView* imageView)
+Framebuffer* Dx12Device::CreateFramebuffer(ImageView* imageView)
 {
 	auto view = reinterpret_cast<SwapChainImage*>(imageView);
 	auto result = new Dx12Framebuffer;
@@ -430,12 +411,12 @@ Framebuffer* Dx12Backend::CreateFramebuffer(ImageView* imageView)
 	return result;
 }
 
-void Dx12Backend::DestroyFramebuffer(Framebuffer* framebuffer)
+void Dx12Device::DestroyFramebuffer(Framebuffer* framebuffer)
 {
 	delete framebuffer;
 }
 
-CommandList* Dx12Backend::CreateCommandList()
+CommandList* Dx12Device::CreateCommandList()
 {
 	ID3D12GraphicsCommandList* list;
 	m_Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_CommandAllocator.Get(), nullptr, IID_PPV_ARGS(&list));
@@ -449,22 +430,22 @@ CommandList* Dx12Backend::CreateCommandList()
 	return result;
 }
 
-void Dx12Backend::DestroyCommandList(CommandList* list)
+void Dx12Device::DestroyCommandList(CommandList* list)
 {
 	reinterpret_cast<Dx12CommandList*>(list)->CmdList->Release();
 	delete list;
 }
 
-void Dx12Backend::SubmitCommandList(CommandList* list)
+void Dx12Device::SubmitCommandList(CommandList* list)
 {
 	ID3D12CommandList* l = reinterpret_cast<Dx12CommandList*>(list)->CmdList;
 	m_GraphicsQueue->ExecuteCommandLists(1, &l);
 }
 
 // TODO(alex): extract to non Dx12 header
-Backend* CreateBackend()
+Device* CreateBackendDevice()
 {
-	return new Dx12Backend;
+	return new Dx12Device;
 }
 
 }

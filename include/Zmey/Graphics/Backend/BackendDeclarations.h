@@ -7,24 +7,22 @@ namespace Graphics
 namespace Backend
 {
 
-class PipelineState;
-class PipelineLayout;
-
+struct GraphicsPipelineState;
 class Framebuffer;
-
-struct Shader;
 
 class CommandList;
 
-class Backend;
+class Device;
 
 class Buffer;
-
 enum class BufferUsage
 {
 	Vertex,
 	Index
 };
+
+class Texture;
+
 
 }
 }

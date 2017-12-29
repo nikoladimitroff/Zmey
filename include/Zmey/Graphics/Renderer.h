@@ -26,16 +26,15 @@ struct FrameData;
 
 struct RendererData
 {
-	RendererData(Backend::Backend* backend)
-		: BufferManager(backend)
+	RendererData(Backend::Device* device)
+		: BufferManager(device)
 	{}
 
 	BufferManager BufferManager;
 	MeshManager MeshManager;
 
 	// TODO(alex): Add PipelineState Manager and remove this
-	Backend::PipelineState* RectsPipelineState;
-	Backend::PipelineState* MeshesPipelineState;
+	Backend::GraphicsPipelineState* MeshesPipelineState;
 };
 
 class RendererInterface
@@ -58,7 +57,7 @@ private:
 	void GenerateCommands(FrameData& frameData, uint32_t imageIndex);
 	void Present(FrameData& frameData, uint32_t imageIndex);
 
-	stl::unique_ptr<Backend::Backend> m_Backend;
+	stl::unique_ptr<Backend::Device> m_Device;
 	// TODO: atomic
 	uint64_t LastCompletedFrame = 0;
 
