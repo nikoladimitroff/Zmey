@@ -2,6 +2,7 @@
 #include <Zmey/Memory/MemoryManagement.h> // For TempAllocator
 #include <Zmey/Graphics/FrameData.h>
 #include <Zmey/Graphics/Renderer.h>
+#include <Zmey/Graphics/RendererGlobals.h>
 
 #include <Zmey/Graphics/Features.h>
 
@@ -9,6 +10,7 @@
 #include <Zmey/Graphics/Backend/CommandList.h>
 
 #include <Zmey/ResourceLoader/DDSLoader.h>
+
 
 //TODO(alex): remove this
 #include <Zmey/Graphics/Backend/Dx12/Dx12Shaders.h>
@@ -18,6 +20,12 @@ namespace Zmey
 {
 namespace Graphics
 {
+
+// Storage for globals
+namespace Globals
+{
+Backend::Device* g_Device;
+}
 
 bool RendererInterface::CreateWindowSurface(WindowHandle handle)
 {
@@ -66,6 +74,32 @@ void RendererInterface::Unitialize()
 	m_Device.reset();
 }
 
+void RendererInterface::UploadTextures()
+{
+	if (m_TextureToUpload.empty())
+	{
+		return;
+	}
+
+	auto uploadList = m_Device->CreateCommandList();
+	uploadList->BeginRecording();
+	for (const auto& texData : m_TextureToUpload)
+	{
+		//TODO: find way not to initialize new loader
+		DDSLoader loader(texData.Data.data(), texData.Data.size());
+
+		auto imageDataSize = loader.GetHeight() * loader.GetWidth() * 4;// TODO: Bytes per pixel for format
+		m_Data.UploadHeap.CopyDataToTexture(uploadList, imageDataSize, loader.GetImageData(), texData.Texture);
+	}
+
+	uploadList->EndRecording();
+	m_Device->SubmitCommandList(uploadList);
+	// TODO: maybe wait for execution
+	m_Device->DestroyCommandList(uploadList);
+
+	m_TextureToUpload.clear();
+}
+
 void RendererInterface::GatherData(FrameData& frameData, World& world)
 {
 	for (auto gatherData : m_Features.GatherDataPtrs)
@@ -76,6 +110,8 @@ void RendererInterface::GatherData(FrameData& frameData, World& world)
 
 void RendererInterface::PrepareData(FrameData& frameData)
 {
+	UploadTextures();
+
 	for (auto prepareData : m_Features.PrepareDataPtrs)
 	{
 		prepareData(frameData, m_Data);
@@ -135,6 +171,8 @@ RendererInterface::RendererInterface()
 	: m_Device(Backend::CreateBackendDevice())
 	, m_Data(m_Device.get())
 {
+	Globals::g_Device = m_Device.get();
+
 	// Initialize renderer features
 	m_Features.GatherDataPtrs.reserve(2);
 	m_Features.PrepareDataPtrs.reserve(2);
@@ -189,11 +227,17 @@ TextureHandle RendererInterface::TextureLoaded(stl::vector<uint8_t>&& data)
 		return TextureHandle(-1);
 	}
 
-	return m_Data.TextureManager.CreateTexture(
+	auto result = m_Data.TextureManager.CreateTexture(
 		loader.GetWidth(),
 		loader.GetHeight(),
-		format,
-		loader.GetImageData());
+		format);
+
+	TextureDataToUpload upload;
+	upload.Data = std::move(data);
+	upload.Texture = m_Data.TextureManager.GetTexture(result);
+	m_TextureToUpload.push_back(std::move(upload));
+
+	return result;
 }
 }
 }

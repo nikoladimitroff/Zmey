@@ -3,6 +3,8 @@
 #ifdef USE_DX12
 
 #include <Zmey/Graphics/Backend/Dx12/Dx12Device.h>
+#include <Zmey/Graphics/Backend/Dx12/Dx12Texture.h>
+#include <Zmey/Graphics/RendererGlobals.h>
 
 namespace Zmey
 {
@@ -74,17 +76,17 @@ void Dx12CommandList::EndRenderPass(Framebuffer* fb)
 
 namespace
 {
-	D3D12_PRIMITIVE_TOPOLOGY ToDx12Topology(PrimitiveTopology topology)
+D3D12_PRIMITIVE_TOPOLOGY ToDx12Topology(PrimitiveTopology topology)
+{
+	switch (topology)
 	{
-		switch (topology)
-		{
-		case PrimitiveTopology::TriangleList:
-			return D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
-		default:
-			NOT_REACHED();
-			return D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
-		}
+	case PrimitiveTopology::TriangleList:
+		return D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	default:
+		NOT_REACHED();
+		return D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
 	}
+}
 }
 
 void Dx12CommandList::BindGraphicsPipelineState(GraphicsPipelineState* state)
@@ -127,6 +129,66 @@ void Dx12CommandList::SetIndexBuffer(const Buffer* ibo)
 	view.Format = DXGI_FORMAT_R32_UINT;
 
 	CmdList->IASetIndexBuffer(&view);
+}
+
+void Dx12CommandList::CopyBufferToTexture(Buffer* buffer, Texture* texture)
+{
+	auto dx12Buffer = reinterpret_cast<Dx12Buffer*>(buffer);
+	auto dx12Texture = reinterpret_cast<Dx12Texture*>(texture);
+
+	{
+		D3D12_RESOURCE_BARRIER barrier;
+		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+		barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+		barrier.Transition.pResource = dx12Texture->Texture;
+		barrier.Transition.StateBefore = dx12Texture->State;
+		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_COPY_DEST;
+		barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+
+		CmdList->ResourceBarrier(1, &barrier);
+	}
+
+	ID3D12Device* device;
+	CmdList->GetDevice(IID_PPV_ARGS(&device));
+
+	D3D12_RESOURCE_DESC desc;
+	desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	desc.Alignment = 0;
+	desc.Width = texture->Width;
+	desc.Height = texture->Height;
+	desc.DepthOrArraySize = 1;
+	desc.MipLevels = 1;
+	desc.Format = PixelFormatToDx12(texture->Format);
+	desc.SampleDesc.Count = 1;
+	desc.SampleDesc.Quality = 0;
+	desc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+	desc.Flags = D3D12_RESOURCE_FLAG_NONE;
+	D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprint;
+	device->GetCopyableFootprints(&desc, 0, 1, 0, &footprint, nullptr, nullptr, nullptr);
+
+	D3D12_TEXTURE_COPY_LOCATION dst;
+	dst.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
+	dst.pResource = dx12Texture->Texture;
+	dst.SubresourceIndex = 0;
+
+	D3D12_TEXTURE_COPY_LOCATION src;
+	src.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
+	src.pResource = dx12Buffer->Buffer;
+	src.PlacedFootprint = footprint;
+
+	CmdList->CopyTextureRegion(&dst, 0, 0, 0, &src, nullptr);
+
+	{
+		D3D12_RESOURCE_BARRIER barrier;
+		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+		barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+		barrier.Transition.pResource = dx12Texture->Texture;
+		barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
+		barrier.Transition.StateAfter = dx12Texture->State;
+		barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+
+		CmdList->ResourceBarrier(1, &barrier);
+	}
 }
 
 }

@@ -27,6 +27,8 @@ public:
 	virtual void SetIndexBuffer(const Buffer* ibo) = 0;
 
 	virtual void SetPushConstants(GraphicsPipelineState* layout, uint32_t offset, uint32_t count, const void* data) = 0;
+
+	virtual void CopyBufferToTexture(Buffer* buffer, Texture* texture) = 0;
 };
 
 }

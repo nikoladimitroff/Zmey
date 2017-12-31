@@ -5,6 +5,7 @@
 #include <Zmey/Graphics/Backend/GraphicsPipelineState.h>
 #include <Zmey/Memory/MemoryManagement.h>
 #include <Zmey/Platform/Platform.h>
+#include <Zmey/Graphics/GraphicsObjects.h>
 
 namespace Zmey
 {
@@ -38,6 +39,9 @@ public:
 
 	virtual Buffer* CreateBuffer(uint32_t size, BufferUsage usage) = 0;
 	virtual void DestroyBuffer(Buffer* buffer) = 0;
+
+	virtual Texture* CreateTexture(uint32_t width, uint32_t height, PixelFormat format) = 0;
+	virtual void DestroyTexture(Texture* texture) = 0;
 
 	virtual uint32_t GetSwapChainBuffers() = 0;
 	virtual ImageView* GetSwapChainImageView(uint32_t index) = 0;

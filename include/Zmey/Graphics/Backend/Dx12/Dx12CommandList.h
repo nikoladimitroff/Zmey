@@ -29,6 +29,7 @@ public:
 	virtual void SetPushConstants(GraphicsPipelineState* layout, uint32_t offset, uint32_t count, const void* data) override;
 	virtual void SetVertexBuffer(const Buffer* vbo, uint32_t vertexStride) override;
 	virtual void SetIndexBuffer(const Buffer* ibo) override;
+	virtual void CopyBufferToTexture(Buffer* buffer, Texture* texture) override;
 
 	ID3D12CommandAllocator* CmdAllocator;
 	ID3D12GraphicsCommandList* CmdList;

@@ -18,24 +18,20 @@ void TextureManager::DestroyResources()
 {
 	for (auto& buff : m_Textures)
 	{
-		//m_Device->DestroyTexture(buff.second);
+		m_Device->DestroyTexture(buff.second);
 	}
 }
 
-TextureHandle TextureManager::CreateTexture(uint32_t width, uint32_t height, PixelFormat format, void* data)
+TextureHandle TextureManager::CreateTexture(uint32_t width, uint32_t height, PixelFormat format)
 {
 	TextureHandle handle = s_TextureNextId++;
-	//auto Texture = m_Device->CreateTexture(size);
+	auto Texture = m_Device->CreateTexture(width, height, format);
 
-	//auto memory = Texture->Map();
-	//memcpy(memory, data, size);
-	//Texture->Unmap();
-
-	//m_Textures[handle] = Texture;
+	m_Textures[handle] = Texture;
 	return handle;
 }
 
-const Backend::Texture* TextureManager::GetTexture(TextureHandle handle) const
+Backend::Texture* TextureManager::GetTexture(TextureHandle handle) const
 {
 	auto findIt = m_Textures.find(handle);
 	ASSERT_RETURN_VALUE(findIt != m_Textures.end(), nullptr);

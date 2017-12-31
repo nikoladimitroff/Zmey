@@ -18,10 +18,11 @@ class Buffer;
 enum class BufferUsage
 {
 	Vertex,
-	Index
+	Index,
+	Copy
 };
 
-class Texture;
+struct Texture;
 
 
 }

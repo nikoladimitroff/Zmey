@@ -7,8 +7,8 @@
 #include <Zmey/Logging.h>
 
 #include <Zmey/Graphics/Backend/Dx12/Dx12Shaders.h>
-
 #include <Zmey/Graphics/Backend/Dx12/Dx12CommandList.h>
+#include <Zmey/Graphics/Backend/Dx12/Dx12Texture.h>
 
 namespace Zmey
 {
@@ -19,19 +19,19 @@ namespace Backend
 
 namespace
 {
-	inline DXGI_FORMAT InputElementFormatToDx12(InputElementFormat format)
+inline DXGI_FORMAT InputElementFormatToDx12(InputElementFormat format)
+{
+	switch (format)
 	{
-		switch (format)
-		{
-		case Zmey::Graphics::Backend::InputElementFormat::Float3:
-			return DXGI_FORMAT_R32G32B32_FLOAT;
-		default:
-			assert(false);
-			break;
-		}
-
-		return DXGI_FORMAT_UNKNOWN;
+	case InputElementFormat::Float3:
+		return DXGI_FORMAT_R32G32B32_FLOAT;
+	default:
+		assert(false);
+		break;
 	}
+
+	return DXGI_FORMAT_UNKNOWN;
+}
 }
 
 Dx12Device::Dx12Device()
@@ -352,6 +352,52 @@ void Dx12Device::DestroyBuffer(Buffer* buffer)
 {
 	reinterpret_cast<Dx12Buffer*>(buffer)->Buffer->Release();
 	delete buffer;
+}
+
+Texture* Dx12Device::CreateTexture(uint32_t width, uint32_t height, PixelFormat format)
+{
+	D3D12_HEAP_PROPERTIES heapProperties;
+	heapProperties.Type = D3D12_HEAP_TYPE_DEFAULT;
+	heapProperties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+	heapProperties.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
+	heapProperties.CreationNodeMask = 0;
+	heapProperties.VisibleNodeMask = 0;
+
+	D3D12_RESOURCE_DESC desc;
+	desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	desc.Alignment = 0;
+	desc.Width = width;
+	desc.Height = height;
+	desc.DepthOrArraySize = 1;
+	desc.MipLevels = 1;
+	desc.Format = PixelFormatToDx12(format);
+	desc.SampleDesc.Count = 1;
+	desc.SampleDesc.Quality = 0;
+	desc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+	desc.Flags = D3D12_RESOURCE_FLAG_NONE;
+
+	ID3D12Resource* texture;
+	CHECK_SUCCESS(m_Device->CreateCommittedResource(
+		&heapProperties,
+		D3D12_HEAP_FLAG_NONE,
+		&desc,
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(&texture)
+	));
+
+	auto result = new Dx12Texture;
+	result->Texture = texture;
+	result->State = D3D12_RESOURCE_STATE_GENERIC_READ;
+	result->Width = width;
+	result->Height = height;
+	result->Format = format;
+	return result;
+}
+
+void Dx12Device::DestroyTexture(Texture* texture)
+{
+	delete texture;
 }
 
 void* Dx12Buffer::Map()

@@ -69,6 +69,9 @@ public:
 	virtual Buffer* CreateBuffer(uint32_t size, BufferUsage usage) override;
 	virtual void DestroyBuffer(Buffer* buffer) override;
 
+	virtual Texture* CreateTexture(uint32_t width, uint32_t height, PixelFormat format) override;
+	virtual void DestroyTexture(Texture* texture) override;
+
 	virtual uint32_t GetSwapChainBuffers() override;
 	virtual ImageView* GetSwapChainImageView(uint32_t index) override;
 

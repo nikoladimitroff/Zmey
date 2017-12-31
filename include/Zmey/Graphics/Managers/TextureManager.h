@@ -16,9 +16,9 @@ public:
 
 	void DestroyResources();
 
-	TextureHandle CreateTexture(uint32_t width, uint32_t height, PixelFormat format, void* data);
+	TextureHandle CreateTexture(uint32_t width, uint32_t height, PixelFormat format);
 
-	const Backend::Texture* GetTexture(TextureHandle handle) const;
+	Backend::Texture* GetTexture(TextureHandle handle) const;
 private:
 	stl::unordered_map<TextureHandle, Backend::Texture*> m_Textures;
 	Backend::Device* m_Device;

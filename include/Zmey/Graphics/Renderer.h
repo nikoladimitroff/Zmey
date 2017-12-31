@@ -10,10 +10,8 @@
 #include <Zmey/Graphics/Managers/BufferManager.h>
 #include <Zmey/Graphics/Managers/TextureManager.h>
 #include <Zmey/Graphics/Managers/MeshManager.h>
-#include <cstdint>
-
-// TODO(alex): remove me
-struct aiScene;
+#include <Zmey/Graphics/Managers/UploadHeap.h>
+#include <stdint.h>
 
 namespace Zmey
 {
@@ -35,6 +33,7 @@ struct RendererData
 	BufferManager BufferManager;
 	TextureManager TextureManager;
 	MeshManager MeshManager;
+	UploadHeap UploadHeap;
 
 	// TODO(alex): Add PipelineState Manager and remove this
 	Backend::GraphicsPipelineState* MeshesPipelineState;
@@ -62,6 +61,8 @@ private:
 	void GenerateCommands(FrameData& frameData, uint32_t imageIndex);
 	void Present(FrameData& frameData, uint32_t imageIndex);
 
+	void UploadTextures();
+
 	stl::unique_ptr<Backend::Device> m_Device;
 	// TODO: atomic
 	uint64_t LastCompletedFrame = 0;
@@ -83,6 +84,13 @@ private:
 	RenderFeatures m_Features;
 
 	RendererData m_Data;
+
+	struct TextureDataToUpload
+	{
+		stl::vector<uint8_t> Data;
+		Backend::Texture* Texture;
+	};
+	stl::vector<TextureDataToUpload> m_TextureToUpload;
 };
 
 }
