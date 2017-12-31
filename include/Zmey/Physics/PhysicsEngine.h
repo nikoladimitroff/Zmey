@@ -84,18 +84,18 @@ private:
 
 	template<typename T>
 	using physx_ptr = stl::unique_ptr<T, PhysxDeleter<T>>;
-	physx_ptr<physx::PxPhysics> m_Physics;
 	physx_ptr<physx::PxFoundation> m_Foundation;
-	physx_ptr<physx::PxScene> m_Scene;
-	physx_ptr<physx::PxDefaultCpuDispatcher> m_DefaultCPUDispatcher;
-	physx_ptr<physx::PxPvd> m_VisualDebugger;
 	physx_ptr<physx::PxPvdTransport> m_Transport;
+	physx_ptr<physx::PxPvd> m_VisualDebugger;
+	physx_ptr<physx::PxPhysics> m_Physics;
+	// TODO: The scene should be part of the world, not the engine
+	physx_ptr<physx::PxScene> m_Scene;
 
 	stl::vector<std::pair<Zmey::Name, CombinedMaterialInfo>> m_Materials;
 
-	stl::unique_ptr<PhysicsAllocator> m_Allocator;
-	stl::unique_ptr<PhysicsErrorReporter> m_ErrorReporter;
-	stl::unique_ptr<PhysicsCpuDispatcher> m_CpuDispatcher;
+	PhysicsAllocator* m_Allocator;
+	PhysicsErrorReporter* m_ErrorReporter;
+	PhysicsCpuDispatcher* m_CpuDispatcher;
 
 	Zmey::World* m_World;
 

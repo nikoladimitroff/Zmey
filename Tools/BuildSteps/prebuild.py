@@ -42,7 +42,11 @@ def run_tools(tools):
             process_handle = subprocess.run(tool_description.cmd, cwd=REPO_ROOT_DIR, timeout=20,
                                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
             print(process_handle.stdout.decode("utf8"))
-            process_handle.check_returncode()
+            try:
+                process_handle.check_returncode()
+            except subprocess.CalledProcessError as err:
+                print(f"Processed failed with return code: {err.returncode}")
+                sys.exit(1)
             data_storage[tool_description.directory] = time.asctime()
 
     with open(prebuild_data_path, mode="w", encoding="utf8") as prebuild_data_file:
@@ -61,13 +65,18 @@ def main():
                         help="the path to the engine's build directory")
     parser.add_argument("--game", dest="isgame", default=False, action="store_true",
                         help="run the tools for the game instead of the tools for the engine")
+    parser.add_argument("--configuration", dest="configuration", required=True, action="store",
+                        choices=["Debug", "Release"],
+                        help="run the tools for the game instead of the tools for the engine")
 
     args = parser.parse_args()
     if not args.isgame:
         # Copy all dependencies to the output
         print("Copying third party dependencies to the output directory")
         thirdparties = path.join(REPO_ROOT_DIR, 'ThirdParty/binx64')
+        thirdparties_per_config = path.join(REPO_ROOT_DIR, 'ThirdParty/binx64', args.configuration)
         dir_util.copy_tree(thirdparties, args.output, update=1)
+        dir_util.copy_tree(thirdparties_per_config, args.output, update=1)
 
     shaders_dir = path.join(REPO_ROOT_DIR, "Source/Graphics/Shaders/Source")
     shader_compiler = path.join(args.output, "ShaderCompiler.exe")

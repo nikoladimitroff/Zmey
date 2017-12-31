@@ -74,7 +74,7 @@
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)ThirdParty\libx64;$(SolutionDir)ThirdParty\libx64\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>PxPvdSDK_x64.lib;PhysX3Extensions.lib;PhysX3_x64.lib;PxFoundation_x64.lib;vulkan-1.lib;assimp-vc140-mt.lib;d3d12.lib;dxgi.lib;Xinput.lib;easy_profiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>PxPvdSDKDEBUG_x64.lib;PhysX3Extensions.lib;PhysX3DEBUG_x64.lib;PxFoundationDEBUG_x64.lib;vulkan-1.lib;assimp-vc140-mt.lib;d3d12.lib;dxgi.lib;Xinput.lib;easy_profiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent />
@@ -84,7 +84,7 @@
     <CustomBuildStep>
       <Outputs>nonexistent-file-path-to-force-visual-studio-to-run-this-build-step</Outputs>
       <Message>Processing game assets</Message>
-      <Command>python $(SOLUTIONDIR)Tools/BuildSteps/prebuild.py --output $(OutputPath)</Command>
+      <Command>python $(SOLUTIONDIR)Tools/BuildSteps/prebuild.py --output $(OutputPath) --configuration $(Configuration)</Command>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -118,7 +118,7 @@
     <CustomBuildStep>
       <Outputs>nonexistent-file-path-to-force-visual-studio-to-run-this-build-step</Outputs>
       <Message>Processing game assets</Message>
-      <Command>python $(SOLUTIONDIR)Tools/BuildSteps/prebuild.py --output $(OutputPath)</Command>
+      <Command>python $(SOLUTIONDIR)Tools/BuildSteps/prebuild.py --output $(OutputPath) --configuration $(Configuration)</Command>
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>

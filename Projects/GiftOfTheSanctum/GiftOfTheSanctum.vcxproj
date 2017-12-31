@@ -71,7 +71,7 @@
     <PreBuildEvent />
     <CustomBuildStep />
     <CustomBuildStep>
-      <Command>python $(SOLUTIONDIR)Tools/BuildSteps/prebuild.py --output $(OutputPath) --game</Command>
+      <Command>python $(SOLUTIONDIR)Tools/BuildSteps/prebuild.py --output $(OutputPath) --configuration $(Configuration) --game</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Message>Processing game assets</Message>
@@ -102,7 +102,7 @@
     <PreBuildEvent />
     <CustomBuildStep />
     <CustomBuildStep>
-      <Command>python $(SOLUTIONDIR)Tools/BuildSteps/prebuild.py --output $(OutputPath) --game</Command>
+      <Command>python $(SOLUTIONDIR)Tools/BuildSteps/prebuild.py --output $(OutputPath) --configuration $(Configuration) --game</Command>
     </CustomBuildStep>
     <CustomBuildStep>
       <Message>Processing game assets</Message>

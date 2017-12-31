@@ -4,6 +4,7 @@
 #include <PhysX/PxPhysicsAPI.h>
 #include <PhysXShared/foundation/PxAllocatorCallback.h>
 #include <PhysX/common/PxTolerancesScale.h>
+#include <PhysX/pvd/PxPvdSceneClient.h>
 
 #include <Zmey/Logging.h>
 #include <Zmey/Modules.h>
@@ -110,7 +111,7 @@ PhysicsEngine::PhysicsEngine()
 	physx::PxSceneDesc sceneDesc(m_Physics->getTolerancesScale());
 	sceneDesc.gravity = physx::PxVec3(0.0f, -9.81f, 0.0f);
 
-	sceneDesc.cpuDispatcher = m_CpuDispatcher.get();
+	sceneDesc.cpuDispatcher = m_CpuDispatcher;
 	sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
 
 	sceneDesc.frictionType = physx::PxFrictionType::eTWO_DIRECTIONAL;
@@ -125,12 +126,18 @@ PhysicsEngine::PhysicsEngine()
 	m_Scene.reset(m_Physics->createScene(sceneDesc));
 	ASSERT_FATAL(m_Scene);
 
-	{
-		physx::PxSceneWriteLock scopedLock(*m_Scene);
-		m_Scene->setVisualizationParameter(physx::PxVisualizationParameter::eSCALE, 1.f);
-		m_Scene->setVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_SHAPES, 1.0f);
-	}
+	physx::PxSceneWriteLock scopedLock(*m_Scene);
+	m_Scene->setVisualizationParameter(physx::PxVisualizationParameter::eSCALE, 1.f);
+	m_Scene->setVisualizationParameter(physx::PxVisualizationParameter::eCOLLISION_SHAPES, 1.0f);
 	LOG(Info, Physics, "Physics system initialized!");
+
+	physx::PxPvdSceneClient* pvdClient = m_Scene->getScenePvdClient();
+	if (pvdClient)
+	{
+		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONSTRAINTS, true);
+		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
+		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
+	}
 }
 
 PhysicsEngine::~PhysicsEngine()
@@ -138,14 +145,16 @@ PhysicsEngine::~PhysicsEngine()
 
 void PhysicsEngine::CreateDebuggerConnection()
 {
-#ifndef NDEBUG
+#ifdef _DEBUG
 	//The normal way to connect to pvd.  PVD needs to be running at the time this function is called.
 	//We don't worry about the return value because we are already registered as a listener for connections
 	//and thus our onPvdConnected call will take care of setting up our basic connection state.
 	char ip[] = "127.0.0.1";
 	m_Transport.reset(physx::PxDefaultPvdSocketTransportCreate(ip, 5425, 1000));
 	if (!m_Transport)
+	{
 		return;
+	}
 
 	//Use these flags for a clean profile trace with minimal overhead
 	physx::PxPvdInstrumentationFlags flags = physx::PxPvdInstrumentationFlag::eALL;
@@ -167,7 +176,10 @@ void PhysicsEngine::Simulate(float deltaTime)
 	TEMP_ALLOCATOR_SCOPE;
 	uint32_t scratchMemorySize = 1024 * 1024; // 1mb
 	tmp::unique_array<uint8_t> scratchMemory = tmp::make_unique_array<uint8_t>(scratchMemorySize);
-	m_Scene->simulate(PhysicsEngine::TimeStep, nullptr, scratchMemory.get(), scratchMemorySize);
+	{
+		physx::PxSceneWriteLock writeLock(*m_Scene);
+		m_Scene->simulate(PhysicsEngine::TimeStep, nullptr, scratchMemory.get(), scratchMemorySize);
+	}
 	m_HasIssuedSimulate = true;
 }
 
@@ -200,9 +212,13 @@ void PhysicsEngine::FetchResults()
 		return;
 	}
 
-	physx::PxU32 error(physx::PxErrorCode::eNO_ERROR);
-	m_Scene->fetchResults(true, &error);
-	ASSERT(error == physx::PxErrorCode::eNO_ERROR);
+	{
+		physx::PxSceneWriteLock writeLock(*m_Scene);
+
+		physx::PxU32 error(physx::PxErrorCode::eNO_ERROR);
+		m_Scene->fetchResults(true, &error);
+		ASSERT(error == physx::PxErrorCode::eNO_ERROR);
+	}
 	m_HasIssuedSimulate = false;
 
 	physx::PxU32 activeTransformsCount = -1;
