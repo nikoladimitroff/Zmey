@@ -22,6 +22,9 @@ cbuffer VertexPushs : register(b0) PUSH_CONSTANT
 	float3 EyePosition;
 };
 
+Texture2D txBuffer : register(t0);
+SamplerState txBufferSampler : register(s0);
+
 VertexOutput VertexShaderMain(VertexInput input)
 {
 	VertexOutput result;
@@ -36,6 +39,12 @@ float4 PixelShaderMain(VertexOutput input) : SV_TARGET
 {
 	// Simple diffuse lighting
 	float4 color = float4(Color, 1.0);
+
+	// TEST CODE:
+	float maxWidth = 1280;
+	float maxHeight = 720;
+	float4 texColor = txBuffer.Sample(txBufferSampler, float2(input.Position.x / maxWidth, input.Position.y / maxHeight));
+	color = color * texColor;
 
 	// diffuse
 	float diffuseFactor = saturate(dot(input.Normal, -LightDirection));

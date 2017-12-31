@@ -30,6 +30,7 @@ struct FrameData
 	Matrix4x4 ViewMatrix;
 	unsigned Width;
 	unsigned Height;
+	TextureHandle TextureToUse; // TODO: remove me
 
 	// Data for render
 	stl::vector<MeshHandle> MeshHandles;

@@ -211,12 +211,39 @@ GraphicsPipelineState* Dx12Device::CreateGraphicsPipelineState(const GraphicsPip
 	rootParam.Constants.RegisterSpace = 0;
 	rootParam.Constants.ShaderRegister = 0;
 
+	D3D12_DESCRIPTOR_RANGE range;
+	range.RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
+	range.NumDescriptors = 1;
+	range.BaseShaderRegister = 0;
+	range.RegisterSpace = 0;
+	range.OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+
+	D3D12_ROOT_PARAMETER rootParam2;
+	rootParam2.ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	rootParam2.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
+	rootParam2.DescriptorTable.NumDescriptorRanges = 1;
+	rootParam2.DescriptorTable.pDescriptorRanges = &range;
+
+	D3D12_STATIC_SAMPLER_DESC sampler;
+	sampler.Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
+	sampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+	sampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+	sampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+	sampler.MipLODBias = 0;
+	sampler.MaxAnisotropy = 0;
+	sampler.MinLOD = 0;
+	sampler.MaxLOD = 0;
+	sampler.ShaderRegister = 0;
+	sampler.RegisterSpace = 0;
+	sampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+
+	D3D12_ROOT_PARAMETER params[2] = { rootParam, rootParam2 };
 	D3D12_ROOT_SIGNATURE_DESC rootSignatureDesc;
 	rootSignatureDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
-	rootSignatureDesc.NumParameters = 1;
-	rootSignatureDesc.pParameters = &rootParam;
-	rootSignatureDesc.NumStaticSamplers = 0;
-	rootSignatureDesc.pStaticSamplers = nullptr;
+	rootSignatureDesc.NumParameters = 2;
+	rootSignatureDesc.pParameters = params;
+	rootSignatureDesc.NumStaticSamplers = 1;
+	rootSignatureDesc.pStaticSamplers = &sampler;
 
 	ComPtr<ID3DBlob> signature;
 	ComPtr<ID3DBlob> error;
@@ -469,22 +496,29 @@ CommandList* Dx12Device::CreateCommandList()
 
 	list->Close();
 
+	D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
+	srvHeapDesc.NumDescriptors = 1024; // TODO: This is totally random
+	srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+	srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+	ID3D12DescriptorHeap* srvHeap;
+	CHECK_SUCCESS(m_Device->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&srvHeap)));
+
 	auto result = new Dx12CommandList;
 	result->CmdList = list;
 	result->CmdAllocator = m_CommandAllocator.Get();
+	result->SRVHeap = srvHeap;
 
 	return result;
 }
 
 void Dx12Device::DestroyCommandList(CommandList* list)
 {
-	reinterpret_cast<Dx12CommandList*>(list)->CmdList->Release();
 	delete list;
 }
 
 void Dx12Device::SubmitCommandList(CommandList* list)
 {
-	ID3D12CommandList* l = reinterpret_cast<Dx12CommandList*>(list)->CmdList;
+	ID3D12CommandList* l = reinterpret_cast<Dx12CommandList*>(list)->CmdList.Get();
 	m_GraphicsQueue->ExecuteCommandLists(1, &l);
 }
 

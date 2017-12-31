@@ -16,6 +16,9 @@ namespace Backend
 void Dx12CommandList::BeginRecording()
 {
 	CmdList->Reset(CmdAllocator, nullptr);
+	NextSlot = 0;
+
+	CmdList->SetDescriptorHeaps(1, SRVHeap.GetAddressOf());
 }
 
 void Dx12CommandList::EndRecording()
@@ -107,6 +110,30 @@ void Dx12CommandList::SetPushConstants(GraphicsPipelineState* layout, uint32_t o
 	CmdList->SetGraphicsRoot32BitConstants(0, count / sizeof(float), data, offset / sizeof(float));
 }
 
+void Dx12CommandList::SetShaderResourceView(GraphicsPipelineState* layout, Texture* texture)
+{
+	assert(NextSlot < 1024); // TODO: This is the random number for size of the heap for now
+	ID3D12Device* device;
+	CmdList->GetDevice(IID_PPV_ARGS(&device));
+
+	D3D12_SHADER_RESOURCE_VIEW_DESC desc{};
+	desc.Format = PixelFormatToDx12(texture->Format);
+	desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	desc.Texture2D.MipLevels = 1;
+	desc.Texture2D.MostDetailedMip = 0;
+
+	D3D12_CPU_DESCRIPTOR_HANDLE handle;
+	handle.ptr = SRVHeap->GetCPUDescriptorHandleForHeapStart().ptr + NextSlot * device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle;
+	gpuHandle.ptr = SRVHeap->GetGPUDescriptorHandleForHeapStart().ptr + NextSlot * device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	++NextSlot;
+
+	device->CreateShaderResourceView(reinterpret_cast<Dx12Texture*>(texture)->Texture.Get(), &desc, handle);
+
+	CmdList->SetGraphicsRootDescriptorTable(1, gpuHandle);
+}
+
 void Dx12CommandList::SetVertexBuffer(const Buffer* vbo, uint32_t vertexStride)
 {
 	auto dx12Buffer = reinterpret_cast<const Dx12Buffer*>(vbo);
@@ -140,7 +167,7 @@ void Dx12CommandList::CopyBufferToTexture(Buffer* buffer, Texture* texture)
 		D3D12_RESOURCE_BARRIER barrier;
 		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 		barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-		barrier.Transition.pResource = dx12Texture->Texture;
+		barrier.Transition.pResource = dx12Texture->Texture.Get();
 		barrier.Transition.StateBefore = dx12Texture->State;
 		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_COPY_DEST;
 		barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
@@ -168,7 +195,7 @@ void Dx12CommandList::CopyBufferToTexture(Buffer* buffer, Texture* texture)
 
 	D3D12_TEXTURE_COPY_LOCATION dst;
 	dst.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
-	dst.pResource = dx12Texture->Texture;
+	dst.pResource = dx12Texture->Texture.Get();
 	dst.SubresourceIndex = 0;
 
 	D3D12_TEXTURE_COPY_LOCATION src;
@@ -182,7 +209,7 @@ void Dx12CommandList::CopyBufferToTexture(Buffer* buffer, Texture* texture)
 		D3D12_RESOURCE_BARRIER barrier;
 		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
 		barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-		barrier.Transition.pResource = dx12Texture->Texture;
+		barrier.Transition.pResource = dx12Texture->Texture.Get();
 		barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
 		barrier.Transition.StateAfter = dx12Texture->State;
 		barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;

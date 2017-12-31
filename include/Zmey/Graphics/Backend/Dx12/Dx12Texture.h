@@ -14,13 +14,8 @@ namespace Backend
 class Dx12Texture : public Texture
 {
 public:
-	ID3D12Resource* Texture;
+	ComPtr<ID3D12Resource> Texture;
 	D3D12_RESOURCE_STATES State;
-
-	~Dx12Texture()
-	{
-		Texture->Release();
-	}
 };
 }
 }
