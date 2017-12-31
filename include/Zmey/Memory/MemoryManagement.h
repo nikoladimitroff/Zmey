@@ -37,10 +37,10 @@ inline void ZmeyFree(void* ptr)
 }
 
 extern Zmey::StaticDataAllocator<1024 * 8> GStaticDataAllocator;
-template<typename T>
-inline T* StaticAlloc()
+template<typename T, typename... Args>
+inline T* StaticAlloc(Args&&... args)
 {
-	return new (GStaticDataAllocator.Malloc(sizeof(T), alignof(T))) T();
+	return new (GStaticDataAllocator.Malloc(sizeof(T), alignof(T))) T(std::forward<Args>(args)...);
 }
 
 constexpr size_t tls_TempAllocatorSize = 4 * 1024 * 1024; // 4MB
@@ -271,4 +271,49 @@ namespace pool
 	template<typename T, unsigned short ObjectCount = 256>
 	using vector = std::vector<T, StlAllocatorTemplate<PoolAllocator<T, ObjectCount>, T>>;
 }
+// Namespace for types which are supposed to hold global variables
+namespace global
+{
+	template<typename Base>
+	struct StdDeleter
+	{
+		StdDeleter() {}
+		template<typename Derived>
+		StdDeleter(const StdDeleter<Derived>&)
+		{
+			static_assert(std::is_base_of<Base, Derived>::value, "Only inherited casting is allowed");
+			static_assert(std::has_virtual_destructor<Base>::value, "Type needs virtual destructor!");
+		}
+		void operator()(Base* ptr)
+		{
+			ptr->~Base();
+			// Don't cleanup memory
+		}
+	};
+	template<typename Base>
+	struct StdDeleterArray
+	{
+		StdDeleterArray() {}
+		template<typename Derived>
+		StdDeleterArray(const StdDeleterArray<Derived>&)
+		{
+			static_assert(std::is_base_of<Base, Derived>::value, "Only inherited casting is allowed");
+			static_assert(std::has_virtual_destructor<Base>::value, "Type needs virtual destructor!");
+		}
+		void operator()(Base* ptr)
+		{
+			ZmeyDestroyArray(ptr);
+		}
+	};
+	template<typename T>
+	// Disallow static arrays
+	using unique_ptr = std::unique_ptr<std::enable_if_t<!std::is_array_v<T>, T>, StdDeleter<T>>;
+	template<typename T, typename... Args>
+	inline unique_ptr<T> make_unique(Args&&... args)
+	{
+		auto ptr = StaticAlloc<T>(std::forward<Args>(args)...);
+		return unique_ptr<T>(ptr);
+	}
+}
+
 }

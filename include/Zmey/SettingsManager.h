@@ -5,7 +5,12 @@
 
 namespace Zmey
 {
-struct SettingsInternalParserHandle;
+struct SettingsInternalParserHandle
+{
+	virtual ~SettingsInternalParserHandle()
+	{}
+};
+struct SettingsInternalParserHandleImpl;
 class SettingsHandle
 {
 public:
@@ -29,7 +34,7 @@ public:
 	void DeleteValue(const stl::string& key);
 private:
 	const stl::string m_Section;
-	SettingsInternalParserHandle& m_Settings;
+	SettingsInternalParserHandleImpl& m_Settings;
 	class SettingsManager& m_Owner;
 };
 
@@ -41,7 +46,7 @@ public:
 private:
 	void OnSettingsClosed(const stl::string& settingsName);
 	stl::string m_FilePath;
-	std::unique_ptr<SettingsInternalParserHandle> m_Serializer;
+	stl::unique_ptr<SettingsInternalParserHandle> m_Serializer;
 	stl::unordered_map<stl::string, stl::shared_ptr<SettingsHandle>> m_OpenSettingsMap;
 	friend class SettingsHandle;
 };

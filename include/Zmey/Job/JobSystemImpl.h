@@ -29,9 +29,12 @@ public:
 		m_Quit.store(true);
 	}
 
-	virtual void Destroy() override
+	virtual void WaitForCompletion() override
 	{
-		delete this;
+		for (auto& thread : m_WorkerThreads)
+		{
+			thread.join();
+		}
 	}
 private:
 	void WorkerThreadEntryPoint();

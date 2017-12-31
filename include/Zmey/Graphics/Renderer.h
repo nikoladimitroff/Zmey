@@ -43,9 +43,9 @@ class RendererInterface
 {
 public:
 	RendererInterface();
+	~RendererInterface();
 
 	bool CreateWindowSurface(WindowHandle handle);
-	void Unitialize();
 
 	void RenderFrame(FrameData& frameData);
 	void GatherData(FrameData& frameData, World& world);

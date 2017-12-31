@@ -67,8 +67,8 @@ void MeshRenderer::GatherData(FrameData& frameData, World& world)
 	}
 
 	Job::Counter counter;
-	Modules::JobSystem->RunJobs("Mesh Gather Data", jobs.data(), uint32_t(jobs.size()), &counter);
-	Modules::JobSystem->WaitForCounter(&counter, 0);
+	Modules.JobSystem.RunJobs("Mesh Gather Data", jobs.data(), uint32_t(jobs.size()), &counter);
+	Modules.JobSystem.WaitForCounter(&counter, 0);
 }
 
 void MeshRenderer::PrepareData(FrameData& frameData, RendererData& data)

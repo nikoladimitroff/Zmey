@@ -84,13 +84,13 @@ void ResourceLoader::WaitForAllResources(const tmp::vector<Zmey::Name>& resource
 
 void OnResourceMeshLoaded(ResourceLoader* loader, Zmey::Name name, stl::vector<uint8_t>&& data)
 {
-	auto handle = Modules::Renderer->MeshLoaded(std::move(data));
+	auto handle = Modules.Renderer.MeshLoaded(std::move(data));
 	loader->m_Meshes.push_back(std::make_pair(name, handle));
 	FORMAT_LOG(Info, ResourceLoader, "Just loaded asset for name: %llu", static_cast<uint64_t>(name));
 }
 void OnResourceTextureLoaded(ResourceLoader* loader, Zmey::Name name, stl::vector<uint8_t>&& data)
 {
-	auto handle = Modules::Renderer->TextureLoaded(std::move(data));
+	auto handle = Modules.Renderer.TextureLoaded(std::move(data));
 	loader->m_Textures.push_back(std::make_pair(name, handle));
 	FORMAT_LOG(Info, ResourceLoader, "Just loaded asset for name: %llu", static_cast<uint64_t>(name));
 }

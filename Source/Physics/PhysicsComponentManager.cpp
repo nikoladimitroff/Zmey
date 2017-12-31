@@ -17,7 +17,7 @@ void PhysicsComponentManager::Simulate(float deltaTime)
 
 void PhysicsComponentManager::InitializeFromBlob(const tmp::vector<EntityId>& entities, Zmey::MemoryInputStream& stream)
 {
-	auto& physEngine = *Zmey::Modules::PhysicsEngine;
+	auto& physEngine = Zmey::Modules.PhysicsEngine;
 	physEngine.SetWorld(GetWorld());
 
 	Zmey::Physics::PhysicsMaterialDescription defaultMat;

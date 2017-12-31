@@ -5,16 +5,16 @@
 
 namespace Zmey
 {
-struct SettingsInternalParserHandle
+struct SettingsInternalParserHandleImpl : public SettingsInternalParserHandle
 {
-	SettingsInternalParserHandle()
+	SettingsInternalParserHandleImpl()
 		: SimpleIni(true, true, true)
 	{}
 	CSimpleIniCaseA SimpleIni;
 };
 SettingsHandle::SettingsHandle(SettingsInternalParserHandle& internalHandle, const stl::string& section, class SettingsManager& owner)
 	: m_Section(section)
-	, m_Settings(internalHandle)
+	, m_Settings(static_cast<SettingsInternalParserHandleImpl&>(internalHandle))
 	, m_Owner(owner)
 {}
 SettingsHandle::~SettingsHandle()
@@ -77,8 +77,8 @@ void SettingsHandle::DeleteValue(const stl::string& key)
 
 SettingsManager::SettingsManager()
 {
-	m_Serializer.reset(new SettingsInternalParserHandle());
-	m_Serializer->SimpleIni.LoadFile("zmeyconfig.ini");
+	m_Serializer.reset(new SettingsInternalParserHandleImpl());
+	static_cast<SettingsInternalParserHandleImpl*>(m_Serializer.get())->SimpleIni.LoadFile("zmeyconfig.ini");
 }
 stl::shared_ptr<SettingsHandle> SettingsManager::DataFor(const stl::string& settingName)
 {

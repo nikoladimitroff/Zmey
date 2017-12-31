@@ -75,7 +75,7 @@ public:
 	virtual void submitTask(physx::PxBaseTask& task) override
 	{
 		Job::JobDecl job{ CPUJobEntryPoint, &task };
-		Zmey::Modules::JobSystem->RunJobs("PhysX CPU Task", &job, 1, nullptr);
+		Zmey::Modules.JobSystem.RunJobs("PhysX CPU Task", &job, 1, nullptr);
 	}
 
 	virtual uint32_t getWorkerCount() const override
@@ -132,6 +132,9 @@ PhysicsEngine::PhysicsEngine()
 	}
 	LOG(Info, Physics, "Physics system initialized!");
 }
+
+PhysicsEngine::~PhysicsEngine()
+{}
 
 void PhysicsEngine::CreateDebuggerConnection()
 {

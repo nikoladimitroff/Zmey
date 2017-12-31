@@ -199,7 +199,7 @@ InputController::InputController()
 {
 	auto tempScope = TempAllocator::GetTlsAllocator().ScopeNow();
 
-	auto settings = Zmey::Modules::SettingsManager->DataFor("InputController");
+	auto settings = Zmey::Modules.SettingsManager.DataFor("InputController");
 	auto actions = settings->ReadValue("Actions");
 	for (const tmp::string& actionCommands : actions)
 	{

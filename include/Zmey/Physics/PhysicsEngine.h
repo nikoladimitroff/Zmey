@@ -50,6 +50,7 @@ class PhysicsEngine
 {
 public:
 	PhysicsEngine();
+	~PhysicsEngine();
 
 	using GeometryPtr = stl::unique_ptr<Geometry, stl::StdDestructorlessDeleter<Geometry>>;
 	GeometryPtr CreateBoxGeometry(float width, float height, float depth) const;

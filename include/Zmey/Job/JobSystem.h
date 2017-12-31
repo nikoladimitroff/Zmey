@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Zmey/Config.h>
+#include <Zmey/Memory/MemoryManagement.h>
 
 #include <inttypes.h>
 #include <atomic>
@@ -30,6 +31,8 @@ struct Counter
 class IJobSystem
 {
 public:
+	virtual ~IJobSystem()
+	{}
 	// Can be called from anywhere
 	virtual void RunJobs(const char* name, JobDecl* jobs, uint32_t numJobs, Counter* counter = nullptr) = 0;
 
@@ -42,9 +45,9 @@ public:
 	virtual void Quit() = 0;
 
 	// Waits for all threads to finish
-	virtual void Destroy() = 0;
+	virtual void WaitForCompletion() = 0;
 };
 
-IJobSystem* CreateJobSystem(uint32_t numWorkerThreads, uint32_t numFibers, uint32_t fiberStackSize);
+global::unique_ptr<IJobSystem> CreateJobSystem(uint32_t numWorkerThreads, uint32_t numFibers, uint32_t fiberStackSize);
 }
 }

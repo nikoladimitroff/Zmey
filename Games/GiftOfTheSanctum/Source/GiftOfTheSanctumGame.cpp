@@ -23,14 +23,14 @@ float NullifyNearZero(float value)
 
 Zmey::Name GiftOfTheSanctumGame::LoadResources()
 {
-	m_WorldName = Zmey::Modules::ResourceLoader->LoadResource("IncineratedDataCache/testworld.worldbin");
+	m_WorldName = Zmey::Modules.ResourceLoader.LoadResource("IncineratedDataCache/testworld.worldbin");
 	return m_WorldName;
 }
 
 void GiftOfTheSanctumGame::InitializePlayerController(unsigned index)
 {
 	{
-		Zmey::Modules::InputController->AddListenerForAction(Zmey::Name("WalkX"), index, [this, index](float axisValue)
+		Zmey::Modules.InputController.AddListenerForAction(Zmey::Name("WalkX"), index, [this, index](float axisValue)
 		{
 			auto transform = GetWorld()->GetManager<Zmey::Components::TransformManager>().Lookup(m_Players[index]);
 			transform.Position().x += NullifyNearZero(axisValue);
@@ -38,7 +38,7 @@ void GiftOfTheSanctumGame::InitializePlayerController(unsigned index)
 	}
 
 	{
-		Zmey::Modules::InputController->AddListenerForAction(Zmey::Name("WalkZ"), index, [this, index](float axisValue)
+		Zmey::Modules.InputController.AddListenerForAction(Zmey::Name("WalkZ"), index, [this, index](float axisValue)
 		{
 			auto transform = GetWorld()->GetManager<Zmey::Components::TransformManager>().Lookup(m_Players[index]);
 			transform.Position().y += NullifyNearZero(axisValue);
@@ -46,7 +46,7 @@ void GiftOfTheSanctumGame::InitializePlayerController(unsigned index)
 	}
 
 	{
-		Zmey::Modules::InputController->AddListenerForAction(Zmey::Name("Cast"), index, [this, index](float axisValue)
+		Zmey::Modules.InputController.AddListenerForAction(Zmey::Name("Cast"), index, [this, index](float axisValue)
 		{
 			CastSpell(index);
 		});

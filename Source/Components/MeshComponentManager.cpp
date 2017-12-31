@@ -51,8 +51,8 @@ void MeshComponentManager::InitializeFromBlob(const tmp::vector<EntityId>& entit
 	{
 		Zmey::Name name;
 		stream >> name;
-		ASSERT(Zmey::Modules::ResourceLoader->IsResourceReady(name));
-		Graphics::MeshHandle meshHandle = *Zmey::Modules::ResourceLoader->AsMeshHandle(name);
+		ASSERT(Zmey::Modules.ResourceLoader.IsResourceReady(name));
+		Graphics::MeshHandle meshHandle = *Zmey::Modules.ResourceLoader.AsMeshHandle(name);
 		m_EntityToIndex[entities[i]] = uint32_t(m_Meshes.size());
 		m_Meshes.push_back(meshHandle);
 	}

@@ -44,17 +44,14 @@ void SetThreadName(const char* thread)
 
 thread_local JobSystemImpl::WorkerThreadData JobSystemImpl::tlsWorkerThreadData;
 
-IJobSystem* CreateJobSystem(uint32_t numWorkerThreads, uint32_t numFibers, uint32_t fiberStackSize)
+global::unique_ptr<IJobSystem> CreateJobSystem(uint32_t numWorkerThreads, uint32_t numFibers, uint32_t fiberStackSize)
 {
-	return new JobSystemImpl(numWorkerThreads, numFibers, fiberStackSize);
+	return global::make_unique<JobSystemImpl>(numWorkerThreads, numFibers, fiberStackSize);
 }
 
 JobSystemImpl::~JobSystemImpl()
 {
-	for (auto& thread : m_WorkerThreads)
-	{
-		thread.join();
-	}
+	WaitForCompletion();
 
 	for (auto& fiber : m_Fibers)
 	{

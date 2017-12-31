@@ -47,12 +47,12 @@ void World::InitializeFromBuffer(const uint8_t* buffer, size_t size)
 			classNames.push_back(Zmey::Name(withoutExtension));
 			classPaths.push_back(resourcePath);
 		}
-		dependentResources.push_back(Zmey::Modules::ResourceLoader->LoadResource(resourcePath));
+		dependentResources.push_back(Zmey::Modules.ResourceLoader.LoadResource(resourcePath));
 	}
-	Zmey::Modules::ResourceLoader->WaitForAllResources(dependentResources);
+	Zmey::Modules.ResourceLoader.WaitForAllResources(dependentResources);
 	for (auto i = 0; i < classNames.size(); ++i)
 	{
-		auto buffer = Zmey::Modules::ResourceLoader->AsBuffer(classPaths[i]);
+		auto buffer = Zmey::Modules.ResourceLoader.AsBuffer(classPaths[i]);
 		AddClassToRegistry(classNames[i], buffer->data(), buffer-> size());
 	}
 	// Read entities

@@ -67,7 +67,7 @@ EngineLoop::EngineLoop(Game* game)
 {
 	Zmey::GAllocator = StaticAlloc<MallocAllocator>();
 	Zmey::GLogHandler = StaticAlloc<StdOutLogHandler>();
-	Zmey::Modules::Initialize();
+	Zmey::Modules.Initialize();
 	PROFILE_INITIALIZE;
 }
 
@@ -80,9 +80,9 @@ void EngineLoop::RunJobEntryPoint(void* data)
 void EngineLoop::Run()
 {
 	Job::JobDecl runJob{ RunJobEntryPoint, this };
-	Zmey::Modules::JobSystem->RunJobs("Main Scheduler Loop", &runJob, 1, nullptr);
-	// TODO: This is needed so we wait for all jobs to finish. Change to something better API wise
-	Zmey::Modules::JobSystem->Destroy();
+	Zmey::Modules.JobSystem.RunJobs("Main Scheduler Loop", &runJob, 1, nullptr);
+	Zmey::Modules.JobSystem.WaitForCompletion();
+	Zmey::Modules.Uninitialize();
 	profiler::dumpBlocksToFile("test_profile.prof");
 }
 
@@ -98,13 +98,13 @@ struct SimulateData
 void SimulateFrame(void* data)
 {
 	auto simulateData = (SimulateData*)data;
-	Modules::PhysicsEngine->Simulate(simulateData->DeltaTime);
 
-	Modules::InputController->DispatchActionEventsForFrame();
+	Modules.InputController.DispatchActionEventsForFrame();
 
+	Modules.PhysicsEngine.Simulate(simulateData->DeltaTime);
 	simulateData->GameInstance->Simulate(simulateData->DeltaTime);
 	simulateData->WorldInstance->Simulate(simulateData->DeltaTime);
-	Modules::PhysicsEngine->FetchResults();
+	Modules.PhysicsEngine.FetchResults();
 }
 
 struct GatherDataData
@@ -116,13 +116,13 @@ struct GatherDataData
 void GatherData(void* data)
 {
 	GatherDataData* gatherData = (GatherDataData*)data;
-	Modules::Renderer->GatherData(gatherData->FrameData, *gatherData->WorldInstance);
+	Modules.Renderer.GatherData(gatherData->FrameData, *gatherData->WorldInstance);
 }
 
 void RenderFrame(void* data)
 {
 	Graphics::FrameData* frameData = (Graphics::FrameData*)data;
-	Modules::Renderer->RenderFrame(*frameData);
+	Modules.Renderer.RenderFrame(*frameData);
 }
 
 }
@@ -132,9 +132,9 @@ void EngineLoop::RunImpl()
 	// TODO(alex): get this params from somewhere
 	auto width = 1280u;
 	auto height = 720u;
-	auto windowHandle = Modules::Platform->SpawnWindow(width, height, "Zmey");
+	auto windowHandle = Modules.Platform.SpawnWindow(width, height, "Zmey");
 
-	if (!Modules::Renderer->CreateWindowSurface(windowHandle))
+	if (!Modules.Renderer.CreateWindowSurface(windowHandle))
 	{
 		return;
 	}
@@ -150,15 +150,15 @@ void EngineLoop::RunImpl()
 	playerView.SetupView(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 14.0f, 1.0f));
 
 	Zmey::Name worldName = m_Game->LoadResources();
-	Modules::ResourceLoader->WaitForResource(worldName);
-	const World* world = Modules::ResourceLoader->AsWorld(worldName);
+	Modules.ResourceLoader.WaitForResource(worldName);
+	const World* world = Modules.ResourceLoader.AsWorld(worldName);
 	ASSERT_FATAL(world);
-	Modules::ResourceLoader->ReleaseOwnershipOver(worldName);
+	Modules.ResourceLoader.ReleaseOwnershipOver(worldName);
 	m_World = const_cast<World*>(world);
 	m_Game->SetWorld(m_World);
 
 	m_Game->Initialize();
-	Modules::PhysicsEngine->SetWorld(*m_World);
+	Modules.PhysicsEngine.SetWorld(*m_World);
 
 	Job::Counter renderCounter;
 	Graphics::FrameData frameDatas[2]; // TODO: 2 seems fine for now
@@ -172,14 +172,14 @@ void EngineLoop::RunImpl()
 		float deltaTime = timeSinceLastFrame.count() * 1e-9f;
 		//FORMAT_LOG(Error, Zmey, "time %f", deltaTime);
 
-		Modules::Platform->PumpMessages(windowHandle);
+		Modules.Platform.PumpMessages(windowHandle);
 
 		SimulateData simulateData{ m_Game, m_World, deltaTime };
 
 		Job::Counter simulateCounter;
 		Job::JobDecl simulateJob{ SimulateFrame, &simulateData };
-		Modules::JobSystem->RunJobs("Simulate", &simulateJob, 1, &simulateCounter);
-		Modules::JobSystem->WaitForCounter(&simulateCounter, 0);
+		Modules.JobSystem.RunJobs("Simulate", &simulateJob, 1, &simulateCounter);
+		Modules.JobSystem.WaitForCounter(&simulateCounter, 0);
 
 		// TODO: Compute visibility
 
@@ -191,14 +191,14 @@ void EngineLoop::RunImpl()
 
 		Job::Counter gatherDataCounter;
 		Job::JobDecl gatherDataJob{ GatherData, &gatherData };
-		Modules::JobSystem->RunJobs("GatherData", &gatherDataJob, 1, &gatherDataCounter);
-		Modules::JobSystem->WaitForCounter(&gatherDataCounter, 0);
+		Modules.JobSystem.RunJobs("GatherData", &gatherDataJob, 1, &gatherDataCounter);
+		Modules.JobSystem.WaitForCounter(&gatherDataCounter, 0);
 
 		// Wait for previous Render World job in order to not get ahead more than 1 frame
-		Modules::JobSystem->WaitForCounter(&renderCounter, 0);
+		Modules.JobSystem.WaitForCounter(&renderCounter, 0);
 
 		Job::JobDecl renderDataJob{ RenderFrame, &frameDatas[currentFrameData] };
-		Modules::JobSystem->RunJobs("Render World", &renderDataJob, 1, &renderCounter);
+		Modules.JobSystem.RunJobs("Render World", &renderDataJob, 1, &renderCounter);
 		// There is a no wait here becase we can start next simulate before this has finished
 
 		lastFrameTmestamp = currentFrameTimestamp;
@@ -211,14 +211,13 @@ void EngineLoop::RunImpl()
 		// that created the window or it will hang
 		//char title[100];
 		//snprintf(title, 100, "Zmey. Delta Time: %.1fms", deltaTime * 1e3f);
-		//Modules::Platform->SetWindowTitle(windowHandle, title);
+		//Modules.Platform.SetWindowTitle(windowHandle, title);
 	}
-	Modules::JobSystem->WaitForCounter(&renderCounter, 0);
+	Modules.JobSystem.WaitForCounter(&renderCounter, 0);
 
 	m_Game->Uninitialize();
-	Modules::Renderer->Unitialize();
-	Modules::Platform->KillWindow(windowHandle);
-	Modules::JobSystem->Quit();
+	Modules.Platform.KillWindow(windowHandle);
+	Modules.JobSystem.Quit();
 }
 
 EngineLoop::~EngineLoop()

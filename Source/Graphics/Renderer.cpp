@@ -27,6 +27,26 @@ namespace Globals
 Backend::Device* g_Device;
 }
 
+RendererInterface::~RendererInterface()
+{
+	m_Data.BufferManager.DestroyResources();
+
+	for (auto& list : m_CommandLists)
+	{
+		m_Device->DestroyCommandList(list);
+	}
+
+	m_Device->DestroyGraphicsPipelineState(m_Data.MeshesPipelineState);
+	for (auto& rtv : m_SwapChainFramebuffers)
+	{
+		m_Device->DestroyFramebuffer(rtv);
+	}
+
+	m_Device.reset();
+}
+
+
+
 bool RendererInterface::CreateWindowSurface(WindowHandle handle)
 {
 	m_Device->Initialize(handle);
@@ -57,23 +77,7 @@ bool RendererInterface::CreateWindowSurface(WindowHandle handle)
 	return true;
 }
 
-void RendererInterface::Unitialize()
-{
-	m_Data.BufferManager.DestroyResources();
 
-	for (auto& list : m_CommandLists)
-	{
-		m_Device->DestroyCommandList(list);
-	}
-
-	m_Device->DestroyGraphicsPipelineState(m_Data.MeshesPipelineState);
-	for (auto& rtv : m_SwapChainFramebuffers)
-	{
-		m_Device->DestroyFramebuffer(rtv);
-	}
-
-	m_Device.reset();
-}
 
 void RendererInterface::UploadTextures()
 {
