@@ -385,13 +385,17 @@ void Incinerator::IncinerateScene(const std::string& destinationFolder, const st
 		std::vector<Zmey::Graphics::MeshVertex> vertices;
 		vertices.reserve(mesh->mNumVertices);
 
+		bool hasUVs = mesh->HasTextureCoords(0);
+
 		for (auto i = 0u; i < mesh->mNumVertices; ++i)
 		{
 			auto& aiVector = mesh->mVertices[i];
 			auto& aiNormal = mesh->mNormals[i];
+			auto& aiUV = hasUVs ? mesh->mTextureCoords[0][i] : aiVector3D(0, 0, 0);
 			vertices.push_back(Zmey::Graphics::MeshVertex{
 				Zmey::Vector3{ aiVector.x, aiVector.y, aiVector.z },
-				Zmey::Vector3{ aiNormal.x, aiNormal.y, aiNormal.z }
+				Zmey::Vector3{ aiNormal.x, aiNormal.y, aiNormal.z },
+				Zmey::Vector2{ aiUV.x, aiUV.y }
 			});
 		}
 

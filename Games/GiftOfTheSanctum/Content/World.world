@@ -1,10 +1,8 @@
 {
-    "version" : "1.0", 
-    "extends" : "city-template", 
     "entities" : [
         {
-            "type" : "Magician", 
             "compiler-id" : 1, 
+            "type" : "Magician", 
             "components" : [
                 {
                     "name" : "tag", 
@@ -13,16 +11,16 @@
                     ]
                 }, 
                 {
-                    "name" : "transform", 
-                    "scale" : [
-                        1.0, 
-                        1.0, 
-                        1.0
-                    ], 
                     "rotation" : [
                         0.0, 
                         0.0, 
                         0.0, 
+                        1.0
+                    ], 
+                    "name" : "transform", 
+                    "scale" : [
+                        1.0, 
+                        1.0, 
                         1.0
                     ], 
                     "position" : [
@@ -32,19 +30,19 @@
                     ]
                 }, 
                 {
-                    "name" : "mesh", 
                     "color" : [
                         0.8000000715255737, 
                         0.03469003736972809, 
                         0.042545996606349945
                     ], 
+                    "name" : "mesh", 
                     "glTF_node_index" : 0
                 }
             ]
         }, 
         {
-            "type" : "Floor", 
             "compiler-id" : 1, 
+            "type" : "Floor", 
             "components" : [
                 {
                     "name" : "tag", 
@@ -53,17 +51,17 @@
                     ]
                 }, 
                 {
-                    "name" : "transform", 
-                    "scale" : [
-                        1.0, 
-                        1.0, 
-                        1.0
-                    ], 
                     "rotation" : [
                         0.7071068286895752, 
                         0.0, 
                         0.0, 
                         0.7071068286895752
+                    ], 
+                    "name" : "transform", 
+                    "scale" : [
+                        1.0, 
+                        1.0, 
+                        1.0
                     ], 
                     "position" : [
                         1.880676507949829, 
@@ -74,8 +72,8 @@
             ]
         }, 
         {
-            "type" : "SpawnPoint", 
             "compiler-id" : 1, 
+            "type" : "SpawnPoint", 
             "components" : [
                 {
                     "name" : "tag", 
@@ -84,17 +82,17 @@
                     ]
                 }, 
                 {
-                    "name" : "transform", 
-                    "scale" : [
-                        1.0, 
-                        1.0, 
-                        1.0
-                    ], 
                     "rotation" : [
                         0.7071068286895752, 
                         0.0, 
                         0.0, 
                         0.7071068286895752
+                    ], 
+                    "name" : "transform", 
+                    "scale" : [
+                        1.0, 
+                        1.0, 
+                        1.0
                     ], 
                     "position" : [
                         1.880676507949829, 
@@ -105,8 +103,8 @@
             ]
         }, 
         {
-            "type" : "Floor", 
             "compiler-id" : 1, 
+            "type" : "Floor", 
             "components" : [
                 {
                     "name" : "tag", 
@@ -115,16 +113,16 @@
                     ]
                 }, 
                 {
-                    "name" : "transform", 
-                    "scale" : [
-                        1.0, 
-                        1.0, 
-                        1.0
-                    ], 
                     "rotation" : [
                         0.0, 
                         0.0, 
                         0.0, 
+                        1.0
+                    ], 
+                    "name" : "transform", 
+                    "scale" : [
+                        1.0, 
+                        1.0, 
                         1.0
                     ], 
                     "position" : [
@@ -140,8 +138,8 @@
             ]
         }, 
         {
-            "type" : "Floor", 
             "compiler-id" : 1, 
+            "type" : "Floor", 
             "components" : [
                 {
                     "name" : "tag", 
@@ -150,16 +148,16 @@
                     ]
                 }, 
                 {
-                    "name" : "transform", 
-                    "scale" : [
-                        1.0, 
-                        1.0, 
-                        1.0
-                    ], 
                     "rotation" : [
                         0.0, 
                         0.0, 
                         0.0, 
+                        1.0
+                    ], 
+                    "name" : "transform", 
+                    "scale" : [
+                        1.0, 
+                        1.0, 
                         1.0
                     ], 
                     "position" : [
@@ -175,8 +173,8 @@
             ]
         }, 
         {
-            "type" : "Floor", 
             "compiler-id" : 1, 
+            "type" : "Floor", 
             "components" : [
                 {
                     "name" : "tag", 
@@ -185,16 +183,16 @@
                     ]
                 }, 
                 {
-                    "name" : "transform", 
-                    "scale" : [
-                        1.0, 
-                        1.0, 
-                        1.0
-                    ], 
                     "rotation" : [
                         0.0, 
                         0.0, 
                         0.0, 
+                        1.0
+                    ], 
+                    "name" : "transform", 
+                    "scale" : [
+                        1.0, 
+                        1.0, 
                         1.0
                     ], 
                     "position" : [
@@ -210,8 +208,8 @@
             ]
         }, 
         {
-            "type" : "Floor", 
             "compiler-id" : 1, 
+            "type" : "Floor", 
             "components" : [
                 {
                     "name" : "tag", 
@@ -220,16 +218,16 @@
                     ]
                 }, 
                 {
-                    "name" : "transform", 
-                    "scale" : [
-                        1.0, 
-                        1.0, 
-                        1.0
-                    ], 
                     "rotation" : [
                         0.0, 
                         0.0, 
                         0.0, 
+                        1.0
+                    ], 
+                    "name" : "transform", 
+                    "scale" : [
+                        1.0, 
+                        1.0, 
                         1.0
                     ], 
                     "position" : [
@@ -245,8 +243,8 @@
             ]
         }, 
         {
-            "type" : "Floor", 
             "compiler-id" : 1, 
+            "type" : "SpawnPoint", 
             "components" : [
                 {
                     "name" : "tag", 
@@ -255,16 +253,16 @@
                     ]
                 }, 
                 {
-                    "name" : "transform", 
-                    "scale" : [
-                        1.0, 
-                        1.0, 
-                        1.0
-                    ], 
                     "rotation" : [
                         0.0, 
                         0.0, 
                         0.0, 
+                        1.0
+                    ], 
+                    "name" : "transform", 
+                    "scale" : [
+                        1.0, 
+                        1.0, 
                         1.0
                     ], 
                     "position" : [
@@ -280,8 +278,8 @@
             ]
         }, 
         {
-            "type" : "Floor", 
             "compiler-id" : 1, 
+            "type" : "Floor", 
             "components" : [
                 {
                     "name" : "tag", 
@@ -290,16 +288,16 @@
                     ]
                 }, 
                 {
-                    "name" : "transform", 
-                    "scale" : [
-                        1.0, 
-                        1.0, 
-                        1.0
-                    ], 
                     "rotation" : [
                         0.0, 
                         0.0, 
                         0.0, 
+                        1.0
+                    ], 
+                    "name" : "transform", 
+                    "scale" : [
+                        1.0, 
+                        1.0, 
                         1.0
                     ], 
                     "position" : [
@@ -315,8 +313,8 @@
             ]
         }, 
         {
-            "type" : "Magician", 
             "compiler-id" : 1, 
+            "type" : "Magician", 
             "components" : [
                 {
                     "name" : "tag", 
@@ -325,16 +323,16 @@
                     ]
                 }, 
                 {
-                    "name" : "transform", 
-                    "scale" : [
-                        1.0, 
-                        1.0, 
-                        1.0
-                    ], 
                     "rotation" : [
                         0.0, 
                         0.0, 
                         0.0, 
+                        1.0
+                    ], 
+                    "name" : "transform", 
+                    "scale" : [
+                        1.0, 
+                        1.0, 
                         1.0
                     ], 
                     "position" : [
@@ -344,16 +342,18 @@
                     ]
                 }, 
                 {
-                    "name" : "mesh", 
                     "color" : [
                         0.048980820924043655, 
                         0.05243249237537384, 
                         0.8000000715255737
                     ], 
+                    "name" : "mesh", 
                     "glTF_node_index" : 9
                 }
             ]
         }
     ], 
-    "name" : "city-of-township"
+    "name" : "city-of-township", 
+    "version" : "1.0", 
+    "extends" : "city-template"
 }

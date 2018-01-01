@@ -21,9 +21,9 @@ enum DDSPixelFormat
 };
 }
 
-DDSLoader::DDSLoader(uint8_t* data, size_t size)
+DDSLoader::DDSLoader(const uint8_t* data, size_t size)
 {
-	auto header = reinterpret_cast<DDS_HEADER*>(data + 4);
+	auto header = reinterpret_cast<const DDS_HEADER*>(data + 4);
 
 	const uint32_t alwaysRequiredFlags = DDS_Caps | DDS_Height | DDS_Width | DDS_PixelFomat;
 
@@ -55,8 +55,18 @@ Graphics::PixelFormat DDSLoader::GetPixelFormat()
 	return format;
 }
 
-uint8_t* DDSLoader::GetImageData()
+uint32_t DDSLoader::GetWidth()
 {
-	return reinterpret_cast<uint8_t*>(m_DDSHeader) + sizeof(DDS_HEADER);
+	return m_DDSHeader->Width;
+}
+
+uint32_t DDSLoader::GetHeight()
+{
+	return m_DDSHeader->Height;
+}
+
+const uint8_t* DDSLoader::GetImageData()
+{
+	return reinterpret_cast<const uint8_t*>(m_DDSHeader) + sizeof(DDS_HEADER);
 }
 }

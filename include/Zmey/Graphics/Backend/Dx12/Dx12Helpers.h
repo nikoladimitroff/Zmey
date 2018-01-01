@@ -9,6 +9,8 @@
 using Microsoft::WRL::ComPtr;
 
 #include <Zmey/Logging.h>
+#include <Zmey/Graphics/GraphicsObjects.h>
+#include <assert.h>
 
 namespace Zmey
 {
@@ -29,6 +31,20 @@ namespace Backend
 			__debugbreak(); \
 		} \
 	} while(0)
+
+inline DXGI_FORMAT PixelFormatToDx12(PixelFormat format)
+{
+	switch (format)
+	{
+	case PixelFormat::B8G8R8A8:
+		return DXGI_FORMAT_B8G8R8A8_UNORM;
+	default:
+		assert(false);
+		break;
+	}
+
+	return DXGI_FORMAT_UNKNOWN;
+}
 
 }
 }

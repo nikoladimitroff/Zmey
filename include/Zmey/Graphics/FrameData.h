@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Zmey/Memory/MemoryManagement.h>
-#include <Zmey/Graphics/ResourceHandles.h>
+#include <Zmey/Graphics/GraphicsObjects.h>
 #include <Zmey/Math/Math.h>
 #include <Zmey/Graphics/View.h>
 

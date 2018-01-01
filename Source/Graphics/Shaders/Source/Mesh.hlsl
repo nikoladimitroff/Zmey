@@ -4,6 +4,7 @@ struct VertexInput
 {
 	float3 Position : POSITION0;
 	float3 Normal : NORMAL0;
+	float2 TextureUV : TEXCOORD0;
 };
 
 struct VertexOutput
@@ -11,6 +12,7 @@ struct VertexOutput
 	float4 Position : SV_POSITION;
 	float3 WorldPosition : POSITION0;
 	float3 Normal : NORMAL0;
+	float2 TextureUV : TEXCOORD0;
 };
 
 cbuffer VertexPushs : register(b0) PUSH_CONSTANT
@@ -22,12 +24,16 @@ cbuffer VertexPushs : register(b0) PUSH_CONSTANT
 	float3 EyePosition;
 };
 
+Texture2D txBuffer : register(t0) SET_BINDING(0);
+SamplerState txBufferSampler : register(s0) SET_BINDING(1);
+
 VertexOutput VertexShaderMain(VertexInput input)
 {
 	VertexOutput result;
 	result.Position = mul(WorldViewProjectionMatrix, float4(input.Position, 1.0));
 	result.WorldPosition = mul(WorldMatrix, float4(input.Position, 1.0)).xyz;
 	result.Normal = normalize(mul(WorldMatrix, float4(input.Normal, 0.0)).xyz);
+	result.TextureUV = input.TextureUV;
 
 	return result;
 }
@@ -36,6 +42,9 @@ float4 PixelShaderMain(VertexOutput input) : SV_TARGET
 {
 	// Simple diffuse lighting
 	float4 color = float4(Color, 1.0);
+
+	//float4 texColor = txBuffer.Sample(txBufferSampler, input.TextureUV);
+	//color = /*color **/ texColor;
 
 	// diffuse
 	float diffuseFactor = saturate(dot(input.Normal, -LightDirection));

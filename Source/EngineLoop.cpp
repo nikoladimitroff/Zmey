@@ -100,8 +100,6 @@ void SimulateFrame(void* data)
 	auto simulateData = (SimulateData*)data;
 	Modules::PhysicsEngine->Simulate(simulateData->DeltaTime);
 
-	// TODO(alex): disabled scripting for now
-	//Modules::ScriptEngine->ExecuteNextFrame(deltaTime);
 	Modules::InputController->DispatchActionEventsForFrame();
 
 	simulateData->GameInstance->Simulate(simulateData->DeltaTime);
@@ -157,8 +155,6 @@ void EngineLoop::RunImpl()
 	ASSERT_FATAL(world);
 	Modules::ResourceLoader->ReleaseOwnershipOver(worldName);
 	m_World = const_cast<World*>(world);
-	//Zmey::Chakra::Binding::ProjectGlobal(L"world", m_World, Zmey::Hash("world"));
-	//Zmey::Modules::ProjectToScripting();
 	m_Game->SetWorld(m_World);
 
 	m_Game->Initialize();

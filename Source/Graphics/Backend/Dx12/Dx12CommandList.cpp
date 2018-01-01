@@ -2,7 +2,9 @@
 
 #ifdef USE_DX12
 
-#include <Zmey/Graphics/Backend/Dx12/Dx12Backend.h>
+#include <Zmey/Graphics/Backend/Dx12/Dx12Device.h>
+#include <Zmey/Graphics/Backend/Dx12/Dx12Texture.h>
+#include <Zmey/Graphics/RendererGlobals.h>
 
 namespace Zmey
 {
@@ -14,6 +16,9 @@ namespace Backend
 void Dx12CommandList::BeginRecording()
 {
 	CmdList->Reset(CmdAllocator, nullptr);
+	NextSlot = 0;
+
+	CmdList->SetDescriptorHeaps(1, SRVHeap.GetAddressOf());
 }
 
 void Dx12CommandList::EndRecording()
@@ -72,11 +77,27 @@ void Dx12CommandList::EndRenderPass(Framebuffer* fb)
 	CmdList->ResourceBarrier(1, &barrier);
 }
 
-void Dx12CommandList::BindPipelineState(PipelineState* state, bool strip)
+namespace
 {
-	CmdList->SetPipelineState(reinterpret_cast<Dx12PipelineState*>(state)->PipelineState);
-	CmdList->SetGraphicsRootSignature(reinterpret_cast<Dx12PipelineState*>(state)->RootSignature);
-	CmdList->IASetPrimitiveTopology(strip ? D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP : D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+D3D12_PRIMITIVE_TOPOLOGY ToDx12Topology(PrimitiveTopology topology)
+{
+	switch (topology)
+	{
+	case PrimitiveTopology::TriangleList:
+		return D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
+	default:
+		NOT_REACHED();
+		return D3D_PRIMITIVE_TOPOLOGY_UNDEFINED;
+	}
+}
+}
+
+void Dx12CommandList::BindGraphicsPipelineState(GraphicsPipelineState* state)
+{
+	auto dx12State = reinterpret_cast<Dx12GraphicsPipelineState*>(state);
+	CmdList->SetPipelineState(dx12State->PipelineState);
+	CmdList->SetGraphicsRootSignature(dx12State->RootSignature);
+	CmdList->IASetPrimitiveTopology(ToDx12Topology(state->Desc.Topology));
 }
 
 void Dx12CommandList::Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t startVertex, uint32_t startInstance)
@@ -84,9 +105,33 @@ void Dx12CommandList::Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_
 	CmdList->DrawInstanced(vertexCount, instanceCount, startVertex, startInstance);
 }
 
-void Dx12CommandList::SetPushConstants(PipelineState* layout, uint32_t offset, uint32_t count, const void* data)
+void Dx12CommandList::SetPushConstants(GraphicsPipelineState* layout, uint32_t offset, uint32_t count, const void* data)
 {
 	CmdList->SetGraphicsRoot32BitConstants(0, count / sizeof(float), data, offset / sizeof(float));
+}
+
+void Dx12CommandList::SetShaderResourceView(GraphicsPipelineState* layout, Texture* texture)
+{
+	assert(NextSlot < 1024); // TODO: This is the random number for size of the heap for now
+	ID3D12Device* device;
+	CmdList->GetDevice(IID_PPV_ARGS(&device));
+
+	D3D12_SHADER_RESOURCE_VIEW_DESC desc{};
+	desc.Format = PixelFormatToDx12(texture->Format);
+	desc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+	desc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+	desc.Texture2D.MipLevels = 1;
+	desc.Texture2D.MostDetailedMip = 0;
+
+	D3D12_CPU_DESCRIPTOR_HANDLE handle;
+	handle.ptr = SRVHeap->GetCPUDescriptorHandleForHeapStart().ptr + NextSlot * device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle;
+	gpuHandle.ptr = SRVHeap->GetGPUDescriptorHandleForHeapStart().ptr + NextSlot * device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+	++NextSlot;
+
+	device->CreateShaderResourceView(reinterpret_cast<Dx12Texture*>(texture)->Texture.Get(), &desc, handle);
+
+	CmdList->SetGraphicsRootDescriptorTable(1, gpuHandle);
 }
 
 void Dx12CommandList::SetVertexBuffer(const Buffer* vbo, uint32_t vertexStride)
@@ -111,6 +156,66 @@ void Dx12CommandList::SetIndexBuffer(const Buffer* ibo)
 	view.Format = DXGI_FORMAT_R32_UINT;
 
 	CmdList->IASetIndexBuffer(&view);
+}
+
+void Dx12CommandList::CopyBufferToTexture(Buffer* buffer, Texture* texture)
+{
+	auto dx12Buffer = reinterpret_cast<Dx12Buffer*>(buffer);
+	auto dx12Texture = reinterpret_cast<Dx12Texture*>(texture);
+
+	{
+		D3D12_RESOURCE_BARRIER barrier;
+		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+		barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+		barrier.Transition.pResource = dx12Texture->Texture.Get();
+		barrier.Transition.StateBefore = dx12Texture->State;
+		barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_COPY_DEST;
+		barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+
+		CmdList->ResourceBarrier(1, &barrier);
+	}
+
+	ID3D12Device* device;
+	CmdList->GetDevice(IID_PPV_ARGS(&device));
+
+	D3D12_RESOURCE_DESC desc;
+	desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	desc.Alignment = 0;
+	desc.Width = texture->Width;
+	desc.Height = texture->Height;
+	desc.DepthOrArraySize = 1;
+	desc.MipLevels = 1;
+	desc.Format = PixelFormatToDx12(texture->Format);
+	desc.SampleDesc.Count = 1;
+	desc.SampleDesc.Quality = 0;
+	desc.Layout = D3D12_TEXTURE_LAYOUT_UNKNOWN;
+	desc.Flags = D3D12_RESOURCE_FLAG_NONE;
+	D3D12_PLACED_SUBRESOURCE_FOOTPRINT footprint;
+	device->GetCopyableFootprints(&desc, 0, 1, 0, &footprint, nullptr, nullptr, nullptr);
+
+	D3D12_TEXTURE_COPY_LOCATION dst;
+	dst.Type = D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX;
+	dst.pResource = dx12Texture->Texture.Get();
+	dst.SubresourceIndex = 0;
+
+	D3D12_TEXTURE_COPY_LOCATION src;
+	src.Type = D3D12_TEXTURE_COPY_TYPE_PLACED_FOOTPRINT;
+	src.pResource = dx12Buffer->Buffer;
+	src.PlacedFootprint = footprint;
+
+	CmdList->CopyTextureRegion(&dst, 0, 0, 0, &src, nullptr);
+
+	{
+		D3D12_RESOURCE_BARRIER barrier;
+		barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+		barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+		barrier.Transition.pResource = dx12Texture->Texture.Get();
+		barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_DEST;
+		barrier.Transition.StateAfter = dx12Texture->State;
+		barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+
+		CmdList->ResourceBarrier(1, &barrier);
+	}
 }
 
 }

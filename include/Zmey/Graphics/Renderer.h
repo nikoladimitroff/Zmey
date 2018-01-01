@@ -8,11 +8,10 @@
 #include <Zmey/Graphics/View.h>
 
 #include <Zmey/Graphics/Managers/BufferManager.h>
+#include <Zmey/Graphics/Managers/TextureManager.h>
 #include <Zmey/Graphics/Managers/MeshManager.h>
-#include <cstdint>
-
-// TODO(alex): remove me
-struct aiScene;
+#include <Zmey/Graphics/Managers/UploadHeap.h>
+#include <stdint.h>
 
 namespace Zmey
 {
@@ -26,16 +25,18 @@ struct FrameData;
 
 struct RendererData
 {
-	RendererData(Backend::Backend* backend)
-		: BufferManager(backend)
+	RendererData(Backend::Device* device)
+		: BufferManager(device)
+		, TextureManager(device)
 	{}
 
 	BufferManager BufferManager;
+	TextureManager TextureManager;
 	MeshManager MeshManager;
+	UploadHeap UploadHeap;
 
 	// TODO(alex): Add PipelineState Manager and remove this
-	Backend::PipelineState* RectsPipelineState;
-	Backend::PipelineState* MeshesPipelineState;
+	Backend::GraphicsPipelineState* MeshesPipelineState;
 };
 
 class RendererInterface
@@ -51,14 +52,18 @@ public:
 
 	bool CheckIfFrameCompleted(uint64_t frameIndex);
 
+	// TODO: This is very weird to be here.
 	MeshHandle MeshLoaded(stl::vector<uint8_t>&& data);
+	TextureHandle TextureLoaded(stl::vector<uint8_t>&& data);
 
 private:
 	void PrepareData(FrameData& frameData);
 	void GenerateCommands(FrameData& frameData, uint32_t imageIndex);
 	void Present(FrameData& frameData, uint32_t imageIndex);
 
-	stl::unique_ptr<Backend::Backend> m_Backend;
+	void UploadTextures();
+
+	stl::unique_ptr<Backend::Device> m_Device;
 	// TODO: atomic
 	uint64_t LastCompletedFrame = 0;
 
@@ -79,6 +84,13 @@ private:
 	RenderFeatures m_Features;
 
 	RendererData m_Data;
+
+	struct TextureDataToUpload
+	{
+		stl::vector<uint8_t> Data;
+		Backend::Texture* Texture;
+	};
+	stl::vector<TextureDataToUpload> m_TextureToUpload;
 };
 
 }

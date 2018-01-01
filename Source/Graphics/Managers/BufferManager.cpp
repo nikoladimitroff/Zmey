@@ -1,7 +1,8 @@
 #pragma once
 
 #include <Zmey/Graphics/Managers/BufferManager.h>
-#include <Zmey/Graphics/Backend/Backend.h>
+#include <Zmey/Graphics/Backend/Device.h>
+#include <Zmey/Graphics/Backend/Buffer.h>
 
 namespace Zmey
 {
@@ -10,22 +11,22 @@ namespace Graphics
 
 uint64_t BufferManager::s_BufferNextId = 0u;
 
-BufferManager::BufferManager(Backend::Backend* backend)
-	: m_Backend(backend)
+BufferManager::BufferManager(Backend::Device* device)
+	: m_Device(device)
 {}
 
 void BufferManager::DestroyResources()
 {
 	for (auto& buff : m_Buffers)
 	{
-		m_Backend->DestroyBuffer(buff.second);
+		m_Device->DestroyBuffer(buff.second);
 	}
 }
 
 BufferHandle BufferManager::CreateStaticBuffer(Backend::BufferUsage usage, uint32_t size, void* data)
 {
 	BufferHandle handle = s_BufferNextId++;
-	auto buffer = m_Backend->CreateBuffer(size, usage);
+	auto buffer = m_Device->CreateBuffer(size, usage);
 
 	auto memory = buffer->Map();
 	memcpy(memory, data, size);

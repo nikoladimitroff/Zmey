@@ -40,14 +40,16 @@ struct DDS_HEADER
 class DDSLoader
 {
 public:
-	DDSLoader(uint8_t* data, size_t size);
+	DDSLoader(const uint8_t* data, size_t size);
 
 	bool IsValid() { return m_DDSHeader; }
 
 	Graphics::PixelFormat GetPixelFormat();
 
-	uint8_t* GetImageData(); // 0 mip 0 array slice TODO(alex): make it take an argument
+	const uint8_t* GetImageData(); // 0 mip 0 array slice TODO(alex): make it take an argument
+	uint32_t GetWidth();
+	uint32_t GetHeight();
 private:
-	DDS_HEADER* m_DDSHeader = nullptr;
+	const DDS_HEADER* m_DDSHeader = nullptr;
 };
 }

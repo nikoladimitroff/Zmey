@@ -7,7 +7,7 @@
             "name" : "transform"
         }
     ], 
+    "name" : "Floor", 
     "version" : "1.0", 
-    "extends" : "", 
-    "name" : "Floor"
+    "extends" : ""
 }

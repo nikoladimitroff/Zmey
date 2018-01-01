@@ -2,11 +2,15 @@
 #include <Zmey/Memory/MemoryManagement.h> // For TempAllocator
 #include <Zmey/Graphics/FrameData.h>
 #include <Zmey/Graphics/Renderer.h>
+#include <Zmey/Graphics/RendererGlobals.h>
 
 #include <Zmey/Graphics/Features.h>
 
-#include <Zmey/Graphics/Backend/Backend.h>
+#include <Zmey/Graphics/Backend/Device.h>
 #include <Zmey/Graphics/Backend/CommandList.h>
+
+#include <Zmey/ResourceLoader/DDSLoader.h>
+
 
 //TODO(alex): remove this
 #include <Zmey/Graphics/Backend/Dx12/Dx12Shaders.h>
@@ -17,21 +21,17 @@ namespace Zmey
 namespace Graphics
 {
 
+// Storage for globals
+namespace Globals
+{
+Backend::Device* g_Device;
+}
+
 bool RendererInterface::CreateWindowSurface(WindowHandle handle)
 {
-	m_Backend->Initialize(handle);
+	m_Device->Initialize(handle);
 
-	Backend::PipelineStateDesc desc;
-#ifdef USE_DX12
-	desc.VertexShader = Backend::Shader{ Backend::Shaders::Rects::g_VertexShaderMain, sizeof(Backend::Shaders::Rects::g_VertexShaderMain) };
-	desc.PixelShader = Backend::Shader{ Backend::Shaders::Rects::g_PixelShaderMain, sizeof(Backend::Shaders::Rects::g_PixelShaderMain) };
-#else
-	desc.VertexShader = Backend::Shader{ (const unsigned char*)Backend::Shaders::g_MeshVS, Backend::Shaders::g_MeshVSSize };
-	desc.PixelShader = Backend::Shader{ (const unsigned char*)Backend::Shaders::g_MeshPS, Backend::Shaders::g_MeshPSSize };
-#endif
-
-	m_Data.RectsPipelineState = m_Backend->CreatePipelineState(desc);
-
+	Backend::GraphicsPipelineStateDesc desc;
 #ifdef USE_DX12
 	desc.VertexShader = Backend::Shader{ Backend::Shaders::Mesh::g_VertexShaderMain, sizeof(Backend::Shaders::Mesh::g_VertexShaderMain) };
 	desc.PixelShader = Backend::Shader{ Backend::Shaders::Mesh::g_PixelShaderMain, sizeof(Backend::Shaders::Mesh::g_PixelShaderMain) };
@@ -40,16 +40,18 @@ bool RendererInterface::CreateWindowSurface(WindowHandle handle)
 	desc.PixelShader = Backend::Shader{ (const unsigned char*)Backend::Shaders::g_MeshPS, Backend::Shaders::g_MeshPSSize };
 #endif
 	desc.Layout.Elements.push_back(Backend::InputElement{ "POSITION", 0, Backend::InputElementFormat::Float3, 0, 0 });
-	desc.Layout.Elements.push_back(Backend::InputElement{ "NORMAL", 0, Backend::InputElementFormat::Float3, 0, 3 * sizeof(float)});
-	m_Data.MeshesPipelineState = m_Backend->CreatePipelineState(desc);
+	desc.Layout.Elements.push_back(Backend::InputElement{ "NORMAL", 0, Backend::InputElementFormat::Float3, 0, 3 * sizeof(float) });
+	desc.Layout.Elements.push_back(Backend::InputElement{ "TEXCOORD", 0, Backend::InputElementFormat::Float2, 0, 6 * sizeof(float)});
+	desc.Topology = Backend::PrimitiveTopology::TriangleList;
+	m_Data.MeshesPipelineState = m_Device->CreateGraphicsPipelineState(desc);
 
-	auto swapChainCount = m_Backend->GetSwapChainBuffers();
+	auto swapChainCount = m_Device->GetSwapChainBuffers();
 	m_SwapChainFramebuffers.reserve(swapChainCount);
 	m_CommandLists.reserve(swapChainCount);
 	for (auto i = 0u; i < swapChainCount; ++i)
 	{
-		m_SwapChainFramebuffers.push_back(m_Backend->CreateFramebuffer(m_Backend->GetSwapChainImageView(i)));
-		m_CommandLists.push_back(m_Backend->CreateCommandList());
+		m_SwapChainFramebuffers.push_back(m_Device->CreateFramebuffer(m_Device->GetSwapChainImageView(i)));
+		m_CommandLists.push_back(m_Device->CreateCommandList());
 	}
 
 	return true;
@@ -61,17 +63,42 @@ void RendererInterface::Unitialize()
 
 	for (auto& list : m_CommandLists)
 	{
-		m_Backend->DestroyCommandList(list);
+		m_Device->DestroyCommandList(list);
 	}
 
-	m_Backend->DestroyPipelineState(m_Data.RectsPipelineState);
-	m_Backend->DestroyPipelineState(m_Data.MeshesPipelineState);
+	m_Device->DestroyGraphicsPipelineState(m_Data.MeshesPipelineState);
 	for (auto& rtv : m_SwapChainFramebuffers)
 	{
-		m_Backend->DestroyFramebuffer(rtv);
+		m_Device->DestroyFramebuffer(rtv);
 	}
 
-	m_Backend.reset();
+	m_Device.reset();
+}
+
+void RendererInterface::UploadTextures()
+{
+	if (m_TextureToUpload.empty())
+	{
+		return;
+	}
+
+	auto uploadList = m_Device->CreateCommandList();
+	uploadList->BeginRecording();
+	for (const auto& texData : m_TextureToUpload)
+	{
+		//TODO: find way not to initialize new loader
+		DDSLoader loader(texData.Data.data(), texData.Data.size());
+
+		auto imageDataSize = loader.GetHeight() * loader.GetWidth() * 4;// TODO: Bytes per pixel for format
+		m_Data.UploadHeap.CopyDataToTexture(uploadList, imageDataSize, loader.GetImageData(), texData.Texture);
+	}
+
+	uploadList->EndRecording();
+	m_Device->SubmitCommandList(uploadList);
+	// TODO: maybe wait for execution
+	m_Device->DestroyCommandList(uploadList);
+
+	m_TextureToUpload.clear();
 }
 
 void RendererInterface::GatherData(FrameData& frameData, World& world)
@@ -84,6 +111,8 @@ void RendererInterface::GatherData(FrameData& frameData, World& world)
 
 void RendererInterface::PrepareData(FrameData& frameData)
 {
+	UploadTextures();
+
 	for (auto prepareData : m_Features.PrepareDataPtrs)
 	{
 		prepareData(frameData, m_Data);
@@ -113,17 +142,17 @@ void RendererInterface::GenerateCommands(FrameData& frameData, uint32_t imageInd
 
 	m_CommandLists[imageIndex]->EndRecording();
 
-	m_Backend->SubmitCommandList(m_CommandLists[imageIndex]);
+	m_Device->SubmitCommandList(m_CommandLists[imageIndex]);
 }
 
 void RendererInterface::Present(FrameData& frameData, uint32_t imageIndex)
 {
-	m_Backend->Present(imageIndex);
+	m_Device->Present(imageIndex);
 }
 
 void RendererInterface::RenderFrame(FrameData& frameData)
 {
-	uint32_t imageIndex = m_Backend->AcquireNextSwapChainImage();
+	uint32_t imageIndex = m_Device->AcquireNextSwapChainImage();
 
 	PrepareData(frameData);
 
@@ -140,9 +169,11 @@ bool RendererInterface::CheckIfFrameCompleted(uint64_t frameIndex)
 }
 
 RendererInterface::RendererInterface()
-	: m_Backend(Backend::CreateBackend())
-	, m_Data(m_Backend.get())
+	: m_Device(Backend::CreateBackendDevice())
+	, m_Data(m_Device.get())
 {
+	Globals::g_Device = m_Device.get();
+
 	// Initialize renderer features
 	m_Features.GatherDataPtrs.reserve(2);
 	m_Features.PrepareDataPtrs.reserve(2);
@@ -180,6 +211,34 @@ MeshHandle RendererInterface::MeshLoaded(stl::vector<uint8_t>&& data)
 		data.data() + sizeof(MeshDataHeader) + (header->VerticesCount * sizeof(MeshVertex))
 	);
 	return m_Data.MeshManager.CreateMesh(newMesh);
+}
+
+TextureHandle RendererInterface::TextureLoaded(stl::vector<uint8_t>&& data)
+{
+	DDSLoader loader(data.data(), data.size());
+
+	if (!loader.IsValid())
+	{
+		return TextureHandle(-1);
+	}
+
+	auto format = loader.GetPixelFormat();
+	if (format == PixelFormat::Unknown)
+	{
+		return TextureHandle(-1);
+	}
+
+	auto result = m_Data.TextureManager.CreateTexture(
+		loader.GetWidth(),
+		loader.GetHeight(),
+		format);
+
+	TextureDataToUpload upload;
+	upload.Data = std::move(data);
+	upload.Texture = m_Data.TextureManager.GetTexture(result);
+	m_TextureToUpload.push_back(std::move(upload));
+
+	return result;
 }
 }
 }

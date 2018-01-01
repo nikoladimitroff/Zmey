@@ -88,6 +88,12 @@ void OnResourceMeshLoaded(ResourceLoader* loader, Zmey::Name name, stl::vector<u
 	loader->m_Meshes.push_back(std::make_pair(name, handle));
 	FORMAT_LOG(Info, ResourceLoader, "Just loaded asset for name: %llu", static_cast<uint64_t>(name));
 }
+void OnResourceTextureLoaded(ResourceLoader* loader, Zmey::Name name, stl::vector<uint8_t>&& data)
+{
+	auto handle = Modules::Renderer->TextureLoaded(std::move(data));
+	loader->m_Textures.push_back(std::make_pair(name, handle));
+	FORMAT_LOG(Info, ResourceLoader, "Just loaded asset for name: %llu", static_cast<uint64_t>(name));
+}
 void OnResourceLoaded(ResourceLoader* loader, Zmey::Name name, const tmp::string& text)
 {
 	loader->m_TextContents.push_back(std::make_pair(name, text.c_str()));
@@ -145,17 +151,20 @@ Zmey::Name ResourceLoader::LoadResource(const stl::string& path)
 			OnResourceLoaded(this, name, world);
 		}
 	}
-	else if (Utilities::EndsWith(path, ".js"))
+	else if (Utilities::EndsWith(path, ".dds"))
 	{
 		// TODO: add task
 		{
-			std::ifstream stream(path.c_str());
+			// TODO: maybe temp memory ?
+			std::ifstream stream(path.c_str(), std::ios::binary);
+			ASSERT(stream.good());
 			stream.seekg(0, std::ios::end);
 			size_t size = stream.tellg();
 			stream.seekg(0);
-			tmp::string buffer(size, '\0');
-			stream.read(&buffer[0], size);
-			OnResourceLoaded(this, name, buffer);
+
+			stl::vector<uint8_t> data(size);
+			stream.read((char*)data.data(), size);
+			OnResourceTextureLoaded(this, name, std::move(data));
 		}
 	}
 	else

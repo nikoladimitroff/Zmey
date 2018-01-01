@@ -134,9 +134,6 @@
     <ClInclude Include="..\..\include\Zmey\Graphics\FrameData.h">
       <Filter>include\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Graphics\ResourceHandles.h">
-      <Filter>include\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\Zmey\Math\Math.h">
       <Filter>include\Math</Filter>
     </ClInclude>
@@ -176,12 +173,6 @@
     <ClInclude Include="..\..\include\Zmey\MemoryStream.h">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Backend.h">
-      <Filter>include\Graphics\Backend</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Vulkan\VulkanBackend.h">
-      <Filter>include\Graphics\Backend\Vulkan</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\Zmey\Graphics\Backend\BackendDeclarations.h">
       <Filter>include\Graphics\Backend</Filter>
     </ClInclude>
@@ -196,9 +187,6 @@
     </ClInclude>
     <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Vulkan\VulkanShaders.h">
       <Filter>include\Graphics\Backend\Vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Dx12\Dx12Backend.h">
-      <Filter>include\Graphics\Backend\Dx12</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Dx12\Dx12CommandList.h">
       <Filter>include\Graphics\Backend\Dx12</Filter>
@@ -263,6 +251,42 @@
     <ClInclude Include="..\..\include\Zmey\Job\Queue.h">
       <Filter>include\Job</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Graphics\Managers\TextureManager.h">
+      <Filter>include\Graphics\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Buffer.h">
+      <Filter>include\Graphics\Backend</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Dx12\Dx12Device.h">
+      <Filter>include\Graphics\Backend\Dx12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Device.h">
+      <Filter>include\Graphics\Backend</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\GraphicsPipelineState.h">
+      <Filter>include\Graphics\Backend</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Texture.h">
+      <Filter>include\Graphics\Backend</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Dx12\Dx12Texture.h">
+      <Filter>include\Graphics\Backend\Dx12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Graphics\Managers\UploadHeap.h">
+      <Filter>include\Graphics\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Graphics\RendererGlobals.h">
+      <Filter>include\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Vulkan\VulkanBuffer.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Vulkan\VulkanDevice.h">
+      <Filter>include\Graphics\Backend\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Vulkan\VulkanTexture.h">
+      <Filter>include\Graphics\Backend\Vulkan</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\EngineLoop.cpp">
@@ -307,14 +331,8 @@
     <ClCompile Include="..\..\Source\Graphics\Backend\Vulkan\VulkanCommandList.cpp">
       <Filter>Source\Graphics\Backend\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Graphics\Backend\Dx12\Dx12Backend.cpp">
-      <Filter>Source\Graphics\Backend\Dx12</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Source\Graphics\Backend\Dx12\Dx12CommandList.cpp">
       <Filter>Source\Graphics\Backend\Dx12</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\Source\Graphics\Backend\Vulkan\VulkanBackend.cpp">
-      <Filter>Source\Graphics\Backend\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\Graphics\Managers\MeshManager.cpp">
       <Filter>Source\Graphics\Managers</Filter>
@@ -354,6 +372,18 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\Job\JobSystemImpl.cpp">
       <Filter>Source\Job</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Managers\TextureManager.cpp">
+      <Filter>Source\Graphics\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Backend\Dx12\Dx12Device.cpp">
+      <Filter>Source\Graphics\Backend\Dx12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Managers\UploadHeap.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Backend\Vulkan\VulkanDevice.cpp">
+      <Filter>Source\Graphics\Backend\Vulkan</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

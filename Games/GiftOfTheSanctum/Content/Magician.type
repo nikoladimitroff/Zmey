@@ -7,7 +7,7 @@
             "name" : "transform"
         }
     ], 
+    "name" : "Magician", 
     "version" : "1.0", 
-    "extends" : "", 
-    "name" : "Magician"
+    "extends" : ""
 }
