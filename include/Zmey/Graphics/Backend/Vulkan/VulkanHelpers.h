@@ -9,6 +9,9 @@
 #include <vulkan/vulkan.h>
 #include <functional>
 
+#include <Zmey/Graphics/GraphicsObjects.h>
+#include <Zmey/Logging.h>
+
 namespace Zmey
 {
 namespace Graphics
@@ -135,6 +138,18 @@ DEFINE_DELETER_WITH_EXTRA(ShaderModule, Device);
 #undef DECLARE_DELETER_AND_UNIQUE_HANDLE
 #undef DEFINE_DELETER
 #undef DEFINE_DELETER_WITH_EXTRA
+
+inline VkFormat PixelFormatToVulkan(PixelFormat format)
+{
+	switch (format)
+	{
+	case PixelFormat::B8G8R8A8:
+		return VK_FORMAT_B8G8R8A8_UNORM;
+	default:
+		NOT_REACHED();
+		return VK_FORMAT_UNDEFINED;
+	}
+}
 
 }
 }

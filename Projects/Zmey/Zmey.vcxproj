@@ -144,10 +144,12 @@
     <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Dx12\Dx12Texture.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\Backend\GraphicsPipelineState.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Texture.h" />
-    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Vulkan\VulkanBackend.h" />
+    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Vulkan\VulkanDevice.h" />
+    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Vulkan\VulkanBuffer.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Vulkan\VulkanCommandList.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Vulkan\VulkanHelpers.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Vulkan\VulkanShaders.h" />
+    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Vulkan\VulkanTexture.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\Features.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\Features\MeshRenderer.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\FrameData.h" />
@@ -197,7 +199,7 @@
     <ClCompile Include="..\..\Source\EntityManager.cpp" />
     <ClCompile Include="..\..\Source\Graphics\Backend\Dx12\Dx12Device.cpp" />
     <ClCompile Include="..\..\Source\Graphics\Backend\Dx12\Dx12CommandList.cpp" />
-    <ClCompile Include="..\..\Source\Graphics\Backend\Vulkan\VulkanBackend.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Backend\Vulkan\VulkanDevice.cpp" />
     <ClCompile Include="..\..\Source\Graphics\Backend\Vulkan\VulkanCommandList.cpp" />
     <ClCompile Include="..\..\Source\Graphics\Backend\Vulkan\VulkanShaders.cpp" />
     <ClCompile Include="..\..\Source\Graphics\Features\MeshRenderer.cpp" />

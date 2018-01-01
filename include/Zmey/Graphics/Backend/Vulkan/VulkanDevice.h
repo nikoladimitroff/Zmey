@@ -3,7 +3,7 @@
 #include <Zmey/Config.h>
 #ifdef USE_VULKAN
 
-#include <Zmey/Graphics/Backend/Backend.h>
+#include <Zmey/Graphics/Backend/Device.h>
 
 #include <Zmey/Graphics/Backend/Vulkan/VulkanHelpers.h>
 #include <Zmey/Memory/MemoryManagement.h>
@@ -15,16 +15,11 @@ namespace Graphics
 namespace Backend
 {
 
-//class VulkanSemaphore : public Semaphore
-//{
-//public:
-//	VkSemaphore Semaphore;
-//};
-
-class VulkanPipelineState : public PipelineState
+class VulkanPipelineState : public GraphicsPipelineState
 {
 public:
 	VkPipelineLayout Layout;
+	VkDescriptorSetLayout SetLayout;
 	VkPipeline Pipeline;
 	VkRenderPass RenderPass;
 };
@@ -42,58 +37,36 @@ public:
 	VkImageView ImageView;
 };
 
-class VulkanBuffer : public Buffer
+class VulkanDevice : public Device
 {
 public:
-	VkBuffer UploadBufferHandle;
-	VkBuffer BufferHandle;
-	VkDeviceMemory UploadMemory;
-	VkDeviceMemory Memory;
-
-	class VulkanBackend* Backend;
-
-	virtual void* Map() override;
-
-	virtual void Unmap() override;
-};
-
-
-class VulkanBackend : public Backend
-{
-public:
-	VulkanBackend();
+	VulkanDevice();
 
 	virtual void Initialize(WindowHandle windowHandle) override;
 
-	virtual Shader* CreateShader() override;
-	virtual void DestroyShader(Shader* shader) override;
-	virtual PipelineState* CreatePipelineState(const PipelineStateDesc& desc) override;
-	virtual void DestroyPipelineState(PipelineState* state) override;
+	virtual GraphicsPipelineState* CreateGraphicsPipelineState(const GraphicsPipelineStateDesc& desc) override;
+	virtual void DestroyGraphicsPipelineState(GraphicsPipelineState* state) override;
 
 	virtual CommandList* CreateCommandList() override;
 	virtual void DestroyCommandList(CommandList* list) override;
 	virtual void SubmitCommandList(CommandList* list) override;
 
-	//virtual Semaphore* CreateCommandListSemaphore() override;
-	//virtual void DestroySemaphore(Semaphore* semaphore) override;
-
-	//virtual RenderPass* CreateRenderPass() override;
-	//virtual void DestroyRenderPass(RenderPass* pass) override;
-
 	virtual Framebuffer* CreateFramebuffer(ImageView* imageView) override;
 	virtual void DestroyFramebuffer(Framebuffer* framebuffer) override;
 
-	virtual ImageView* CreateImageView() override;
-	virtual void DestroyImageView(ImageView* imageView) override;
-
 	virtual Buffer* CreateBuffer(uint32_t size, BufferUsage usage) override;
 	virtual void DestroyBuffer(Buffer* buffer) override;
+
+	virtual Texture* CreateTexture(uint32_t width, uint32_t height, PixelFormat format) override;
+	virtual void DestroyTexture(Texture* texture) override;
 
 	virtual uint32_t GetSwapChainBuffers() override;
 	virtual ImageView* GetSwapChainImageView(uint32_t index) override;
 
 	virtual uint32_t AcquireNextSwapChainImage() override;
 	virtual void Present(uint32_t imageIndex) override;
+
+	VkDevice GetNativeDevice() { return m_Device; }
 
 private:
 	VulkanInstanceHandle m_Instance;
@@ -126,7 +99,9 @@ private:
 	VkSemaphore m_ImageAvailable;
 	VkSemaphore m_RenderFinishedAvailable;
 
-	friend class VulkanBuffer; // TODO: remove
+	VkSampler m_StaticSampler;
+
+	friend class VulkanBuffer; // TODO: remove me
 };
 
 }

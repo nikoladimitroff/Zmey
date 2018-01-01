@@ -24,8 +24,8 @@ cbuffer VertexPushs : register(b0) PUSH_CONSTANT
 	float3 EyePosition;
 };
 
-Texture2D txBuffer : register(t0);
-SamplerState txBufferSampler : register(s0);
+Texture2D txBuffer : register(t0) SET_BINDING(0);
+SamplerState txBufferSampler : register(s0) SET_BINDING(1);
 
 VertexOutput VertexShaderMain(VertexInput input)
 {
