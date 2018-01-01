@@ -1,7 +1,4 @@
 {
-    "name" : "Spell", 
-    "extends" : "", 
-    "version" : "1.0", 
     "components" : [
         {
             "name" : "physics"
@@ -21,5 +18,8 @@
             "name" : "mesh", 
             "glTF_node_index" : 10
         }
-    ]
+    ], 
+    "name" : "Spell", 
+    "version" : "1.0", 
+    "extends" : ""
 }

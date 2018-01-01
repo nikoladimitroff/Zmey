@@ -43,8 +43,8 @@ float4 PixelShaderMain(VertexOutput input) : SV_TARGET
 	// Simple diffuse lighting
 	float4 color = float4(Color, 1.0);
 
-	float4 texColor = txBuffer.Sample(txBufferSampler, input.TextureUV);
-	color = /*color **/ texColor;
+	//float4 texColor = txBuffer.Sample(txBufferSampler, input.TextureUV);
+	//color = /*color **/ texColor;
 
 	// diffuse
 	float diffuseFactor = saturate(dot(input.Normal, -LightDirection));

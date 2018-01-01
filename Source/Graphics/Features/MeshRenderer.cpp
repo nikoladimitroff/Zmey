@@ -94,7 +94,7 @@ void MeshRenderer::GenerateCommands(FrameData& frameData, RenderPass pass, ViewT
 	lightDir = glm::normalize(lightDir);
 	list->SetPushConstants(data.MeshesPipelineState, 2 * sizeof(Matrix4x4) + sizeof(Vector4), sizeof(Vector3), &lightDir);
 	list->SetPushConstants(data.MeshesPipelineState, 2 * sizeof(Matrix4x4) + sizeof(Vector4) + sizeof(Vector4), sizeof(Vector3), &frameData.EyePosition);
-	list->SetShaderResourceView(data.MeshesPipelineState, data.TextureManager.GetTexture(frameData.TextureToUse));
+	//list->SetShaderResourceView(data.MeshesPipelineState, data.TextureManager.GetTexture(frameData.TextureToUse));
 
 	for (auto i = 0u; i < frameData.MeshHandles.size(); ++i)
 	{

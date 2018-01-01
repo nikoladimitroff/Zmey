@@ -149,9 +149,6 @@ void EngineLoop::RunImpl()
 	playerView.SetupProjection(width, height, glm::radians(90.0f), 0.1f, 1000.0f);
 	playerView.SetupView(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 14.0f, 1.0f));
 
-	// TODO: remove me
-	auto txHandle = Zmey::Modules::ResourceLoader->LoadResource("Content/Meshes/Vampire_A_Lusth/textures/Vampire_diffuse.dds");
-
 	Zmey::Name worldName = m_Game->LoadResources();
 	Modules::ResourceLoader->WaitForResource(worldName);
 	const World* world = Modules::ResourceLoader->AsWorld(worldName);
@@ -188,7 +185,6 @@ void EngineLoop::RunImpl()
 
 		// Gather render data
 		frameDatas[currentFrameData].FrameIndex = frameIndex++;
-		frameDatas[currentFrameData].TextureToUse = *Zmey::Modules::ResourceLoader->AsTextureHandle(txHandle); // TODO: remove me 
 		playerView.GatherData(frameDatas[currentFrameData]);
 
 		GatherDataData gatherData{ m_World, frameDatas[currentFrameData] };
