@@ -36,7 +36,10 @@ RendererInterface::~RendererInterface()
 		m_Device->DestroyCommandList(list);
 	}
 
-	m_Device->DestroyGraphicsPipelineState(m_Data.MeshesPipelineState);
+	if (m_Data.MeshesPipelineState)
+	{
+		m_Device->DestroyGraphicsPipelineState(m_Data.MeshesPipelineState);
+	}
 	for (auto& rtv : m_SwapChainFramebuffers)
 	{
 		m_Device->DestroyFramebuffer(rtv);

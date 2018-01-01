@@ -35,6 +35,8 @@ public:
 		{
 			thread.join();
 		}
+
+		m_WorkerThreads.clear();
 	}
 private:
 	void WorkerThreadEntryPoint();
