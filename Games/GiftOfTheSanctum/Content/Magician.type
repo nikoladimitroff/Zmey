@@ -1,4 +1,6 @@
 {
+    "name" : "Magician", 
+    "extends" : "", 
     "components" : [
         {
             "name" : "physics"
@@ -7,7 +9,5 @@
             "name" : "transform"
         }
     ], 
-    "version" : "1.0", 
-    "extends" : "", 
-    "name" : "Magician"
+    "version" : "1.0"
 }

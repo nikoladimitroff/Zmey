@@ -4,6 +4,7 @@ struct VertexInput
 {
 	float3 Position : POSITION0;
 	float3 Normal : NORMAL0;
+	float2 TextureUV : TEXCOORD0;
 };
 
 struct VertexOutput
@@ -11,6 +12,7 @@ struct VertexOutput
 	float4 Position : SV_POSITION;
 	float3 WorldPosition : POSITION0;
 	float3 Normal : NORMAL0;
+	float2 TextureUV : TEXCOORD0;
 };
 
 cbuffer VertexPushs : register(b0) PUSH_CONSTANT
@@ -31,6 +33,7 @@ VertexOutput VertexShaderMain(VertexInput input)
 	result.Position = mul(WorldViewProjectionMatrix, float4(input.Position, 1.0));
 	result.WorldPosition = mul(WorldMatrix, float4(input.Position, 1.0)).xyz;
 	result.Normal = normalize(mul(WorldMatrix, float4(input.Normal, 0.0)).xyz);
+	result.TextureUV = input.TextureUV;
 
 	return result;
 }
@@ -40,11 +43,8 @@ float4 PixelShaderMain(VertexOutput input) : SV_TARGET
 	// Simple diffuse lighting
 	float4 color = float4(Color, 1.0);
 
-	// TEST CODE:
-	float maxWidth = 1280;
-	float maxHeight = 720;
-	float4 texColor = txBuffer.Sample(txBufferSampler, float2(input.Position.x / maxWidth, input.Position.y / maxHeight));
-	color = color * texColor;
+	float4 texColor = txBuffer.Sample(txBufferSampler, input.TextureUV);
+	color = /*color **/ texColor;
 
 	// diffuse
 	float diffuseFactor = saturate(dot(input.Normal, -LightDirection));

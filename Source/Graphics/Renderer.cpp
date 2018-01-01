@@ -40,7 +40,8 @@ bool RendererInterface::CreateWindowSurface(WindowHandle handle)
 	desc.PixelShader = Backend::Shader{ (const unsigned char*)Backend::Shaders::g_MeshPS, Backend::Shaders::g_MeshPSSize };
 #endif
 	desc.Layout.Elements.push_back(Backend::InputElement{ "POSITION", 0, Backend::InputElementFormat::Float3, 0, 0 });
-	desc.Layout.Elements.push_back(Backend::InputElement{ "NORMAL", 0, Backend::InputElementFormat::Float3, 0, 3 * sizeof(float)});
+	desc.Layout.Elements.push_back(Backend::InputElement{ "NORMAL", 0, Backend::InputElementFormat::Float3, 0, 3 * sizeof(float) });
+	desc.Layout.Elements.push_back(Backend::InputElement{ "TEXCOORD", 0, Backend::InputElementFormat::Float2, 0, 6 * sizeof(float)});
 	desc.Topology = Backend::PrimitiveTopology::TriangleList;
 	m_Data.MeshesPipelineState = m_Device->CreateGraphicsPipelineState(desc);
 

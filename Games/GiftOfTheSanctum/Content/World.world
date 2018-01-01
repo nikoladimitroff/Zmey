@@ -1,5 +1,5 @@
 {
-    "version" : "1.0", 
+    "name" : "city-of-township", 
     "extends" : "city-template", 
     "entities" : [
         {
@@ -13,12 +13,6 @@
                     ]
                 }, 
                 {
-                    "name" : "transform", 
-                    "scale" : [
-                        1.0, 
-                        1.0, 
-                        1.0
-                    ], 
                     "rotation" : [
                         0.0, 
                         0.0, 
@@ -29,16 +23,22 @@
                         0.4079437255859375, 
                         2.3354034423828125, 
                         0.8683605194091797
-                    ]
+                    ], 
+                    "scale" : [
+                        1.0, 
+                        1.0, 
+                        1.0
+                    ], 
+                    "name" : "transform"
                 }, 
                 {
+                    "glTF_node_index" : 0, 
                     "name" : "mesh", 
                     "color" : [
                         0.8000000715255737, 
                         0.03469003736972809, 
                         0.042545996606349945
-                    ], 
-                    "glTF_node_index" : 0
+                    ]
                 }
             ]
         }, 
@@ -53,12 +53,6 @@
                     ]
                 }, 
                 {
-                    "name" : "transform", 
-                    "scale" : [
-                        1.0, 
-                        1.0, 
-                        1.0
-                    ], 
                     "rotation" : [
                         0.7071068286895752, 
                         0.0, 
@@ -69,7 +63,13 @@
                         1.880676507949829, 
                         0.7469357848167419, 
                         -10.283686637878418
-                    ]
+                    ], 
+                    "scale" : [
+                        1.0, 
+                        1.0, 
+                        1.0
+                    ], 
+                    "name" : "transform"
                 }
             ]
         }, 
@@ -84,12 +84,6 @@
                     ]
                 }, 
                 {
-                    "name" : "transform", 
-                    "scale" : [
-                        1.0, 
-                        1.0, 
-                        1.0
-                    ], 
                     "rotation" : [
                         0.7071068286895752, 
                         0.0, 
@@ -100,7 +94,13 @@
                         1.880676507949829, 
                         0.7469357848167419, 
                         10.636601448059082
-                    ]
+                    ], 
+                    "scale" : [
+                        1.0, 
+                        1.0, 
+                        1.0
+                    ], 
+                    "name" : "transform"
                 }
             ]
         }, 
@@ -115,12 +115,6 @@
                     ]
                 }, 
                 {
-                    "name" : "transform", 
-                    "scale" : [
-                        1.0, 
-                        1.0, 
-                        1.0
-                    ], 
                     "rotation" : [
                         0.0, 
                         0.0, 
@@ -130,12 +124,18 @@
                     "position" : [
                         0.0, 
                         -0.250000536441803, 
-                        0.0
-                    ]
+                        -0.023533165454864502
+                    ], 
+                    "scale" : [
+                        1.0, 
+                        1.0, 
+                        1.0
+                    ], 
+                    "name" : "transform"
                 }, 
                 {
-                    "name" : "mesh", 
-                    "glTF_node_index" : 3
+                    "glTF_node_index" : 3, 
+                    "name" : "mesh"
                 }
             ]
         }, 
@@ -150,12 +150,6 @@
                     ]
                 }, 
                 {
-                    "name" : "transform", 
-                    "scale" : [
-                        1.0, 
-                        1.0, 
-                        1.0
-                    ], 
                     "rotation" : [
                         0.0, 
                         0.0, 
@@ -166,11 +160,17 @@
                         0.0, 
                         -0.250000536441803, 
                         0.0
-                    ]
+                    ], 
+                    "scale" : [
+                        1.0, 
+                        1.0, 
+                        1.0
+                    ], 
+                    "name" : "transform"
                 }, 
                 {
-                    "name" : "mesh", 
-                    "glTF_node_index" : 4
+                    "glTF_node_index" : 4, 
+                    "name" : "mesh"
                 }
             ]
         }, 
@@ -185,12 +185,6 @@
                     ]
                 }, 
                 {
-                    "name" : "transform", 
-                    "scale" : [
-                        1.0, 
-                        1.0, 
-                        1.0
-                    ], 
                     "rotation" : [
                         0.0, 
                         0.0, 
@@ -200,12 +194,18 @@
                     "position" : [
                         0.0, 
                         -0.250000536441803, 
-                        0.0
-                    ]
+                        -0.03292068839073181
+                    ], 
+                    "scale" : [
+                        1.0, 
+                        1.0, 
+                        1.0
+                    ], 
+                    "name" : "transform"
                 }, 
                 {
-                    "name" : "mesh", 
-                    "glTF_node_index" : 5
+                    "glTF_node_index" : 5, 
+                    "name" : "mesh"
                 }
             ]
         }, 
@@ -220,12 +220,6 @@
                     ]
                 }, 
                 {
-                    "name" : "transform", 
-                    "scale" : [
-                        1.0, 
-                        1.0, 
-                        1.0
-                    ], 
                     "rotation" : [
                         0.0, 
                         0.0, 
@@ -236,16 +230,22 @@
                         0.0, 
                         -0.250000536441803, 
                         0.0
-                    ]
+                    ], 
+                    "scale" : [
+                        1.0, 
+                        1.0, 
+                        1.0
+                    ], 
+                    "name" : "transform"
                 }, 
                 {
-                    "name" : "mesh", 
-                    "glTF_node_index" : 6
+                    "glTF_node_index" : 6, 
+                    "name" : "mesh"
                 }
             ]
         }, 
         {
-            "type" : "Floor", 
+            "type" : "SpawnPoint", 
             "compiler-id" : 1, 
             "components" : [
                 {
@@ -255,12 +255,6 @@
                     ]
                 }, 
                 {
-                    "name" : "transform", 
-                    "scale" : [
-                        1.0, 
-                        1.0, 
-                        1.0
-                    ], 
                     "rotation" : [
                         0.0, 
                         0.0, 
@@ -271,11 +265,17 @@
                         0.0, 
                         -0.250000536441803, 
                         0.0
-                    ]
+                    ], 
+                    "scale" : [
+                        1.0, 
+                        1.0, 
+                        1.0
+                    ], 
+                    "name" : "transform"
                 }, 
                 {
-                    "name" : "mesh", 
-                    "glTF_node_index" : 7
+                    "glTF_node_index" : 7, 
+                    "name" : "mesh"
                 }
             ]
         }, 
@@ -290,12 +290,6 @@
                     ]
                 }, 
                 {
-                    "name" : "transform", 
-                    "scale" : [
-                        1.0, 
-                        1.0, 
-                        1.0
-                    ], 
                     "rotation" : [
                         0.0, 
                         0.0, 
@@ -306,11 +300,17 @@
                         0.0, 
                         -0.250000536441803, 
                         0.0
-                    ]
+                    ], 
+                    "scale" : [
+                        1.0, 
+                        1.0, 
+                        1.0
+                    ], 
+                    "name" : "transform"
                 }, 
                 {
-                    "name" : "mesh", 
-                    "glTF_node_index" : 8
+                    "glTF_node_index" : 8, 
+                    "name" : "mesh"
                 }
             ]
         }, 
@@ -325,12 +325,6 @@
                     ]
                 }, 
                 {
-                    "name" : "transform", 
-                    "scale" : [
-                        1.0, 
-                        1.0, 
-                        1.0
-                    ], 
                     "rotation" : [
                         0.0, 
                         0.0, 
@@ -341,19 +335,25 @@
                         1.8748650550842285, 
                         2.689826726913452, 
                         4.328875541687012
-                    ]
+                    ], 
+                    "scale" : [
+                        1.0, 
+                        1.0, 
+                        1.0
+                    ], 
+                    "name" : "transform"
                 }, 
                 {
+                    "glTF_node_index" : 9, 
                     "name" : "mesh", 
                     "color" : [
                         0.048980820924043655, 
                         0.05243249237537384, 
                         0.8000000715255737
-                    ], 
-                    "glTF_node_index" : 9
+                    ]
                 }
             ]
         }
     ], 
-    "name" : "city-of-township"
+    "version" : "1.0"
 }

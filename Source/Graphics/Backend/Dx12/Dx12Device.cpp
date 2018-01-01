@@ -23,6 +23,8 @@ inline DXGI_FORMAT InputElementFormatToDx12(InputElementFormat format)
 {
 	switch (format)
 	{
+	case InputElementFormat::Float2:
+		return DXGI_FORMAT_R32G32_FLOAT;
 	case InputElementFormat::Float3:
 		return DXGI_FORMAT_R32G32B32_FLOAT;
 	default:

@@ -18,6 +18,7 @@ struct Shader
 
 enum class InputElementFormat : uint8_t
 {
+	Float2,
 	Float3
 };
 

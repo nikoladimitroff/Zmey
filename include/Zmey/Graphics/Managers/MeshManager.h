@@ -13,6 +13,7 @@ struct MeshVertex
 {
 	Vector3 Position;
 	Vector3 Normal;
+	Vector2 TextureUV;
 };
 
 struct MeshDataHeader
