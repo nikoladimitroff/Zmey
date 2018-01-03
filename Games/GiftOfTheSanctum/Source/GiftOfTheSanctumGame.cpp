@@ -10,7 +10,7 @@
 #include <Zmey/Components/TransformManager.h>
 #include <Zmey/Components/TagManager.h>
 #include <Zmey/Physics/PhysicsComponentManager.h>
-#include <iostream>
+
 namespace
 {
 float NullifyNearZero(float value)
@@ -33,7 +33,6 @@ void GiftOfTheSanctumGame::InitializePlayerController(unsigned index)
 	{
 		Zmey::Modules.InputController.AddListenerForAction(Zmey::Name("WalkX"), index, [this, index](float axisValue, float deltaTime)
 		{
-			std::cout << axisValue << std::endl;
 			auto transform = GetWorld()->GetManager<Zmey::Components::TransformManager>().Lookup(m_Players.Entity[index]);
 			transform.Position().x += NullifyNearZero(axisValue) * deltaTime * m_Players.WalkingSpeed[index];
 		});
