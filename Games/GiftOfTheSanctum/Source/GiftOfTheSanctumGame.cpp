@@ -92,6 +92,10 @@ void GiftOfTheSanctumGame::Initialize()
 
 	// SetupPlayersToSpawnPoints
 	SetupPlayersToSpawnPoints();
+
+	GetWorld()->GetManager<SpellComponent>().SetSpellExpireListener([this](Zmey::EntityId id) {
+		GetWorld()->DestroyEntity(id);
+	});
 }
 
 void GiftOfTheSanctumGame::SetupPlayersToSpawnPoints()
@@ -118,13 +122,13 @@ void GiftOfTheSanctumGame::CastSpell(uint8_t playerIndex, uint8_t spellIndex)
 
 
 	//Append spell instance to active spells
-	auto spellManager = GetWorld()->GetManager<SpellComponent>();
+	auto& spellManager = GetWorld()->GetManager<SpellComponent>();
 	spellManager.Push(SpellComponent::EntryDescriptor{
 	1.0f,//InitialSpeed
 	1.0f,//ImpactDamage
 	1.0f,//InitialMass
 	1.0f,//CooldownTime
-	1.0f,//ExpireTime
+	1.0f,//LifeTime
 	spellId//EntityId
 		});
 }
