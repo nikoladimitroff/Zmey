@@ -11,5 +11,5 @@ using ComponentIndex = uint16_t;
 
 #define DECLARE_EXTERNAL_COMPONENT_MANAGER(ClassName) \
 	public: \
-		##ClassName(World& world) : ComponentManager(world) {} \
+		##ClassName( Zmey::World& world) : ComponentManager(world) {} \
 		const static Zmey::ComponentIndex SZmeyComponentManagerIndex
