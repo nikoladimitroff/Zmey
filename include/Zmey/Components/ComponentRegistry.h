@@ -63,7 +63,7 @@ namespace Components
 		&Zmey::Components::InstantiateManager<##Class##>, \
 		DefaultsToBlob, \
 		ToBlob, \
-		Priority) \
+		Priority)
 
 #define DEFINE_EXTERNAL_COMPONENT_MANAGER(Class, ShortName, DefaultsToBlob, ToBlob) \
 	const Zmey::ComponentIndex Class##::SZmeyComponentManagerIndex = Zmey::Components::GetNextComponentManagerIndex(); \
@@ -71,7 +71,8 @@ namespace Components
 		Class##::SZmeyComponentManagerIndex, \
 		&Zmey::Components::InstantiateManager<##Class##>, \
 		DefaultsToBlob, \
-		ToBlob)
+		ToBlob, \
+		100)
 }
 
 }
