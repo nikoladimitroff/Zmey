@@ -1,7 +1,7 @@
 #include <string>
 
 #include <Zmey/EngineLoop.h>
-
+#include <Zmey/Modules.h>
 #include "Incinerator.h"
 
 
@@ -18,6 +18,7 @@ int main(int argc, char** argv)
 	Zmey::EngineLoop loop(nullptr); // Neccessary to initialize the engine TODO: change the api to something not as ugly
 	Incinerator incinerator;
 	incinerator.Incinerate(options);
-
+	Zmey::Modules.JobSystem.Quit();
+	Zmey::Modules.Uninitialize();
 	return 0;
 }
