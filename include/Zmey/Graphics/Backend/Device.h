@@ -6,6 +6,7 @@
 #include <Zmey/Memory/MemoryManagement.h>
 #include <Zmey/Platform/Platform.h>
 #include <Zmey/Graphics/GraphicsObjects.h>
+#include <Zmey/Math/Math.h>
 
 namespace Zmey
 {
@@ -14,8 +15,11 @@ namespace Graphics
 namespace Backend
 {
 
-class Framebuffer
-{};
+struct Framebuffer
+{
+	uint32_t Width;
+	uint32_t Height;
+};
 
 class ImageView
 {};
@@ -30,9 +34,9 @@ public:
 	virtual GraphicsPipelineState* CreateGraphicsPipelineState(const GraphicsPipelineStateDesc& desc) = 0;
 	virtual void DestroyGraphicsPipelineState(GraphicsPipelineState* state) = 0;
 
-	virtual CommandList* CreateCommandList() = 0;
+	virtual CommandList* CreateCommandList(bool test = false) = 0;
 	virtual void DestroyCommandList(CommandList* list) = 0;
-	virtual void SubmitCommandList(CommandList* list) = 0;
+	virtual void SubmitCommandLists(CommandList** lists, uint32_t count) = 0;
 
 	virtual Framebuffer* CreateFramebuffer(ImageView* imageView) = 0;
 	virtual void DestroyFramebuffer(Framebuffer* framebuffer) = 0;
@@ -48,6 +52,8 @@ public:
 	virtual uint32_t AcquireNextSwapChainImage() = 0;
 
 	virtual void Present(uint32_t imageIndex) = 0;
+
+	virtual UVector2 GetSwapChainSize() = 0;
 };
 
 Device* CreateBackendDevice();

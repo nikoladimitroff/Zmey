@@ -26,7 +26,7 @@ void Dx12CommandList::EndRecording()
 	CmdList->Close();
 }
 
-void Dx12CommandList::BeginRenderPass(Framebuffer* fb)
+void Dx12CommandList::BeginRenderPass(Framebuffer* fb, bool clear)
 {
 	auto dxfb = reinterpret_cast<Dx12Framebuffer*>(fb);
 
@@ -40,18 +40,21 @@ void Dx12CommandList::BeginRenderPass(Framebuffer* fb)
 
 	CmdList->ResourceBarrier(1, &barrier);
 
-	const float clearColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-	CmdList->ClearRenderTargetView(dxfb->RTV, clearColor, 0, nullptr);
+	if (clear)
+	{
+		const float clearColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+		CmdList->ClearRenderTargetView(dxfb->RTV, clearColor, 0, nullptr);
 
-	CmdList->ClearDepthStencilView(dxfb->DSV, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+		CmdList->ClearDepthStencilView(dxfb->DSV, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+	}
 
 	CmdList->OMSetRenderTargets(1, &dxfb->RTV, FALSE, &dxfb->DSV);
 
 	D3D12_VIEWPORT viewport;
 	viewport.TopLeftX = 0;
 	viewport.TopLeftY = 0;
-	viewport.Width = 1280;
-	viewport.Height = 720;
+	viewport.Width = float(fb->Width);
+	viewport.Height = float(fb->Height);
 	viewport.MinDepth = 0;
 	viewport.MaxDepth = 1;
 	CmdList->RSSetViewports(1, &viewport);
@@ -59,8 +62,8 @@ void Dx12CommandList::BeginRenderPass(Framebuffer* fb)
 	D3D12_RECT scissor;
 	scissor.left = 0;
 	scissor.top = 0;
-	scissor.right = 1280;
-	scissor.bottom = 720;
+	scissor.right = fb->Width;
+	scissor.bottom = fb->Height;
 	CmdList->RSSetScissorRects(1, &scissor);
 }
 
@@ -75,6 +78,16 @@ void Dx12CommandList::EndRenderPass(Framebuffer* fb)
 	barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 
 	CmdList->ResourceBarrier(1, &barrier);
+}
+
+void Dx12CommandList::SetScissor(float x, float y, float width, float height)
+{
+	D3D12_RECT scissor;
+	scissor.left = LONG(x);
+	scissor.top = LONG(y);
+	scissor.right = LONG(width);
+	scissor.bottom = LONG(height);
+	CmdList->RSSetScissorRects(1, &scissor);
 }
 
 namespace
@@ -103,6 +116,11 @@ void Dx12CommandList::BindGraphicsPipelineState(GraphicsPipelineState* state)
 void Dx12CommandList::Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t startVertex, uint32_t startInstance)
 {
 	CmdList->DrawInstanced(vertexCount, instanceCount, startVertex, startInstance);
+}
+
+void Dx12CommandList::DrawIndexed(uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, uint32_t vertexOffset, uint32_t firstInstance)
+{
+	CmdList->DrawIndexedInstanced(indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
 }
 
 void Dx12CommandList::SetPushConstants(GraphicsPipelineState* layout, uint32_t offset, uint32_t count, const void* data)

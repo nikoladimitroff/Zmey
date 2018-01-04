@@ -15,10 +15,10 @@ namespace Backend
 {
 namespace Shaders
 {
-namespace Rects
+namespace UI
 {
-#include "../../Source/Graphics/Shaders/Compiled/DirectX/RectsVS.h"
-#include "../../Source/Graphics/Shaders/Compiled/DirectX/RectsPS.h"
+#include "../../Source/Graphics/Shaders/Compiled/DirectX/UIVS.h"
+#include "../../Source/Graphics/Shaders/Compiled/DirectX/UIPS.h"
 }
 
 namespace Mesh

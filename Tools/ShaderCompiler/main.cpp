@@ -69,8 +69,6 @@ int main()
 		const auto filename = sSourceFolder + shader + ".hlsl";
 		const auto finalname = sOutputFolder + shader;
 
-		const auto entryName = shader.substr(3);
-
 		std::cout << "Compiling " << shader << "..." << std::endl;
 
 		std::string profile;

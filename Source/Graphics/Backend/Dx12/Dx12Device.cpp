@@ -23,12 +23,16 @@ inline DXGI_FORMAT InputElementFormatToDx12(InputElementFormat format)
 {
 	switch (format)
 	{
+	case InputElementFormat::RGBA8:
+		return DXGI_FORMAT_R8G8B8A8_UNORM;
 	case InputElementFormat::Float2:
 		return DXGI_FORMAT_R32G32_FLOAT;
 	case InputElementFormat::Float3:
 		return DXGI_FORMAT_R32G32B32_FLOAT;
+	case InputElementFormat::Float4:
+		return DXGI_FORMAT_R32G32B32A32_FLOAT;
 	default:
-		assert(false);
+		NOT_REACHED();
 		break;
 	}
 
@@ -93,8 +97,8 @@ void Dx12Device::Initialize(WindowHandle windowHandle)
 
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
 	swapChainDesc.BufferCount = 2;
-	swapChainDesc.Width = 1280;
-	swapChainDesc.Height = 720;
+	swapChainDesc.Width = 0;
+	swapChainDesc.Height = 0;
 	swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
@@ -113,6 +117,12 @@ void Dx12Device::Initialize(WindowHandle windowHandle)
 	swapChain.As(&m_SwapChain);
 
 	CHECK_SUCCESS(m_Factory->MakeWindowAssociation(HWND(windowHandle), DXGI_MWA_NO_ALT_ENTER));
+
+	{
+		DXGI_SWAP_CHAIN_DESC1 realDesc;
+		m_SwapChain->GetDesc1(&realDesc);
+		m_SwapChainSize = Vector2(realDesc.Width, realDesc.Height);
+	}
 
 	UINT rtvDescriptorSize;
 	// Create descriptor heaps.
@@ -160,8 +170,8 @@ void Dx12Device::Initialize(WindowHandle windowHandle)
 			D3D12_RESOURCE_DESC desc;
 			desc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 			desc.Alignment = 0;
-			desc.Width = 1280;
-			desc.Height = 720;
+			desc.Width = m_SwapChainSize.x;
+			desc.Height = m_SwapChainSize.y;
 			desc.DepthOrArraySize = 1;
 			desc.MipLevels = 1;
 			desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
@@ -202,6 +212,25 @@ void Dx12Device::Initialize(WindowHandle windowHandle)
 	}
 }
 
+namespace
+{
+D3D12_CULL_MODE CullModeToDx12(CullMode mode)
+{
+	switch (mode)
+	{
+	case CullMode::None:
+		return D3D12_CULL_MODE_NONE;
+	case CullMode::Front:
+		return D3D12_CULL_MODE_FRONT;
+	case CullMode::Back:
+		return D3D12_CULL_MODE_BACK;
+	default:
+		NOT_REACHED();
+		return D3D12_CULL_MODE_NONE;
+	}
+}
+}
+
 GraphicsPipelineState* Dx12Device::CreateGraphicsPipelineState(const GraphicsPipelineStateDesc& psDesc)
 {
 	TEMP_ALLOCATOR_SCOPE;
@@ -209,7 +238,7 @@ GraphicsPipelineState* Dx12Device::CreateGraphicsPipelineState(const GraphicsPip
 	D3D12_ROOT_PARAMETER rootParam;
 	rootParam.ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
 	rootParam.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
-	rootParam.Constants.Num32BitValues = 43;
+	rootParam.Constants.Num32BitValues = psDesc.ResourceTable.NumPushConstants;
 	rootParam.Constants.RegisterSpace = 0;
 	rootParam.Constants.ShaderRegister = 0;
 
@@ -227,10 +256,10 @@ GraphicsPipelineState* Dx12Device::CreateGraphicsPipelineState(const GraphicsPip
 	rootParam2.DescriptorTable.pDescriptorRanges = &range;
 
 	D3D12_STATIC_SAMPLER_DESC sampler;
-	sampler.Filter = D3D12_FILTER_MIN_MAG_MIP_POINT;
-	sampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-	sampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
-	sampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+	sampler.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
+	sampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	sampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+	sampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
 	sampler.MipLODBias = 0;
 	sampler.MaxAnisotropy = 0;
 	sampler.MinLOD = 0;
@@ -283,7 +312,7 @@ GraphicsPipelineState* Dx12Device::CreateGraphicsPipelineState(const GraphicsPip
 	desc.PS.BytecodeLength = psDesc.PixelShader.Size;
 
 	desc.RasterizerState.FillMode = D3D12_FILL_MODE_SOLID;
-	desc.RasterizerState.CullMode = D3D12_CULL_MODE_BACK;
+	desc.RasterizerState.CullMode = CullModeToDx12(psDesc.Rasterizer.CullMode);
 	desc.RasterizerState.FrontCounterClockwise = TRUE;
 	desc.RasterizerState.DepthBias = D3D12_DEFAULT_DEPTH_BIAS;
 	desc.RasterizerState.DepthBiasClamp = D3D12_DEFAULT_DEPTH_BIAS_CLAMP;
@@ -298,18 +327,18 @@ GraphicsPipelineState* Dx12Device::CreateGraphicsPipelineState(const GraphicsPip
 	desc.BlendState.IndependentBlendEnable = FALSE;
 	const D3D12_RENDER_TARGET_BLEND_DESC defaultRenderTargetBlendDesc =
 	{
-		FALSE,FALSE,
-		D3D12_BLEND_ONE, D3D12_BLEND_ZERO, D3D12_BLEND_OP_ADD,
-		D3D12_BLEND_ONE, D3D12_BLEND_ZERO, D3D12_BLEND_OP_ADD,
+		psDesc.Blend.BlendEnable ? TRUE : FALSE,FALSE,
+		D3D12_BLEND_SRC_ALPHA, D3D12_BLEND_INV_SRC_ALPHA, D3D12_BLEND_OP_ADD,
+		D3D12_BLEND_INV_SRC_ALPHA, D3D12_BLEND_ZERO, D3D12_BLEND_OP_ADD,
 		D3D12_LOGIC_OP_NOOP,
 		D3D12_COLOR_WRITE_ENABLE_ALL,
 	};
 	for (UINT i = 0; i < D3D12_SIMULTANEOUS_RENDER_TARGET_COUNT; ++i)
 		desc.BlendState.RenderTarget[i] = defaultRenderTargetBlendDesc;
 
-	desc.DepthStencilState.DepthEnable = TRUE;
+	desc.DepthStencilState.DepthEnable = psDesc.DepthStencil.DepthEnable ? TRUE : FALSE;
 	desc.DepthStencilState.StencilEnable = FALSE;
-	desc.DepthStencilState.DepthWriteMask = D3D12_DEPTH_WRITE_MASK_ALL;
+	desc.DepthStencilState.DepthWriteMask = psDesc.DepthStencil.DepthWrite ? D3D12_DEPTH_WRITE_MASK_ALL : D3D12_DEPTH_WRITE_MASK_ZERO;
 	desc.DepthStencilState.DepthFunc = D3D12_COMPARISON_FUNC_LESS;
 
 	desc.SampleMask = UINT_MAX;
@@ -483,6 +512,8 @@ Framebuffer* Dx12Device::CreateFramebuffer(ImageView* imageView)
 	result->RTV = view->RTVHandle;
 	result->DSResource = m_DSV.Get();
 	result->DSV = m_DSVHandle;
+	result->Width = m_SwapChainSize.x;
+	result->Height = m_SwapChainSize.y;
 	return result;
 }
 
@@ -491,7 +522,7 @@ void Dx12Device::DestroyFramebuffer(Framebuffer* framebuffer)
 	delete framebuffer;
 }
 
-CommandList* Dx12Device::CreateCommandList()
+CommandList* Dx12Device::CreateCommandList(bool test)
 {
 	ID3D12GraphicsCommandList* list;
 	m_Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_CommandAllocator.Get(), nullptr, IID_PPV_ARGS(&list));
@@ -518,10 +549,15 @@ void Dx12Device::DestroyCommandList(CommandList* list)
 	delete list;
 }
 
-void Dx12Device::SubmitCommandList(CommandList* list)
+void Dx12Device::SubmitCommandLists(CommandList** lists, uint32_t count)
 {
-	ID3D12CommandList* l = reinterpret_cast<Dx12CommandList*>(list)->CmdList.Get();
-	m_GraphicsQueue->ExecuteCommandLists(1, &l);
+	TEMP_ALLOCATOR_SCOPE;
+	tmp::vector<ID3D12CommandList*> cmdLists;
+	for (auto i = 0u; i < count; ++i)
+	{
+		cmdLists.push_back(reinterpret_cast<Dx12CommandList*>(lists[i])->CmdList.Get());
+	}
+	m_GraphicsQueue->ExecuteCommandLists(count, cmdLists.data());
 }
 
 // TODO(alex): extract to non Dx12 header

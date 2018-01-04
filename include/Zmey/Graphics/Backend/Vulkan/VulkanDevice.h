@@ -47,9 +47,9 @@ public:
 	virtual GraphicsPipelineState* CreateGraphicsPipelineState(const GraphicsPipelineStateDesc& desc) override;
 	virtual void DestroyGraphicsPipelineState(GraphicsPipelineState* state) override;
 
-	virtual CommandList* CreateCommandList() override;
+	virtual CommandList* CreateCommandList(bool test) override;
 	virtual void DestroyCommandList(CommandList* list) override;
-	virtual void SubmitCommandList(CommandList* list) override;
+	virtual void SubmitCommandLists(CommandList** list, uint32_t count) override;
 
 	virtual Framebuffer* CreateFramebuffer(ImageView* imageView) override;
 	virtual void DestroyFramebuffer(Framebuffer* framebuffer) override;
@@ -88,7 +88,8 @@ private:
 	VkFormat m_SwapChainImageFormat;
 	VkExtent2D m_SwapChainExtent;
 
-	VulkanCommandPoolHandle m_CommandPool{ VulkanCommandPoolDeleter{&m_Device} };
+	VulkanCommandPoolHandle m_CommandPool{ VulkanCommandPoolDeleter{ &m_Device } };
+	VulkanCommandPoolHandle m_UICommandPool{ VulkanCommandPoolDeleter{&m_Device} };
 
 	// Depth stencil
 	VkImage m_DepthStencil;

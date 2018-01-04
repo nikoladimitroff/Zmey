@@ -13,6 +13,8 @@
 #include <Zmey/Graphics/Managers/UploadHeap.h>
 #include <stdint.h>
 
+struct ImDrawData;
+
 namespace Zmey
 {
 
@@ -52,9 +54,14 @@ public:
 
 	bool CheckIfFrameCompleted(uint64_t frameIndex);
 
+	UVector2 GetSwapChainSize();
+
 	// TODO: This is very weird to be here.
 	MeshHandle MeshLoaded(stl::vector<uint8_t>&& data);
 	TextureHandle TextureLoaded(stl::vector<uint8_t>&& data);
+	TextureHandle UITextureLoaded(uint8_t* data, uint32_t width, uint32_t height);
+
+	void RecordUICommandList(ImDrawData* data);
 
 private:
 	void PrepareData(FrameData& frameData);
@@ -89,8 +96,22 @@ private:
 	{
 		stl::vector<uint8_t> Data;
 		Backend::Texture* Texture;
+		uint64_t StartOffsetInData;
+		uint32_t ActualDataSize;
 	};
 	stl::vector<TextureDataToUpload> m_TextureToUpload;
+
+	struct UIData
+	{
+		Backend::GraphicsPipelineState* PipelineState;
+		Backend::CommandList* CommandLists[5];
+		Backend::Buffer* VertexBuffers[5] = {nullptr, nullptr};
+		Backend::Buffer* IndexBuffers[5] = {nullptr, nullptr};
+		uint8_t CurrentIndex = 0; // TODO: take this from FrameData
+		bool HasData[5] = { false, false };
+	};
+
+	UIData m_UIData;
 };
 
 }

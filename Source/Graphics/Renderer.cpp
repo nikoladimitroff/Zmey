@@ -8,9 +8,11 @@
 
 #include <Zmey/Graphics/Backend/Device.h>
 #include <Zmey/Graphics/Backend/CommandList.h>
+#include <Zmey/Graphics/Backend/Buffer.h>
 
 #include <Zmey/ResourceLoader/DDSLoader.h>
 
+#include <imgui/imgui.h>
 
 //TODO(alex): remove this
 #include <Zmey/Graphics/Backend/Dx12/Dx12Shaders.h>
@@ -66,6 +68,8 @@ bool RendererInterface::CreateWindowSurface(WindowHandle handle)
 	desc.Layout.Elements.push_back(Backend::InputElement{ "NORMAL", 0, Backend::InputElementFormat::Float3, 0, 3 * sizeof(float) });
 	desc.Layout.Elements.push_back(Backend::InputElement{ "TEXCOORD", 0, Backend::InputElementFormat::Float2, 0, 6 * sizeof(float)});
 	desc.Topology = Backend::PrimitiveTopology::TriangleList;
+	desc.ResourceTable.NumPushConstants = 43;
+
 	m_Data.MeshesPipelineState = m_Device->CreateGraphicsPipelineState(desc);
 
 	auto swapChainCount = m_Device->GetSwapChainBuffers();
@@ -77,7 +81,38 @@ bool RendererInterface::CreateWindowSurface(WindowHandle handle)
 		m_CommandLists.push_back(m_Device->CreateCommandList());
 	}
 
+	// UI
+	{
+		Backend::GraphicsPipelineStateDesc uiDesc;
+#ifdef USE_DX12
+		uiDesc.VertexShader = Backend::Shader{ Backend::Shaders::UI::g_VertexShaderMain, sizeof(Backend::Shaders::UI::g_VertexShaderMain) };
+		uiDesc.PixelShader = Backend::Shader{ Backend::Shaders::UI::g_PixelShaderMain, sizeof(Backend::Shaders::UI::g_PixelShaderMain) };
+#else
+		uiDesc.VertexShader = Backend::Shader{ (const unsigned char*)Backend::Shaders::g_UIVS, Backend::Shaders::g_UIVSSize };
+		uiDesc.PixelShader = Backend::Shader{ (const unsigned char*)Backend::Shaders::g_UIPS, Backend::Shaders::g_UIPSSize };
+#endif
+		uiDesc.Layout.Elements.push_back(Backend::InputElement{ "POSITION", 0, Backend::InputElementFormat::Float2, 0, 0 });
+		uiDesc.Layout.Elements.push_back(Backend::InputElement{ "TEXCOORD", 0, Backend::InputElementFormat::Float2, 0, 2 * sizeof(float) });
+		uiDesc.Layout.Elements.push_back(Backend::InputElement{ "COLOR", 0, Backend::InputElementFormat::RGBA8, 0, 4 * sizeof(float) });
+		uiDesc.Topology = Backend::PrimitiveTopology::TriangleList;
+		uiDesc.ResourceTable.NumPushConstants = 4;
+		uiDesc.Rasterizer.CullMode = Backend::CullMode::None;
+		uiDesc.Blend.BlendEnable = true;
+		uiDesc.DepthStencil.DepthEnable = false;
+		uiDesc.DepthStencil.DepthWrite = false;
+
+		m_UIData.PipelineState = m_Device->CreateGraphicsPipelineState(uiDesc);
+
+		m_UIData.CommandLists[0] = m_Device->CreateCommandList(true);
+		m_UIData.CommandLists[1] = m_Device->CreateCommandList(true);
+	}
+
 	return true;
+}
+
+UVector2 RendererInterface::GetSwapChainSize()
+{
+	return m_Device->GetSwapChainSize();
 }
 
 
@@ -93,15 +128,15 @@ void RendererInterface::UploadTextures()
 	uploadList->BeginRecording();
 	for (const auto& texData : m_TextureToUpload)
 	{
-		//TODO: find way not to initialize new loader
-		DDSLoader loader(texData.Data.data(), texData.Data.size());
-
-		auto imageDataSize = loader.GetHeight() * loader.GetWidth() * 4;// TODO: Bytes per pixel for format
-		m_Data.UploadHeap.CopyDataToTexture(uploadList, imageDataSize, loader.GetImageData(), texData.Texture);
+		m_Data.UploadHeap.CopyDataToTexture(
+			uploadList,
+			texData.ActualDataSize,
+			texData.Data.data() + texData.StartOffsetInData,
+			texData.Texture);
 	}
 
 	uploadList->EndRecording();
-	m_Device->SubmitCommandList(uploadList);
+	m_Device->SubmitCommandLists(&uploadList, 1);
 	// TODO: maybe wait for execution
 	m_Device->DestroyCommandList(uploadList);
 
@@ -149,7 +184,16 @@ void RendererInterface::GenerateCommands(FrameData& frameData, uint32_t imageInd
 
 	m_CommandLists[imageIndex]->EndRecording();
 
-	m_Device->SubmitCommandList(m_CommandLists[imageIndex]);
+	TEMP_ALLOCATOR_SCOPE;
+	tmp::vector<Backend::CommandList*> cmdLists;
+	cmdLists.push_back(m_CommandLists[imageIndex]);
+	if (m_UIData.HasData[imageIndex])
+	{
+		cmdLists.push_back(m_UIData.CommandLists[imageIndex]);
+		m_UIData.HasData[imageIndex] = false;
+	}
+
+	m_Device->SubmitCommandLists(cmdLists.data(), uint32_t(cmdLists.size()));
 }
 
 void RendererInterface::Present(FrameData& frameData, uint32_t imageIndex)
@@ -241,11 +285,122 @@ TextureHandle RendererInterface::TextureLoaded(stl::vector<uint8_t>&& data)
 		format);
 
 	TextureDataToUpload upload;
+	upload.Texture = m_Data.TextureManager.GetTexture(result);
+	upload.ActualDataSize = loader.GetWidth() * loader.GetHeight() * 4;//TODO: Take image format into account
+	upload.StartOffsetInData = loader.GetImageData() - data.data();
 	upload.Data = std::move(data);
+	m_TextureToUpload.push_back(std::move(upload));
+
+	return result;
+}
+
+TextureHandle RendererInterface::UITextureLoaded(uint8_t* data, uint32_t width, uint32_t height)
+{
+	auto result = m_Data.TextureManager.CreateTexture(width, height, PixelFormat::B8G8R8A8);
+
+	TextureDataToUpload upload;
+	upload.Data.assign(data, data + (width * height * 4));
+	upload.ActualDataSize = width * height * 4;
+	upload.StartOffsetInData = 0u;
 	upload.Texture = m_Data.TextureManager.GetTexture(result);
 	m_TextureToUpload.push_back(std::move(upload));
 
 	return result;
+}
+
+void RendererInterface::RecordUICommandList(ImDrawData* drawData)
+{
+	if (drawData->CmdListsCount == 0)
+	{
+		m_UIData.CurrentIndex = (m_UIData.CurrentIndex + 1) % m_CommandLists.size();
+		return;
+	}
+
+	m_UIData.HasData[m_UIData.CurrentIndex] = true;
+
+	auto vertexDataSize = uint32_t(drawData->TotalVtxCount * sizeof(ImDrawVert));
+	if (!m_UIData.VertexBuffers[m_UIData.CurrentIndex]
+		|| m_UIData.VertexBuffers[m_UIData.CurrentIndex]->Size < vertexDataSize)
+	{
+		if (m_UIData.VertexBuffers[m_UIData.CurrentIndex])
+		{
+			m_Device->DestroyBuffer(m_UIData.VertexBuffers[m_UIData.CurrentIndex]);
+		}
+		m_UIData.VertexBuffers[m_UIData.CurrentIndex] = m_Device->CreateBuffer(vertexDataSize, Backend::BufferUsage::Vertex);
+	}
+
+	auto indexDataSize = uint32_t(drawData->TotalIdxCount * sizeof(ImDrawIdx));
+	if (!m_UIData.IndexBuffers[m_UIData.CurrentIndex]
+		|| m_UIData.IndexBuffers[m_UIData.CurrentIndex]->Size < indexDataSize)
+	{
+		if (m_UIData.IndexBuffers[m_UIData.CurrentIndex])
+		{
+			m_Device->DestroyBuffer(m_UIData.IndexBuffers[m_UIData.CurrentIndex]);
+		}
+		m_UIData.IndexBuffers[m_UIData.CurrentIndex] = m_Device->CreateBuffer(vertexDataSize, Backend::BufferUsage::Index);
+	}
+
+	// Upload data
+	auto vertexMemory = reinterpret_cast<ImDrawVert*>(m_UIData.VertexBuffers[m_UIData.CurrentIndex]->Map());
+	auto indexMemory = reinterpret_cast<ImDrawIdx*>(m_UIData.IndexBuffers[m_UIData.CurrentIndex]->Map());
+	for (int i = 0; i < drawData->CmdListsCount; ++i)
+	{
+		const ImDrawList* cmd = drawData->CmdLists[i];
+		memcpy(vertexMemory, cmd->VtxBuffer.Data, cmd->VtxBuffer.Size * sizeof(ImDrawVert));
+		memcpy(indexMemory, cmd->IdxBuffer.Data, cmd->IdxBuffer.Size * sizeof(ImDrawIdx));
+		vertexMemory += cmd->VtxBuffer.Size;
+		indexMemory += cmd->IdxBuffer.Size;
+	}
+	m_UIData.VertexBuffers[m_UIData.CurrentIndex]->Unmap();
+	m_UIData.IndexBuffers[m_UIData.CurrentIndex]->Unmap();
+
+	auto& cmdList = m_UIData.CommandLists[m_UIData.CurrentIndex];
+	cmdList->BeginRecording();
+	cmdList->BeginRenderPass(m_SwapChainFramebuffers[m_UIData.CurrentIndex], false); // This is wrong index
+
+	ImGuiIO& io = ImGui::GetIO();
+
+	cmdList->BindGraphicsPipelineState(m_UIData.PipelineState);
+	// TODO: take this from command
+	cmdList->SetShaderResourceView(m_UIData.PipelineState, m_Data.TextureManager.GetTexture(reinterpret_cast<TextureHandle>(io.Fonts->TexID)));
+	cmdList->SetVertexBuffer(m_UIData.VertexBuffers[m_UIData.CurrentIndex], sizeof(ImDrawVert));
+	cmdList->SetIndexBuffer(m_UIData.IndexBuffers[m_UIData.CurrentIndex]);
+
+	float scale[2];
+	scale[0] = 2.0f / io.DisplaySize.x;
+	scale[1] = -2.0f / io.DisplaySize.y;
+	float translate[2];
+	translate[0] = -1.0f;
+	translate[1] = 1.0f;
+	cmdList->SetPushConstants(m_UIData.PipelineState, 0, sizeof(float) * 2, scale);
+	cmdList->SetPushConstants(m_UIData.PipelineState, sizeof(float) * 2, sizeof(float) * 2, translate);
+
+	int vertexOffset = 0;
+	int indexOffset = 0;
+	for (int i = 0; i < drawData->CmdListsCount; ++i)
+	{
+		const ImDrawList* uiCmdList = drawData->CmdLists[i];
+		for (int cmdIdx = 0; cmdIdx < uiCmdList->CmdBuffer.Size; ++cmdIdx)
+		{
+			const ImDrawCmd* cmd = &uiCmdList->CmdBuffer[cmdIdx];
+			if (cmd->UserCallback)
+			{
+				cmd->UserCallback(uiCmdList, cmd);
+			}
+			else
+			{
+				cmdList->SetScissor(cmd->ClipRect.x, cmd->ClipRect.y, cmd->ClipRect.z, cmd->ClipRect.w);
+				cmdList->DrawIndexed(cmd->ElemCount, 1, indexOffset, vertexOffset, 0);
+			}
+			indexOffset += cmd->ElemCount;
+		}
+		vertexOffset += uiCmdList->VtxBuffer.Size;
+	}
+
+	cmdList->EndRenderPass(m_SwapChainFramebuffers[m_UIData.CurrentIndex]);
+	cmdList->EndRecording();
+
+	m_UIData.CurrentIndex = (m_UIData.CurrentIndex + 1) % m_CommandLists.size();
 }
 }
 }

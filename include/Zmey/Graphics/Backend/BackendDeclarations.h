@@ -8,7 +8,7 @@ namespace Backend
 {
 
 struct GraphicsPipelineState;
-class Framebuffer;
+struct Framebuffer;
 
 class CommandList;
 
