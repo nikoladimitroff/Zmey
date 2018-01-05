@@ -96,7 +96,6 @@ private:
 		D3D12_CPU_DESCRIPTOR_HANDLE RTVHandle;
 	};
 	stl::vector<SwapChainImage> m_SwapChainImages;
-	ComPtr<ID3D12CommandAllocator> m_CommandAllocator;
 	ComPtr<ID3D12Fence> m_Fence;
 	UINT64 m_FenceValue;
 	HANDLE m_FenceEvent;

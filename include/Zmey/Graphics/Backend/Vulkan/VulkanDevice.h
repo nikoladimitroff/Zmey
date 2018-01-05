@@ -66,6 +66,8 @@ public:
 	virtual uint32_t AcquireNextSwapChainImage() override;
 	virtual void Present(uint32_t imageIndex) override;
 
+	virtual UVector2 GetSwapChainSize() override;
+
 	VkDevice GetNativeDevice() { return m_Device; }
 
 private:

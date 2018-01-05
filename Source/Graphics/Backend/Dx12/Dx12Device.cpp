@@ -200,8 +200,6 @@ void Dx12Device::Initialize(WindowHandle windowHandle)
 		}
 	}
 
-	CHECK_SUCCESS(m_Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_CommandAllocator)));
-
 	// Create synchronization objects.
 	{
 		m_Device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_Fence));
@@ -500,8 +498,6 @@ void Dx12Device::Present(uint32_t imageIndex)
 		m_Fence->SetEventOnCompletion(fence, m_FenceEvent);
 		WaitForSingleObject(m_FenceEvent, INFINITE);
 	}
-
-	m_CommandAllocator->Reset();
 }
 
 Framebuffer* Dx12Device::CreateFramebuffer(ImageView* imageView)
@@ -524,8 +520,11 @@ void Dx12Device::DestroyFramebuffer(Framebuffer* framebuffer)
 
 CommandList* Dx12Device::CreateCommandList(bool test)
 {
+	ID3D12CommandAllocator* allocator;
+	CHECK_SUCCESS(m_Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&allocator)));
+
 	ID3D12GraphicsCommandList* list;
-	m_Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_CommandAllocator.Get(), nullptr, IID_PPV_ARGS(&list));
+	CHECK_SUCCESS(m_Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, allocator, nullptr, IID_PPV_ARGS(&list)));
 
 	list->Close();
 
@@ -538,7 +537,7 @@ CommandList* Dx12Device::CreateCommandList(bool test)
 
 	auto result = new Dx12CommandList;
 	result->CmdList = list;
-	result->CmdAllocator = m_CommandAllocator.Get();
+	result->CmdAllocator = allocator;
 	result->SRVHeap = srvHeap;
 
 	return result;

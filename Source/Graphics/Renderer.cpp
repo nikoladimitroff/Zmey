@@ -29,7 +29,7 @@ namespace Globals
 Backend::Device* g_Device;
 }
 
-RendererInterface::~RendererInterface()
+Renderer::~Renderer()
 {
 	m_Data.BufferManager.DestroyResources();
 
@@ -50,9 +50,7 @@ RendererInterface::~RendererInterface()
 	m_Device.reset();
 }
 
-
-
-bool RendererInterface::CreateWindowSurface(WindowHandle handle)
+bool Renderer::CreateWindowSurface(WindowHandle handle)
 {
 	m_Device->Initialize(handle);
 
@@ -101,23 +99,20 @@ bool RendererInterface::CreateWindowSurface(WindowHandle handle)
 		uiDesc.DepthStencil.DepthEnable = false;
 		uiDesc.DepthStencil.DepthWrite = false;
 
-		m_UIData.PipelineState = m_Device->CreateGraphicsPipelineState(uiDesc);
-
-		m_UIData.CommandLists[0] = m_Device->CreateCommandList(true);
-		m_UIData.CommandLists[1] = m_Device->CreateCommandList(true);
+		m_Data.UIData.PipelineState = m_Device->CreateGraphicsPipelineState(uiDesc);
 	}
 
 	return true;
 }
 
-UVector2 RendererInterface::GetSwapChainSize()
+UVector2 Renderer::GetSwapChainSize()
 {
 	return m_Device->GetSwapChainSize();
 }
 
 
 
-void RendererInterface::UploadTextures()
+void Renderer::UploadTextures()
 {
 	if (m_TextureToUpload.empty())
 	{
@@ -143,7 +138,7 @@ void RendererInterface::UploadTextures()
 	m_TextureToUpload.clear();
 }
 
-void RendererInterface::GatherData(FrameData& frameData, World& world)
+void Renderer::GatherData(FrameData& frameData, World& world)
 {
 	for (auto gatherData : m_Features.GatherDataPtrs)
 	{
@@ -151,7 +146,7 @@ void RendererInterface::GatherData(FrameData& frameData, World& world)
 	}
 }
 
-void RendererInterface::PrepareData(FrameData& frameData)
+void Renderer::PrepareData(FrameData& frameData)
 {
 	UploadTextures();
 
@@ -161,7 +156,7 @@ void RendererInterface::PrepareData(FrameData& frameData)
 	}
 }
 
-void RendererInterface::GenerateCommands(FrameData& frameData, uint32_t imageIndex)
+void Renderer::GenerateCommands(FrameData& frameData, uint32_t imageIndex)
 {
 	// TODO: High level render passes
 
@@ -179,6 +174,15 @@ void RendererInterface::GenerateCommands(FrameData& frameData, uint32_t imageInd
 			m_Data);
 	}
 
+	for (auto generateCommands : m_Features.GenerateCommandsPtrs)
+	{
+		generateCommands(frameData,
+			RenderPass::UI,
+			ViewType::PlayerView,
+			m_CommandLists[imageIndex],
+			m_Data);
+	}
+
 	m_CommandLists[imageIndex]->EndRenderPass(m_SwapChainFramebuffers[imageIndex]);
 	// End Main pass on PlayerView
 
@@ -187,21 +191,16 @@ void RendererInterface::GenerateCommands(FrameData& frameData, uint32_t imageInd
 	TEMP_ALLOCATOR_SCOPE;
 	tmp::vector<Backend::CommandList*> cmdLists;
 	cmdLists.push_back(m_CommandLists[imageIndex]);
-	if (m_UIData.HasData[imageIndex])
-	{
-		cmdLists.push_back(m_UIData.CommandLists[imageIndex]);
-		m_UIData.HasData[imageIndex] = false;
-	}
 
 	m_Device->SubmitCommandLists(cmdLists.data(), uint32_t(cmdLists.size()));
 }
 
-void RendererInterface::Present(FrameData& frameData, uint32_t imageIndex)
+void Renderer::Present(FrameData& frameData, uint32_t imageIndex)
 {
 	m_Device->Present(imageIndex);
 }
 
-void RendererInterface::RenderFrame(FrameData& frameData)
+void Renderer::RenderFrame(FrameData& frameData)
 {
 	uint32_t imageIndex = m_Device->AcquireNextSwapChainImage();
 
@@ -214,12 +213,12 @@ void RendererInterface::RenderFrame(FrameData& frameData)
 	LastCompletedFrame = frameData.FrameIndex;
 }
 
-bool RendererInterface::CheckIfFrameCompleted(uint64_t frameIndex)
+bool Renderer::CheckIfFrameCompleted(uint64_t frameIndex)
 {
 	return frameIndex <= LastCompletedFrame;
 }
 
-RendererInterface::RendererInterface()
+Renderer::Renderer()
 	: m_Device(Backend::CreateBackendDevice())
 	, m_Data(m_Device.get())
 {
@@ -240,7 +239,7 @@ RendererInterface::RendererInterface()
 #undef REGISTER_FEATURE
 }
 
-MeshHandle RendererInterface::MeshLoaded(stl::vector<uint8_t>&& data)
+MeshHandle Renderer::MeshLoaded(stl::vector<uint8_t>&& data)
 {
 	if (data.size() < sizeof(MeshDataHeader))
 	{
@@ -264,7 +263,7 @@ MeshHandle RendererInterface::MeshLoaded(stl::vector<uint8_t>&& data)
 	return m_Data.MeshManager.CreateMesh(newMesh);
 }
 
-TextureHandle RendererInterface::TextureLoaded(stl::vector<uint8_t>&& data)
+TextureHandle Renderer::TextureLoaded(stl::vector<uint8_t>&& data)
 {
 	DDSLoader loader(data.data(), data.size());
 
@@ -294,7 +293,7 @@ TextureHandle RendererInterface::TextureLoaded(stl::vector<uint8_t>&& data)
 	return result;
 }
 
-TextureHandle RendererInterface::UITextureLoaded(uint8_t* data, uint32_t width, uint32_t height)
+TextureHandle Renderer::UITextureLoaded(uint8_t* data, uint32_t width, uint32_t height)
 {
 	auto result = m_Data.TextureManager.CreateTexture(width, height, PixelFormat::B8G8R8A8);
 
@@ -306,101 +305,6 @@ TextureHandle RendererInterface::UITextureLoaded(uint8_t* data, uint32_t width, 
 	m_TextureToUpload.push_back(std::move(upload));
 
 	return result;
-}
-
-void RendererInterface::RecordUICommandList(ImDrawData* drawData)
-{
-	if (drawData->CmdListsCount == 0)
-	{
-		m_UIData.CurrentIndex = (m_UIData.CurrentIndex + 1) % m_CommandLists.size();
-		return;
-	}
-
-	m_UIData.HasData[m_UIData.CurrentIndex] = true;
-
-	auto vertexDataSize = uint32_t(drawData->TotalVtxCount * sizeof(ImDrawVert));
-	if (!m_UIData.VertexBuffers[m_UIData.CurrentIndex]
-		|| m_UIData.VertexBuffers[m_UIData.CurrentIndex]->Size < vertexDataSize)
-	{
-		if (m_UIData.VertexBuffers[m_UIData.CurrentIndex])
-		{
-			m_Device->DestroyBuffer(m_UIData.VertexBuffers[m_UIData.CurrentIndex]);
-		}
-		m_UIData.VertexBuffers[m_UIData.CurrentIndex] = m_Device->CreateBuffer(vertexDataSize, Backend::BufferUsage::Vertex);
-	}
-
-	auto indexDataSize = uint32_t(drawData->TotalIdxCount * sizeof(ImDrawIdx));
-	if (!m_UIData.IndexBuffers[m_UIData.CurrentIndex]
-		|| m_UIData.IndexBuffers[m_UIData.CurrentIndex]->Size < indexDataSize)
-	{
-		if (m_UIData.IndexBuffers[m_UIData.CurrentIndex])
-		{
-			m_Device->DestroyBuffer(m_UIData.IndexBuffers[m_UIData.CurrentIndex]);
-		}
-		m_UIData.IndexBuffers[m_UIData.CurrentIndex] = m_Device->CreateBuffer(vertexDataSize, Backend::BufferUsage::Index);
-	}
-
-	// Upload data
-	auto vertexMemory = reinterpret_cast<ImDrawVert*>(m_UIData.VertexBuffers[m_UIData.CurrentIndex]->Map());
-	auto indexMemory = reinterpret_cast<ImDrawIdx*>(m_UIData.IndexBuffers[m_UIData.CurrentIndex]->Map());
-	for (int i = 0; i < drawData->CmdListsCount; ++i)
-	{
-		const ImDrawList* cmd = drawData->CmdLists[i];
-		memcpy(vertexMemory, cmd->VtxBuffer.Data, cmd->VtxBuffer.Size * sizeof(ImDrawVert));
-		memcpy(indexMemory, cmd->IdxBuffer.Data, cmd->IdxBuffer.Size * sizeof(ImDrawIdx));
-		vertexMemory += cmd->VtxBuffer.Size;
-		indexMemory += cmd->IdxBuffer.Size;
-	}
-	m_UIData.VertexBuffers[m_UIData.CurrentIndex]->Unmap();
-	m_UIData.IndexBuffers[m_UIData.CurrentIndex]->Unmap();
-
-	auto& cmdList = m_UIData.CommandLists[m_UIData.CurrentIndex];
-	cmdList->BeginRecording();
-	cmdList->BeginRenderPass(m_SwapChainFramebuffers[m_UIData.CurrentIndex], false); // This is wrong index
-
-	ImGuiIO& io = ImGui::GetIO();
-
-	cmdList->BindGraphicsPipelineState(m_UIData.PipelineState);
-	// TODO: take this from command
-	cmdList->SetShaderResourceView(m_UIData.PipelineState, m_Data.TextureManager.GetTexture(reinterpret_cast<TextureHandle>(io.Fonts->TexID)));
-	cmdList->SetVertexBuffer(m_UIData.VertexBuffers[m_UIData.CurrentIndex], sizeof(ImDrawVert));
-	cmdList->SetIndexBuffer(m_UIData.IndexBuffers[m_UIData.CurrentIndex]);
-
-	float scale[2];
-	scale[0] = 2.0f / io.DisplaySize.x;
-	scale[1] = -2.0f / io.DisplaySize.y;
-	float translate[2];
-	translate[0] = -1.0f;
-	translate[1] = 1.0f;
-	cmdList->SetPushConstants(m_UIData.PipelineState, 0, sizeof(float) * 2, scale);
-	cmdList->SetPushConstants(m_UIData.PipelineState, sizeof(float) * 2, sizeof(float) * 2, translate);
-
-	int vertexOffset = 0;
-	int indexOffset = 0;
-	for (int i = 0; i < drawData->CmdListsCount; ++i)
-	{
-		const ImDrawList* uiCmdList = drawData->CmdLists[i];
-		for (int cmdIdx = 0; cmdIdx < uiCmdList->CmdBuffer.Size; ++cmdIdx)
-		{
-			const ImDrawCmd* cmd = &uiCmdList->CmdBuffer[cmdIdx];
-			if (cmd->UserCallback)
-			{
-				cmd->UserCallback(uiCmdList, cmd);
-			}
-			else
-			{
-				cmdList->SetScissor(cmd->ClipRect.x, cmd->ClipRect.y, cmd->ClipRect.z, cmd->ClipRect.w);
-				cmdList->DrawIndexed(cmd->ElemCount, 1, indexOffset, vertexOffset, 0);
-			}
-			indexOffset += cmd->ElemCount;
-		}
-		vertexOffset += uiCmdList->VtxBuffer.Size;
-	}
-
-	cmdList->EndRenderPass(m_SwapChainFramebuffers[m_UIData.CurrentIndex]);
-	cmdList->EndRecording();
-
-	m_UIData.CurrentIndex = (m_UIData.CurrentIndex + 1) % m_CommandLists.size();
 }
 }
 }

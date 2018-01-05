@@ -121,56 +121,11 @@ void GatherData(void* data)
 	Modules.Renderer.GatherData(gatherData->FrameData, *gatherData->WorldInstance);
 }
 
-void GatherUIData(void*)
-{
-	// Create new command list for UI only and record it now.
-	// However it will be executed later with the other command lists
-	ImGui::Render();
-	auto drawData = ImGui::GetDrawData();
-	Modules::Renderer->RecordUICommandList(drawData);
-}
-
-// TODO: remove me
-bool show_demo_window = true;
-bool show_another_window = false;
 void RenderFrame(void* data)
 {
-	{
-		ImGui::NewFrame();
-		{
-			static float f = 0.0f;
-			ImGui::Text("Hello, world!");                           // Some text (you can use a format string too)
-			ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float as a slider from 0.0f to 1.0f
-			if (ImGui::Button("Demo Window"))                       // Use buttons to toggle our bools. We could use Checkbox() as well.
-				show_demo_window ^= 1;
-			if (ImGui::Button("Another Window"))
-				show_another_window ^= 1;
-			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-		}
-
-		// 2. Show another simple window. In most cases you will use an explicit Begin/End pair to name the window.
-		if (show_another_window)
-		{
-			ImGui::Begin("Another Window", &show_another_window);
-			ImGui::Text("Hello from another window!");
-			ImGui::End();
-		}
-
-		// 3. Show the ImGui demo window. Most of the sample code is in ImGui::ShowDemoWindow().
-		if (show_demo_window)
-		{
-			ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver); // Normally user code doesn't need/want to call this because positions are saved in .ini file anyway. Here we just want to make the demo initial state a bit more friendly!
-			ImGui::ShowDemoWindow(&show_demo_window);
-		}
-	}
-	GatherUIData(nullptr);
-
-
-
 	Graphics::FrameData* frameData = (Graphics::FrameData*)data;
 	Modules.Renderer.RenderFrame(*frameData);
 }
-
 }
 
 void EngineLoop::RunImpl()
@@ -185,7 +140,7 @@ void EngineLoop::RunImpl()
 		return;
 	}
 
-	auto swapchainSizes = Modules::Renderer->GetSwapChainSize();
+	auto swapchainSizes = Modules.Renderer.GetSwapChainSize();
 
 	uint64_t frameIndex = 0;
 
@@ -213,13 +168,12 @@ void EngineLoop::RunImpl()
 		auto& io = ImGui::GetIO();
 		io.DisplaySize.x = float(swapchainSizes.x);
 		io.DisplaySize.y = float(swapchainSizes.y);
+		io.IniFilename = nullptr;
 
 		unsigned char* pixels;
 		int w, h;
 		io.Fonts->GetTexDataAsRGBA32(&pixels, &w, &h);
-
-		io.Fonts->TexID = reinterpret_cast<void*>(Modules::Renderer->UITextureLoaded(pixels, w, h));
-
+		io.Fonts->TexID = reinterpret_cast<void*>(Modules.Renderer.UITextureLoaded(pixels, w, h));
 		ImGui::StyleColorsDark();
 	}
 
@@ -233,13 +187,14 @@ void EngineLoop::RunImpl()
 		clock::time_point currentFrameTimestamp = clock::now();
 		clock::duration timeSinceLastFrame = currentFrameTimestamp - lastFrameTmestamp;
 		float deltaTime = timeSinceLastFrame.count() * 1e-9f;
-		//FORMAT_LOG(Error, Zmey, "time %f", deltaTime);
 
 		Modules.Platform.PumpMessages(windowHandle);
 
+		// UI
 		{
 			auto& io = ImGui::GetIO();
 			io.DeltaTime = deltaTime;
+			ImGui::NewFrame();
 		}
 
 		SimulateData simulateData{ m_Game, m_World, deltaTime };
@@ -250,7 +205,6 @@ void EngineLoop::RunImpl()
 		Modules.JobSystem.WaitForCounter(&simulateCounter, 0);
 
 		// TODO: Compute visibility
-
 		// Gather render data
 		frameDatas[currentFrameData].FrameIndex = frameIndex++;
 		playerView.GatherData(frameDatas[currentFrameData]);
@@ -260,14 +214,7 @@ void EngineLoop::RunImpl()
 		Job::Counter gatherDataCounter;
 		Job::JobDecl gatherDataJob{ GatherData, &gatherData };
 		Modules.JobSystem.RunJobs("GatherData", &gatherDataJob, 1, &gatherDataCounter);
-
-		//Job::Counter gatherUIDataCounter;
-		//Job::JobDecl gatherUIDataJob{ GatherUIData, nullptr };
-		//Modules.JobSystem.RunJobs("GatherUIData", &gatherUIDataJob, 1, &gatherUIDataCounter);
-
-		// Wait for both world and ui data gathering
 		Modules.JobSystem.WaitForCounter(&gatherDataCounter, 0);
-		//Modules.JobSystem.WaitForCounter(&gatherUIDataCounter, 0);
 
 		// Wait for previous Render World job in order to not get ahead more than 1 frame
 		Modules.JobSystem.WaitForCounter(&renderCounter, 0);
@@ -279,14 +226,6 @@ void EngineLoop::RunImpl()
 		lastFrameTmestamp = currentFrameTimestamp;
 
 		currentFrameData = (currentFrameData + 1) % 2;
-
-		// TODO: add some text drawing and draw it onto the screen
-		// We cannot use SetWindowTitle because we are changing threads all the time
-		// because of our job system and SetWindowTitle can be called only on the thread
-		// that created the window or it will hang
-		//char title[100];
-		//snprintf(title, 100, "Zmey. Delta Time: %.1fms", deltaTime * 1e3f);
-		//Modules.Platform.SetWindowTitle(windowHandle, title);
 	}
 	Modules.JobSystem.WaitForCounter(&renderCounter, 0);
 

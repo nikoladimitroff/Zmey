@@ -39,13 +39,22 @@ struct RendererData
 
 	// TODO(alex): Add PipelineState Manager and remove this
 	Backend::GraphicsPipelineState* MeshesPipelineState;
+
+	struct UIData
+	{
+		Backend::GraphicsPipelineState* PipelineState = nullptr;
+		Backend::Buffer* VertexBuffers[2] = { nullptr, nullptr };
+		Backend::Buffer* IndexBuffers[2] = { nullptr, nullptr };
+	};
+
+	UIData UIData;
 };
 
-class RendererInterface
+class Renderer
 {
 public:
-	RendererInterface();
-	~RendererInterface();
+	Renderer();
+	~Renderer();
 
 	bool CreateWindowSurface(WindowHandle handle);
 
@@ -60,8 +69,6 @@ public:
 	MeshHandle MeshLoaded(stl::vector<uint8_t>&& data);
 	TextureHandle TextureLoaded(stl::vector<uint8_t>&& data);
 	TextureHandle UITextureLoaded(uint8_t* data, uint32_t width, uint32_t height);
-
-	void RecordUICommandList(ImDrawData* data);
 
 private:
 	void PrepareData(FrameData& frameData);
@@ -100,18 +107,6 @@ private:
 		uint32_t ActualDataSize;
 	};
 	stl::vector<TextureDataToUpload> m_TextureToUpload;
-
-	struct UIData
-	{
-		Backend::GraphicsPipelineState* PipelineState;
-		Backend::CommandList* CommandLists[5];
-		Backend::Buffer* VertexBuffers[5] = {nullptr, nullptr};
-		Backend::Buffer* IndexBuffers[5] = {nullptr, nullptr};
-		uint8_t CurrentIndex = 0; // TODO: take this from FrameData
-		bool HasData[5] = { false, false };
-	};
-
-	UIData m_UIData;
 };
 
 }

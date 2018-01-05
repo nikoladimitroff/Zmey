@@ -12,6 +12,9 @@
 
 #include <imgui/imgui.h>
 
+static bool g_MouseJustPressed[3] = { false, false, false };
+static bool g_MouseCurrentState[3] = { false, false, false };
+
 LRESULT CALLBACK DefaultWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	auto& io = ImGui::GetIO();
@@ -54,33 +57,30 @@ LRESULT CALLBACK DefaultWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARA
 	break;
 	case WM_LBUTTONDOWN:
 		Zmey::Modules.InputController.SetButtonPressed(Zmey::MouseButton::LeftButton, true);
-		io.MouseDown[0] = true;
-
+		g_MouseJustPressed[0] = true;
+		g_MouseCurrentState[0] = true;
 	break;
 	case WM_LBUTTONUP:
 		Zmey::Modules.InputController.SetButtonPressed(Zmey::MouseButton::LeftButton, false);
-		io.MouseDown[0] = false;
-
+		g_MouseCurrentState[0] = false;
 	break;
 	case WM_RBUTTONDOWN:
 		Zmey::Modules.InputController.SetButtonPressed(Zmey::MouseButton::RightButton, true);
-		io.MouseDown[1] = true;
-
+		g_MouseJustPressed[1] = true;
+		g_MouseCurrentState[1] = true;
 	break;
 	case WM_RBUTTONUP:
 		Zmey::Modules.InputController.SetButtonPressed(Zmey::MouseButton::RightButton, false);
-		io.MouseDown[1] = false;
-
+		g_MouseCurrentState[1] = false;
 	break;
 	case WM_MBUTTONDOWN:
 		Zmey::Modules.InputController.SetButtonPressed(Zmey::MouseButton::MiddleButton, true);
-		io.MouseDown[2] = true;
-
+		g_MouseJustPressed[2] = true;
+		g_MouseCurrentState[2] = true;
 	break;
 	case WM_MBUTTONUP:
 		Zmey::Modules.InputController.SetButtonPressed(Zmey::MouseButton::MiddleButton, false);
-		io.MouseDown[2] = false;
-
+		g_MouseCurrentState[2] = false;
 	break;
 	case WM_MOUSEWHEEL:
 		io.MouseWheel += GET_WHEEL_DELTA_WPARAM(wParam) > 0 ? +1.0f : -1.0f;
@@ -211,6 +211,22 @@ void WindowsPlatform::PumpMessages(WindowHandle handle)
 			// TODO: Detect a disconnected controller and nullify all of its inputs
 			UpdateInputControllerFromGamepad(gamepadState, i);
 		}
+	}
+
+	// UI
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		for (int i = 0; i < 3; i++)
+		{
+			// If a mouse press event came, always pass it as "mouse held this frame", so we don't miss click-release events that are shorter than 1 frame.
+			io.MouseDown[i] = g_MouseJustPressed[i] || g_MouseCurrentState[i];
+			g_MouseJustPressed[i] = false;
+		}
+
+		io.KeyCtrl = (GetKeyState(VK_CONTROL) & 0x8000) != 0;
+		io.KeyShift = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
+		io.KeyAlt = (GetKeyState(VK_MENU) & 0x8000) != 0;
+		io.KeySuper = false;
 	}
 }
 

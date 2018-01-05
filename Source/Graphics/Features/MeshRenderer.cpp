@@ -78,16 +78,12 @@ void MeshRenderer::PrepareData(FrameData& frameData, RendererData& data)
 
 void MeshRenderer::GenerateCommands(FrameData& frameData, RenderPass pass, ViewType view, Backend::CommandList* list, RendererData& data)
 {
-	if (view == ViewType::PlayerView
-		&& pass == RenderPass::Main)
+	if (view != ViewType::PlayerView || pass != RenderPass::Main)
 	{
-		list->BindGraphicsPipelineState(data.MeshesPipelineState);
-	}
-	else
-	{
-		assert(false);
+		return;
 	}
 
+	list->BindGraphicsPipelineState(data.MeshesPipelineState);
 	auto viewProjection = frameData.ProjectionMatrix * frameData.ViewMatrix;
 
 	Vector3 lightDir(-1.0, -1.0, 1.0);

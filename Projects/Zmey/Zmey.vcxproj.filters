@@ -311,6 +311,9 @@
     <ClInclude Include="..\..\ThirdParty\include\imgui\stb_truetype.h">
       <Filter>Source\ThirdParty\imgui</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Graphics\Features\UIRenderer.h">
+      <Filter>include\Graphics\Features</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\EngineLoop.cpp">
@@ -417,6 +420,9 @@
     </ClCompile>
     <ClCompile Include="..\..\ThirdParty\include\imgui\imgui_draw.cpp">
       <Filter>Source\ThirdParty\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Features\UIRenderer.cpp">
+      <Filter>Source\Graphics\Features</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

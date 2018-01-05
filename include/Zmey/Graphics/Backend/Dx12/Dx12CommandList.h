@@ -34,7 +34,7 @@ public:
 	virtual void SetIndexBuffer(const Buffer* ibo) override;
 	virtual void CopyBufferToTexture(Buffer* buffer, Texture* texture) override;
 
-	ID3D12CommandAllocator* CmdAllocator;
+	ComPtr<ID3D12CommandAllocator> CmdAllocator;
 	ComPtr<ID3D12GraphicsCommandList> CmdList;
 	ComPtr<ID3D12DescriptorHeap> SRVHeap;
 	uint32_t NextSlot = 0;

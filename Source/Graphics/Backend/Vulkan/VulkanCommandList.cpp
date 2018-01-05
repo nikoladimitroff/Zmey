@@ -42,7 +42,7 @@ void VulkanCommandList::BeginRenderPass(Framebuffer* fb, bool clear)
 	renderPassInfo.renderPass = reinterpret_cast<VulkanFramebuffer*>(fb)->RenderPass;
 	renderPassInfo.framebuffer = reinterpret_cast<VulkanFramebuffer*>(fb)->Framebuffer;
 	renderPassInfo.renderArea.offset = { 0, 0 };
-	renderPassInfo.renderArea.extent = { 1264, 681 };
+	renderPassInfo.renderArea.extent = { fb->Width, fb->Height };
 
 	VkClearValue clearColor[2];
 	clearColor[0].color = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -52,19 +52,20 @@ void VulkanCommandList::BeginRenderPass(Framebuffer* fb, bool clear)
 
 	vkCmdBeginRenderPass(CmdBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
+	// We are using VK_KHR_maintenance1 for negative sized viewport in order to be consistent with Dx12 Viewport
 	VkViewport viewport = {};
 	viewport.x = 0.0f;
-	viewport.y = 681;
-	viewport.width = 1264;
-	viewport.height = -681;
+	viewport.y = float(fb->Height);
+	viewport.width = float(fb->Width);
+	viewport.height = -float(fb->Height);
 	viewport.minDepth = 0.0f;
 	viewport.maxDepth = 1.0f;
 	vkCmdSetViewport(CmdBuffer, 0, 1, &viewport);
 
 	VkRect2D scissor = {};
 	scissor.offset = { 0, 0 };
-	scissor.extent.width = 1264;
-	scissor.extent.height = 681;
+	scissor.extent.width = fb->Width;
+	scissor.extent.height = fb->Height;
 	vkCmdSetScissor(CmdBuffer, 0, 1, &scissor);
 }
 

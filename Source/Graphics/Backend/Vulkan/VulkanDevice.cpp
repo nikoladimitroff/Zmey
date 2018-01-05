@@ -115,14 +115,8 @@ VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilites)
 	}
 	else
 	{
-		// TODO(alex): refactor this
-		int width = 1280, height = 720;
-		VkExtent2D actualExtent = { uint32_t(width), uint32_t(height) };
-
-		actualExtent.width = std::max(capabilites.minImageExtent.width, std::min(capabilites.maxImageExtent.width, actualExtent.width));
-		actualExtent.height = std::max(capabilites.minImageExtent.height, std::min(capabilites.maxImageExtent.height, actualExtent.height));
-
-		return actualExtent;
+		NOT_REACHED();
+		return VkExtent2D{};
 	}
 }
 }
@@ -358,7 +352,8 @@ void VulkanDevice::Initialize(WindowHandle windowHandle)
 		auto presentMode = ChooseSwapPresentMode(presentModes);
 		auto extent = ChooseSwapExtent(capabilities);
 
-		uint32_t imageCount = capabilities.minImageCount + 1;
+		// use at most 2 images, or minImageCount if more than 2
+		uint32_t imageCount = capabilities.minImageCount > 2 ? capabilities.minImageCount : 2;
 		if (capabilities.maxImageCount > 0 && imageCount > capabilities.maxImageCount)
 		{
 			imageCount = capabilities.maxImageCount;
@@ -627,6 +622,8 @@ inline VkFormat InputElementFormatToVulkan(InputElementFormat format)
 {
 	switch (format)
 	{
+	case InputElementFormat::RGBA8:
+		return VK_FORMAT_R8G8B8A8_UNORM;
 	case InputElementFormat::Float2:
 		return VK_FORMAT_R32G32_SFLOAT;
 	case InputElementFormat::Float3:
@@ -651,8 +648,6 @@ inline VkCullModeFlagBits CullModeToVulkan(CullMode mode)
 		return VK_CULL_MODE_FRONT_BIT;
 	case CullMode::Back:
 		return VK_CULL_MODE_BACK_BIT;
-	case CullMode::FrontAndBack:
-		return VK_CULL_MODE_FRONT_AND_BACK;
 	default:
 		NOT_REACHED();
 		return VK_CULL_MODE_NONE;
@@ -722,6 +717,9 @@ GraphicsPipelineState* VulkanDevice::CreateGraphicsPipelineState(const GraphicsP
 
 		switch (ie.Format)
 		{
+		case InputElementFormat::RGBA8:
+			totalSize += sizeof(uint32_t);
+			break;
 		case InputElementFormat::Float2:
 			totalSize += 2 * sizeof(float);
 			break;
@@ -1006,6 +1004,8 @@ Framebuffer* VulkanDevice::CreateFramebuffer(ImageView* imageView)
 	auto result = new VulkanFramebuffer;
 	result->Framebuffer = fb;
 	result->RenderPass = m_Pass;
+	result->Width = m_SwapChainExtent.width;
+	result->Height = m_SwapChainExtent.height;
 	return result;
 }
 
@@ -1285,6 +1285,11 @@ void VulkanDevice::DestroyTexture(Texture* texture)
 	vkDestroyImage(m_Device, vkBuffer->TextureHandle, nullptr);
 	vkFreeMemory(m_Device, vkBuffer->Memory, nullptr);
 	delete texture;
+}
+
+UVector2 VulkanDevice::GetSwapChainSize()
+{
+	return UVector2{ m_SwapChainExtent.width, m_SwapChainExtent.height };
 }
 
 //TODO: move out to new file

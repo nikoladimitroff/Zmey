@@ -38,7 +38,7 @@ GlobalModules::GlobalModules(bool /*initializeFlag*/)
 	// TODO: Num fibers and fiber stack size should be configurable
 	INIT_FIRST_MODULE(JobSystem, Job::CreateJobSystem(std::thread::hardware_concurrency(), 64, 2 * 1024 * 1024))
 	INIT_MODULE(Platform, global::make_unique<Zmey::WindowsPlatform>())
-	INIT_MODULE(Renderer, global::make_unique<Zmey::Graphics::RendererInterface>())
+	INIT_MODULE(Renderer, global::make_unique<Zmey::Graphics::Renderer>())
 	INIT_MODULE(ResourceLoader, global::make_unique<Zmey::ResourceLoader>())
 	INIT_MODULE(SettingsManager, global::make_unique<Zmey::SettingsManager>())
 	INIT_MODULE(InputController, global::make_unique<Zmey::InputController>())

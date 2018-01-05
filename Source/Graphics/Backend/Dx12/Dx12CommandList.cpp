@@ -15,7 +15,8 @@ namespace Backend
 
 void Dx12CommandList::BeginRecording()
 {
-	CmdList->Reset(CmdAllocator, nullptr);
+	CmdAllocator->Reset();
+	CmdList->Reset(CmdAllocator.Get(), nullptr);
 	NextSlot = 0;
 
 	CmdList->SetDescriptorHeaps(1, SRVHeap.GetAddressOf());
