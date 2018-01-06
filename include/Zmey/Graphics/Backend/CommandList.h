@@ -16,7 +16,7 @@ public:
 	virtual void BeginRecording() = 0;
 	virtual void EndRecording() = 0;
 
-	virtual void BeginRenderPass(Framebuffer* fb, bool clear = true) = 0;
+	virtual void BeginRenderPass(Framebuffer* fb) = 0;
 	virtual void EndRenderPass(Framebuffer* fb) = 0;
 
 	virtual void SetScissor(float x, float y, float width, float height) = 0;

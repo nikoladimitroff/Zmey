@@ -519,20 +519,6 @@ void VulkanDevice::Initialize(WindowHandle windowHandle)
 		}
 	}
 
-	{
-		VkCommandPoolCreateInfo poolInfo = {};
-		poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-		poolInfo.queueFamilyIndex = graphicsFamilyIndex;
-		poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-
-		if (vkCreateCommandPool(m_Device, &poolInfo, nullptr, m_UICommandPool.Receive()) != VK_SUCCESS)
-		{
-			LOG(Fatal, Vulkan, "Failed to create command pool!");
-			return;
-		}
-	}
-
-
 	// render pass
 	VkAttachmentDescription colorAttachment = {};
 	colorAttachment.format = m_SwapChainImageFormat;
@@ -1015,11 +1001,11 @@ void VulkanDevice::DestroyFramebuffer(Framebuffer* framebuffer)
 	delete framebuffer;
 }
 
-CommandList* VulkanDevice::CreateCommandList(bool test)
+CommandList* VulkanDevice::CreateCommandList()
 {
 	VkCommandBufferAllocateInfo allocInfo = {};
 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	allocInfo.commandPool = test ? m_UICommandPool : m_CommandPool;
+	allocInfo.commandPool = m_CommandPool;
 	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 	allocInfo.commandBufferCount = 1;
 

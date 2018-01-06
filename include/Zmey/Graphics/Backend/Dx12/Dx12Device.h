@@ -60,7 +60,7 @@ public:
 	virtual GraphicsPipelineState* CreateGraphicsPipelineState(const GraphicsPipelineStateDesc& desc) override;
 	virtual void DestroyGraphicsPipelineState(GraphicsPipelineState* state) override;
 
-	virtual CommandList* CreateCommandList(bool test) override;
+	virtual CommandList* CreateCommandList() override;
 	virtual void DestroyCommandList(CommandList* list) override;
 	virtual void SubmitCommandLists(CommandList** lists, uint32_t count) override;
 

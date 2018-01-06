@@ -21,7 +21,7 @@ public:
 	virtual void BeginRecording() override;
 	virtual void EndRecording() override;
 
-	virtual void BeginRenderPass(Framebuffer* fb, bool clear) override;
+	virtual void BeginRenderPass(Framebuffer* fb) override;
 	virtual void EndRenderPass(Framebuffer* fb) override;
 	virtual void SetScissor(float x, float y, float width, float height) override;
 

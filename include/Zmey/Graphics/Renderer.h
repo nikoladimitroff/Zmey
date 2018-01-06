@@ -13,8 +13,6 @@
 #include <Zmey/Graphics/Managers/UploadHeap.h>
 #include <stdint.h>
 
-struct ImDrawData;
-
 namespace Zmey
 {
 

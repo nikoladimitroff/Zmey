@@ -35,7 +35,7 @@ void VulkanCommandList::EndRecording()
 	}
 }
 
-void VulkanCommandList::BeginRenderPass(Framebuffer* fb, bool clear)
+void VulkanCommandList::BeginRenderPass(Framebuffer* fb)
 {
 	VkRenderPassBeginInfo renderPassInfo = {};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;

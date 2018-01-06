@@ -34,7 +34,7 @@ public:
 	virtual GraphicsPipelineState* CreateGraphicsPipelineState(const GraphicsPipelineStateDesc& desc) = 0;
 	virtual void DestroyGraphicsPipelineState(GraphicsPipelineState* state) = 0;
 
-	virtual CommandList* CreateCommandList(bool test = false) = 0;
+	virtual CommandList* CreateCommandList() = 0;
 	virtual void DestroyCommandList(CommandList* list) = 0;
 	virtual void SubmitCommandLists(CommandList** lists, uint32_t count) = 0;
 

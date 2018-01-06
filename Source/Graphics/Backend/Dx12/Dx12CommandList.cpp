@@ -27,7 +27,7 @@ void Dx12CommandList::EndRecording()
 	CmdList->Close();
 }
 
-void Dx12CommandList::BeginRenderPass(Framebuffer* fb, bool clear)
+void Dx12CommandList::BeginRenderPass(Framebuffer* fb)
 {
 	auto dxfb = reinterpret_cast<Dx12Framebuffer*>(fb);
 
@@ -41,13 +41,10 @@ void Dx12CommandList::BeginRenderPass(Framebuffer* fb, bool clear)
 
 	CmdList->ResourceBarrier(1, &barrier);
 
-	if (clear)
-	{
-		const float clearColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
-		CmdList->ClearRenderTargetView(dxfb->RTV, clearColor, 0, nullptr);
+	const float clearColor[] = { 1.0f, 1.0f, 1.0f, 1.0f };
+	CmdList->ClearRenderTargetView(dxfb->RTV, clearColor, 0, nullptr);
 
-		CmdList->ClearDepthStencilView(dxfb->DSV, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
-	}
+	CmdList->ClearDepthStencilView(dxfb->DSV, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
 	CmdList->OMSetRenderTargets(1, &dxfb->RTV, FALSE, &dxfb->DSV);
 

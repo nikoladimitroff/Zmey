@@ -47,7 +47,7 @@ public:
 	virtual GraphicsPipelineState* CreateGraphicsPipelineState(const GraphicsPipelineStateDesc& desc) override;
 	virtual void DestroyGraphicsPipelineState(GraphicsPipelineState* state) override;
 
-	virtual CommandList* CreateCommandList(bool test) override;
+	virtual CommandList* CreateCommandList() override;
 	virtual void DestroyCommandList(CommandList* list) override;
 	virtual void SubmitCommandLists(CommandList** list, uint32_t count) override;
 
@@ -91,7 +91,6 @@ private:
 	VkExtent2D m_SwapChainExtent;
 
 	VulkanCommandPoolHandle m_CommandPool{ VulkanCommandPoolDeleter{ &m_Device } };
-	VulkanCommandPoolHandle m_UICommandPool{ VulkanCommandPoolDeleter{&m_Device} };
 
 	// Depth stencil
 	VkImage m_DepthStencil;

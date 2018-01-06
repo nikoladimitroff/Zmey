@@ -518,7 +518,7 @@ void Dx12Device::DestroyFramebuffer(Framebuffer* framebuffer)
 	delete framebuffer;
 }
 
-CommandList* Dx12Device::CreateCommandList(bool test)
+CommandList* Dx12Device::CreateCommandList()
 {
 	ID3D12CommandAllocator* allocator;
 	CHECK_SUCCESS(m_Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&allocator)));
