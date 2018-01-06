@@ -20,6 +20,7 @@ public:
 private:
 	void InitializePlayerController(unsigned index);
 	void UpdatePlayers();
+	void DoUI();
 private:
 	Zmey::Utilities::ConstructorInitializable<Zmey::Name> m_WorldName;
 	static const uint8_t MaxPlayers = 2;

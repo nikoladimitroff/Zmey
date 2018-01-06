@@ -41,7 +41,7 @@ public: \
 	// Access the module Foo with Zmey::Modules.Foo
 	DECLARE_MODULE(Zmey::Job::IJobSystem, JobSystem);
 	DECLARE_MODULE(Zmey::IPlatform, Platform);
-	DECLARE_MODULE(Zmey::Graphics::RendererInterface, Renderer);
+	DECLARE_MODULE(Zmey::Graphics::Renderer, Renderer);
 	DECLARE_MODULE(Zmey::ResourceLoader, ResourceLoader);
 	DECLARE_MODULE(Zmey::SettingsManager, SettingsManager);
 	DECLARE_MODULE(Zmey::InputController, InputController);

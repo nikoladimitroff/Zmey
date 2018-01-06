@@ -8,9 +8,11 @@
 
 #include <Zmey/Graphics/Backend/Device.h>
 #include <Zmey/Graphics/Backend/CommandList.h>
+#include <Zmey/Graphics/Backend/Buffer.h>
 
 #include <Zmey/ResourceLoader/DDSLoader.h>
 
+#include <imgui/imgui.h>
 
 //TODO(alex): remove this
 #include <Zmey/Graphics/Backend/Dx12/Dx12Shaders.h>
@@ -27,7 +29,7 @@ namespace Globals
 Backend::Device* g_Device;
 }
 
-RendererInterface::~RendererInterface()
+Renderer::~Renderer()
 {
 	m_Data.BufferManager.DestroyResources();
 
@@ -48,9 +50,7 @@ RendererInterface::~RendererInterface()
 	m_Device.reset();
 }
 
-
-
-bool RendererInterface::CreateWindowSurface(WindowHandle handle)
+bool Renderer::CreateWindowSurface(WindowHandle handle)
 {
 	m_Device->Initialize(handle);
 
@@ -66,6 +66,8 @@ bool RendererInterface::CreateWindowSurface(WindowHandle handle)
 	desc.Layout.Elements.push_back(Backend::InputElement{ "NORMAL", 0, Backend::InputElementFormat::Float3, 0, 3 * sizeof(float) });
 	desc.Layout.Elements.push_back(Backend::InputElement{ "TEXCOORD", 0, Backend::InputElementFormat::Float2, 0, 6 * sizeof(float)});
 	desc.Topology = Backend::PrimitiveTopology::TriangleList;
+	desc.ResourceTable.NumPushConstants = 43;
+
 	m_Data.MeshesPipelineState = m_Device->CreateGraphicsPipelineState(desc);
 
 	auto swapChainCount = m_Device->GetSwapChainBuffers();
@@ -77,12 +79,40 @@ bool RendererInterface::CreateWindowSurface(WindowHandle handle)
 		m_CommandLists.push_back(m_Device->CreateCommandList());
 	}
 
+	// UI
+	{
+		Backend::GraphicsPipelineStateDesc uiDesc;
+#ifdef USE_DX12
+		uiDesc.VertexShader = Backend::Shader{ Backend::Shaders::UI::g_VertexShaderMain, sizeof(Backend::Shaders::UI::g_VertexShaderMain) };
+		uiDesc.PixelShader = Backend::Shader{ Backend::Shaders::UI::g_PixelShaderMain, sizeof(Backend::Shaders::UI::g_PixelShaderMain) };
+#else
+		uiDesc.VertexShader = Backend::Shader{ (const unsigned char*)Backend::Shaders::g_UIVS, Backend::Shaders::g_UIVSSize };
+		uiDesc.PixelShader = Backend::Shader{ (const unsigned char*)Backend::Shaders::g_UIPS, Backend::Shaders::g_UIPSSize };
+#endif
+		uiDesc.Layout.Elements.push_back(Backend::InputElement{ "POSITION", 0, Backend::InputElementFormat::Float2, 0, 0 });
+		uiDesc.Layout.Elements.push_back(Backend::InputElement{ "TEXCOORD", 0, Backend::InputElementFormat::Float2, 0, 2 * sizeof(float) });
+		uiDesc.Layout.Elements.push_back(Backend::InputElement{ "COLOR", 0, Backend::InputElementFormat::RGBA8, 0, 4 * sizeof(float) });
+		uiDesc.Topology = Backend::PrimitiveTopology::TriangleList;
+		uiDesc.ResourceTable.NumPushConstants = 4;
+		uiDesc.Rasterizer.CullMode = Backend::CullMode::None;
+		uiDesc.Blend.BlendEnable = true;
+		uiDesc.DepthStencil.DepthEnable = false;
+		uiDesc.DepthStencil.DepthWrite = false;
+
+		m_Data.UIData.PipelineState = m_Device->CreateGraphicsPipelineState(uiDesc);
+	}
+
 	return true;
+}
+
+UVector2 Renderer::GetSwapChainSize()
+{
+	return m_Device->GetSwapChainSize();
 }
 
 
 
-void RendererInterface::UploadTextures()
+void Renderer::UploadTextures()
 {
 	if (m_TextureToUpload.empty())
 	{
@@ -93,22 +123,22 @@ void RendererInterface::UploadTextures()
 	uploadList->BeginRecording();
 	for (const auto& texData : m_TextureToUpload)
 	{
-		//TODO: find way not to initialize new loader
-		DDSLoader loader(texData.Data.data(), texData.Data.size());
-
-		auto imageDataSize = loader.GetHeight() * loader.GetWidth() * 4;// TODO: Bytes per pixel for format
-		m_Data.UploadHeap.CopyDataToTexture(uploadList, imageDataSize, loader.GetImageData(), texData.Texture);
+		m_Data.UploadHeap.CopyDataToTexture(
+			uploadList,
+			texData.ActualDataSize,
+			texData.Data.data() + texData.StartOffsetInData,
+			texData.Texture);
 	}
 
 	uploadList->EndRecording();
-	m_Device->SubmitCommandList(uploadList);
+	m_Device->SubmitCommandLists(&uploadList, 1);
 	// TODO: maybe wait for execution
 	m_Device->DestroyCommandList(uploadList);
 
 	m_TextureToUpload.clear();
 }
 
-void RendererInterface::GatherData(FrameData& frameData, World& world)
+void Renderer::GatherData(FrameData& frameData, World& world)
 {
 	for (auto gatherData : m_Features.GatherDataPtrs)
 	{
@@ -116,7 +146,7 @@ void RendererInterface::GatherData(FrameData& frameData, World& world)
 	}
 }
 
-void RendererInterface::PrepareData(FrameData& frameData)
+void Renderer::PrepareData(FrameData& frameData)
 {
 	UploadTextures();
 
@@ -126,7 +156,7 @@ void RendererInterface::PrepareData(FrameData& frameData)
 	}
 }
 
-void RendererInterface::GenerateCommands(FrameData& frameData, uint32_t imageIndex)
+void Renderer::GenerateCommands(FrameData& frameData, uint32_t imageIndex)
 {
 	// TODO: High level render passes
 
@@ -144,20 +174,33 @@ void RendererInterface::GenerateCommands(FrameData& frameData, uint32_t imageInd
 			m_Data);
 	}
 
+	for (auto generateCommands : m_Features.GenerateCommandsPtrs)
+	{
+		generateCommands(frameData,
+			RenderPass::UI,
+			ViewType::PlayerView,
+			m_CommandLists[imageIndex],
+			m_Data);
+	}
+
 	m_CommandLists[imageIndex]->EndRenderPass(m_SwapChainFramebuffers[imageIndex]);
 	// End Main pass on PlayerView
 
 	m_CommandLists[imageIndex]->EndRecording();
 
-	m_Device->SubmitCommandList(m_CommandLists[imageIndex]);
+	TEMP_ALLOCATOR_SCOPE;
+	tmp::vector<Backend::CommandList*> cmdLists;
+	cmdLists.push_back(m_CommandLists[imageIndex]);
+
+	m_Device->SubmitCommandLists(cmdLists.data(), uint32_t(cmdLists.size()));
 }
 
-void RendererInterface::Present(FrameData& frameData, uint32_t imageIndex)
+void Renderer::Present(FrameData& frameData, uint32_t imageIndex)
 {
 	m_Device->Present(imageIndex);
 }
 
-void RendererInterface::RenderFrame(FrameData& frameData)
+void Renderer::RenderFrame(FrameData& frameData)
 {
 	uint32_t imageIndex = m_Device->AcquireNextSwapChainImage();
 
@@ -170,12 +213,12 @@ void RendererInterface::RenderFrame(FrameData& frameData)
 	LastCompletedFrame = frameData.FrameIndex;
 }
 
-bool RendererInterface::CheckIfFrameCompleted(uint64_t frameIndex)
+bool Renderer::CheckIfFrameCompleted(uint64_t frameIndex)
 {
 	return frameIndex <= LastCompletedFrame;
 }
 
-RendererInterface::RendererInterface()
+Renderer::Renderer()
 	: m_Device(Backend::CreateBackendDevice())
 	, m_Data(m_Device.get())
 {
@@ -196,7 +239,7 @@ RendererInterface::RendererInterface()
 #undef REGISTER_FEATURE
 }
 
-MeshHandle RendererInterface::MeshLoaded(stl::vector<uint8_t>&& data)
+MeshHandle Renderer::MeshLoaded(stl::vector<uint8_t>&& data)
 {
 	if (data.size() < sizeof(MeshDataHeader))
 	{
@@ -220,7 +263,7 @@ MeshHandle RendererInterface::MeshLoaded(stl::vector<uint8_t>&& data)
 	return m_Data.MeshManager.CreateMesh(newMesh);
 }
 
-TextureHandle RendererInterface::TextureLoaded(stl::vector<uint8_t>&& data)
+TextureHandle Renderer::TextureLoaded(stl::vector<uint8_t>&& data)
 {
 	DDSLoader loader(data.data(), data.size());
 
@@ -241,7 +284,23 @@ TextureHandle RendererInterface::TextureLoaded(stl::vector<uint8_t>&& data)
 		format);
 
 	TextureDataToUpload upload;
+	upload.Texture = m_Data.TextureManager.GetTexture(result);
+	upload.ActualDataSize = loader.GetWidth() * loader.GetHeight() * 4;//TODO: Take image format into account
+	upload.StartOffsetInData = loader.GetImageData() - data.data();
 	upload.Data = std::move(data);
+	m_TextureToUpload.push_back(std::move(upload));
+
+	return result;
+}
+
+TextureHandle Renderer::UITextureLoaded(uint8_t* data, uint32_t width, uint32_t height)
+{
+	auto result = m_Data.TextureManager.CreateTexture(width, height, PixelFormat::B8G8R8A8);
+
+	TextureDataToUpload upload;
+	upload.Data.assign(data, data + (width * height * 4));
+	upload.ActualDataSize = width * height * 4;
+	upload.StartOffsetInData = 0u;
 	upload.Texture = m_Data.TextureManager.GetTexture(result);
 	m_TextureToUpload.push_back(std::move(upload));
 

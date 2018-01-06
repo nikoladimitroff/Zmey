@@ -16,6 +16,8 @@
 
 #include <Zmey/Profile.h>
 
+#include <imgui/imgui.h>
+
 namespace Zmey
 {
 
@@ -124,20 +126,21 @@ void RenderFrame(void* data)
 	Graphics::FrameData* frameData = (Graphics::FrameData*)data;
 	Modules.Renderer.RenderFrame(*frameData);
 }
-
 }
 
 void EngineLoop::RunImpl()
 {
 	// TODO(alex): get this params from somewhere
 	auto width = 1280u;
-	auto height = 720u;
+	auto height = 800u;
 	auto windowHandle = Modules.Platform.SpawnWindow(width, height, "Zmey");
 
 	if (!Modules.Renderer.CreateWindowSurface(windowHandle))
 	{
 		return;
 	}
+
+	auto swapchainSizes = Modules.Renderer.GetSwapChainSize();
 
 	uint64_t frameIndex = 0;
 
@@ -146,7 +149,7 @@ void EngineLoop::RunImpl()
 
 	// Create main Player view
 	Graphics::View playerView(Graphics::ViewType::PlayerView);
-	playerView.SetupProjection(width, height, glm::radians(90.0f), 0.1f, 1000.0f);
+	playerView.SetupProjection(swapchainSizes.x, swapchainSizes.y, glm::radians(90.0f), 0.1f, 1000.0f);
 	playerView.SetupView(Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f), Vector3(0.0f, 14.0f, 1.0f));
 
 	Zmey::Name worldName = m_Game->LoadResources();
@@ -160,6 +163,20 @@ void EngineLoop::RunImpl()
 	m_Game->Initialize();
 	Modules.PhysicsEngine.SetWorld(*m_World);
 
+	// UI
+	{
+		auto& io = ImGui::GetIO();
+		io.DisplaySize.x = float(swapchainSizes.x);
+		io.DisplaySize.y = float(swapchainSizes.y);
+		io.IniFilename = nullptr;
+
+		unsigned char* pixels;
+		int w, h;
+		io.Fonts->GetTexDataAsRGBA32(&pixels, &w, &h);
+		io.Fonts->TexID = reinterpret_cast<void*>(Modules.Renderer.UITextureLoaded(pixels, w, h));
+		ImGui::StyleColorsDark();
+	}
+
 	Job::Counter renderCounter;
 	Graphics::FrameData frameDatas[2]; // TODO: 2 seems fine for now
 	uint8_t currentFrameData = 0;
@@ -170,9 +187,15 @@ void EngineLoop::RunImpl()
 		clock::time_point currentFrameTimestamp = clock::now();
 		clock::duration timeSinceLastFrame = currentFrameTimestamp - lastFrameTmestamp;
 		float deltaTime = timeSinceLastFrame.count() * 1e-9f;
-		//FORMAT_LOG(Error, Zmey, "time %f", deltaTime);
 
 		Modules.Platform.PumpMessages(windowHandle);
+
+		// UI
+		{
+			auto& io = ImGui::GetIO();
+			io.DeltaTime = deltaTime;
+			ImGui::NewFrame();
+		}
 
 		SimulateData simulateData{ m_Game, m_World, deltaTime };
 
@@ -182,7 +205,6 @@ void EngineLoop::RunImpl()
 		Modules.JobSystem.WaitForCounter(&simulateCounter, 0);
 
 		// TODO: Compute visibility
-
 		// Gather render data
 		frameDatas[currentFrameData].FrameIndex = frameIndex++;
 		playerView.GatherData(frameDatas[currentFrameData]);
@@ -204,14 +226,6 @@ void EngineLoop::RunImpl()
 		lastFrameTmestamp = currentFrameTimestamp;
 
 		currentFrameData = (currentFrameData + 1) % 2;
-
-		// TODO: add some text drawing and draw it onto the screen
-		// We cannot use SetWindowTitle because we are changing threads all the time
-		// because of our job system and SetWindowTitle can be called only on the thread
-		// that created the window or it will hang
-		//char title[100];
-		//snprintf(title, 100, "Zmey. Delta Time: %.1fms", deltaTime * 1e3f);
-		//Modules.Platform.SetWindowTitle(windowHandle, title);
 	}
 	Modules.JobSystem.WaitForCounter(&renderCounter, 0);
 

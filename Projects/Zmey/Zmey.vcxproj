@@ -152,6 +152,7 @@
     <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Vulkan\VulkanTexture.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\Features.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\Features\MeshRenderer.h" />
+    <ClInclude Include="..\..\include\Zmey\Graphics\Features\UIRenderer.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\FrameData.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\GraphicsObjects.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\Managers\BufferManager.h" />
@@ -188,6 +189,12 @@
     <ClInclude Include="..\..\include\Zmey\Utilities.h" />
     <ClInclude Include="..\..\include\Zmey\World.h" />
     <ClInclude Include="..\..\Source\Platform\WindowsPlatform.h" />
+    <ClInclude Include="..\..\ThirdParty\include\imgui\imconfig.h" />
+    <ClInclude Include="..\..\ThirdParty\include\imgui\imgui.h" />
+    <ClInclude Include="..\..\ThirdParty\include\imgui\imgui_internal.h" />
+    <ClInclude Include="..\..\ThirdParty\include\imgui\stb_rect_pack.h" />
+    <ClInclude Include="..\..\ThirdParty\include\imgui\stb_textedit.h" />
+    <ClInclude Include="..\..\ThirdParty\include\imgui\stb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\Components\ComponentRegistry.cpp" />
@@ -203,6 +210,7 @@
     <ClCompile Include="..\..\Source\Graphics\Backend\Vulkan\VulkanCommandList.cpp" />
     <ClCompile Include="..\..\Source\Graphics\Backend\Vulkan\VulkanShaders.cpp" />
     <ClCompile Include="..\..\Source\Graphics\Features\MeshRenderer.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Features\UIRenderer.cpp" />
     <ClCompile Include="..\..\Source\Graphics\Managers\BufferManager.cpp" />
     <ClCompile Include="..\..\Source\Graphics\Managers\MeshManager.cpp" />
     <ClCompile Include="..\..\Source\Graphics\Managers\TextureManager.cpp" />
@@ -222,6 +230,9 @@
     <ClCompile Include="..\..\Source\Platform\WindowsPlatform.cpp" />
     <ClCompile Include="..\..\Source\ResourceLoader\ResourceLoader.cpp" />
     <ClCompile Include="..\..\Source\World.cpp" />
+    <ClCompile Include="..\..\ThirdParty\include\imgui\imgui.cpp" />
+    <ClCompile Include="..\..\ThirdParty\include\imgui\imgui_demo.cpp" />
+    <ClCompile Include="..\..\ThirdParty\include\imgui\imgui_draw.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

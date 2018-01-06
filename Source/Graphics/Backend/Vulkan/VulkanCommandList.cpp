@@ -22,6 +22,9 @@ void VulkanCommandList::BeginRecording()
 
 	// This will implicitly reset the buffer
 	vkBeginCommandBuffer(CmdBuffer, &beginInfo);
+
+	auto device = reinterpret_cast<VulkanDevice*>(Globals::g_Device)->GetNativeDevice();
+	vkResetDescriptorPool(device, Pool, 0);
 }
 
 void VulkanCommandList::EndRecording()
@@ -39,7 +42,7 @@ void VulkanCommandList::BeginRenderPass(Framebuffer* fb)
 	renderPassInfo.renderPass = reinterpret_cast<VulkanFramebuffer*>(fb)->RenderPass;
 	renderPassInfo.framebuffer = reinterpret_cast<VulkanFramebuffer*>(fb)->Framebuffer;
 	renderPassInfo.renderArea.offset = { 0, 0 };
-	renderPassInfo.renderArea.extent = { 1264, 681 };
+	renderPassInfo.renderArea.extent = { fb->Width, fb->Height };
 
 	VkClearValue clearColor[2];
 	clearColor[0].color = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -48,11 +51,36 @@ void VulkanCommandList::BeginRenderPass(Framebuffer* fb)
 	renderPassInfo.pClearValues = clearColor;
 
 	vkCmdBeginRenderPass(CmdBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+	// We are using VK_KHR_maintenance1 for negative sized viewport in order to be consistent with Dx12 Viewport
+	VkViewport viewport = {};
+	viewport.x = 0.0f;
+	viewport.y = float(fb->Height);
+	viewport.width = float(fb->Width);
+	viewport.height = -float(fb->Height);
+	viewport.minDepth = 0.0f;
+	viewport.maxDepth = 1.0f;
+	vkCmdSetViewport(CmdBuffer, 0, 1, &viewport);
+
+	VkRect2D scissor = {};
+	scissor.offset = { 0, 0 };
+	scissor.extent.width = fb->Width;
+	scissor.extent.height = fb->Height;
+	vkCmdSetScissor(CmdBuffer, 0, 1, &scissor);
 }
 
 void VulkanCommandList::EndRenderPass(Framebuffer* fb)
 {
 	vkCmdEndRenderPass(CmdBuffer);
+}
+
+void VulkanCommandList::SetScissor(float x, float y, float width, float height)
+{
+	VkRect2D scissor = {};
+	scissor.offset = { int32_t(x), int32_t(y) };
+	scissor.extent.width = uint32_t(width);
+	scissor.extent.height = uint32_t(height);
+	vkCmdSetScissor(CmdBuffer, 0, 1, &scissor);
 }
 
 void VulkanCommandList::BindGraphicsPipelineState(GraphicsPipelineState* state)
@@ -63,6 +91,11 @@ void VulkanCommandList::BindGraphicsPipelineState(GraphicsPipelineState* state)
 void VulkanCommandList::Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t startVertex, uint32_t startInstance)
 {
 	vkCmdDraw(CmdBuffer, vertexCount, instanceCount, startVertex, startInstance);
+}
+
+void VulkanCommandList::DrawIndexed(uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, uint32_t vertexOffset, uint32_t firstInstance)
+{
+	vkCmdDrawIndexed(CmdBuffer, indexCount, instanceCount, firstIndex, vertexOffset, firstInstance);
 }
 
 void VulkanCommandList::SetPushConstants(GraphicsPipelineState* layout, uint32_t offset, uint32_t count, const void* data)

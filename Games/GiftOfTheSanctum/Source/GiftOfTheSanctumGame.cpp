@@ -10,6 +10,8 @@
 #include <Zmey/Components/TransformManager.h>
 #include <Zmey/Components/TagManager.h>
 
+#include <imgui/imgui.h>
+
 namespace
 {
 float NullifyNearZero(float value)
@@ -107,6 +109,33 @@ void GiftOfTheSanctumGame::Simulate(float deltaTime)
 		GetWorld()->DestroyEntity(ring);
 		--m_CurrentRing;
 	}
+
+	DoUI();
+}
+
+void GiftOfTheSanctumGame::DoUI()
+{
+	// TODO: This setup is to have transparent window which is not interactable
+	// This could be extracted someplace
+	ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32_BLACK);
+	ImGui::PushStyleColor(ImGuiCol_WindowBg, IM_COL32_BLACK_TRANS);
+	ImGui::SetNextWindowSize(ImVec2(0, 0), ImGuiCond_FirstUseEver);
+	ImGui::Begin("FPS", nullptr,
+		ImGuiWindowFlags_NoTitleBar |
+		ImGuiWindowFlags_NoResize |
+		ImGuiWindowFlags_NoMove |
+		ImGuiWindowFlags_NoScrollbar |
+		ImGuiWindowFlags_NoScrollWithMouse |
+		ImGuiWindowFlags_NoCollapse |
+		ImGuiWindowFlags_NoSavedSettings |
+		ImGuiWindowFlags_NoInputs
+	);
+	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+	ImGui::End();
+	ImGui::PopStyleColor(2);
+
+	// Uncomment me for demo of ImGui features
+	//ImGui::ShowDemoWindow();
 }
 
 void GiftOfTheSanctumGame::Uninitialize()

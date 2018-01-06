@@ -37,13 +37,22 @@ struct RendererData
 
 	// TODO(alex): Add PipelineState Manager and remove this
 	Backend::GraphicsPipelineState* MeshesPipelineState;
+
+	struct UIData
+	{
+		Backend::GraphicsPipelineState* PipelineState = nullptr;
+		Backend::Buffer* VertexBuffers[2] = { nullptr, nullptr };
+		Backend::Buffer* IndexBuffers[2] = { nullptr, nullptr };
+	};
+
+	UIData UIData;
 };
 
-class RendererInterface
+class Renderer
 {
 public:
-	RendererInterface();
-	~RendererInterface();
+	Renderer();
+	~Renderer();
 
 	bool CreateWindowSurface(WindowHandle handle);
 
@@ -52,9 +61,12 @@ public:
 
 	bool CheckIfFrameCompleted(uint64_t frameIndex);
 
+	UVector2 GetSwapChainSize();
+
 	// TODO: This is very weird to be here.
 	MeshHandle MeshLoaded(stl::vector<uint8_t>&& data);
 	TextureHandle TextureLoaded(stl::vector<uint8_t>&& data);
+	TextureHandle UITextureLoaded(uint8_t* data, uint32_t width, uint32_t height);
 
 private:
 	void PrepareData(FrameData& frameData);
@@ -89,6 +101,8 @@ private:
 	{
 		stl::vector<uint8_t> Data;
 		Backend::Texture* Texture;
+		uint64_t StartOffsetInData;
+		uint32_t ActualDataSize;
 	};
 	stl::vector<TextureDataToUpload> m_TextureToUpload;
 };

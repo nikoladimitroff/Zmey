@@ -87,6 +87,12 @@
     <Filter Include="Source\Job">
       <UniqueIdentifier>{40208c78-f4d6-4bae-bf9d-421d626fa26e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\ThirdParty">
+      <UniqueIdentifier>{0e881a45-f0aa-44cf-a8c1-c89830491904}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\ThirdParty\imgui">
+      <UniqueIdentifier>{4acbc6fc-218f-45a3-b930-1684a09731b1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\Zmey\Config.h">
@@ -287,6 +293,27 @@
     <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Vulkan\VulkanTexture.h">
       <Filter>include\Graphics\Backend\Vulkan</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\include\imgui\imconfig.h">
+      <Filter>Source\ThirdParty\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\include\imgui\imgui.h">
+      <Filter>Source\ThirdParty\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\include\imgui\imgui_internal.h">
+      <Filter>Source\ThirdParty\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\include\imgui\stb_rect_pack.h">
+      <Filter>Source\ThirdParty\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\include\imgui\stb_textedit.h">
+      <Filter>Source\ThirdParty\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\ThirdParty\include\imgui\stb_truetype.h">
+      <Filter>Source\ThirdParty\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Graphics\Features\UIRenderer.h">
+      <Filter>include\Graphics\Features</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\EngineLoop.cpp">
@@ -384,6 +411,18 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\Graphics\Backend\Vulkan\VulkanDevice.cpp">
       <Filter>Source\Graphics\Backend\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\include\imgui\imgui.cpp">
+      <Filter>Source\ThirdParty\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\include\imgui\imgui_demo.cpp">
+      <Filter>Source\ThirdParty\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\ThirdParty\include\imgui\imgui_draw.cpp">
+      <Filter>Source\ThirdParty\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Features\UIRenderer.cpp">
+      <Filter>Source\Graphics\Features</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

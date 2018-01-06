@@ -18,8 +18,10 @@ struct Shader
 
 enum class InputElementFormat : uint8_t
 {
+	RGBA8,
 	Float2,
-	Float3
+	Float3,
+	Float4
 };
 
 struct InputElement
@@ -41,12 +43,44 @@ enum class PrimitiveTopology : uint8_t
 	TriangleList
 };
 
+struct ResourceTableDesc
+{
+	uint32_t NumPushConstants = 0;
+};
+
+enum class CullMode : uint8_t
+{
+	None,
+	Front,
+	Back
+};
+
+struct RasterizerState
+{
+	CullMode CullMode = CullMode::Back;
+};
+
+struct BlendState
+{
+	bool BlendEnable = false;
+};
+
+struct DepthStencilState
+{
+	bool DepthEnable = true;
+	bool DepthWrite = true;
+};
+
 struct GraphicsPipelineStateDesc
 {
 	Shader VertexShader;
 	Shader PixelShader;
 	InputLayout Layout;
 	PrimitiveTopology Topology;
+	ResourceTableDesc ResourceTable;
+	RasterizerState Rasterizer;
+	BlendState Blend;
+	DepthStencilState DepthStencil;
 };
 
 struct GraphicsPipelineState

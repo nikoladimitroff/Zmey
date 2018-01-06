@@ -10,8 +10,14 @@
 #include <windowsx.h>
 #include <Xinput.h>
 
+#include <imgui/imgui.h>
+
+static bool g_MouseJustPressed[3] = { false, false, false };
+static bool g_MouseCurrentState[3] = { false, false, false };
+
 LRESULT CALLBACK DefaultWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+	auto& io = ImGui::GetIO();
 	switch (message)
 	{
 	case WM_DESTROY:
@@ -22,32 +28,63 @@ LRESULT CALLBACK DefaultWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARA
 	}
 	case WM_KEYDOWN:
 		Zmey::Modules.InputController.SetButtonPressed(static_cast<Zmey::KeyboardButton>(wParam), true);
+		if (wParam < 256)
+		{
+			io.KeysDown[wParam] = 1;
+		}
+
 	break;
 	case WM_KEYUP:
 		Zmey::Modules.InputController.SetButtonPressed(static_cast<Zmey::KeyboardButton>(wParam), false);
+		if (wParam < 256)
+		{
+			io.KeysDown[wParam] = 0;
+		}
+
 	break;
+	case WM_CHAR:
+		if (wParam > 0 && wParam < 0x10000)
+		{
+			io.AddInputCharacter((unsigned short)wParam);
+		}
+		break;
 	case WM_MOUSEMOVE:
 		Zmey::Modules.InputController.SetAxis(Zmey::MouseAxis::MouseX, static_cast<float>(GET_X_LPARAM(lParam)));
 		Zmey::Modules.InputController.SetAxis(Zmey::MouseAxis::MouseY, static_cast<float>(GET_Y_LPARAM(lParam)));
+		io.MousePos.x = (signed short)(lParam);
+		io.MousePos.y = (signed short)(lParam >> 16);
+
 	break;
 	case WM_LBUTTONDOWN:
 		Zmey::Modules.InputController.SetButtonPressed(Zmey::MouseButton::LeftButton, true);
+		g_MouseJustPressed[0] = true;
+		g_MouseCurrentState[0] = true;
 	break;
 	case WM_LBUTTONUP:
 		Zmey::Modules.InputController.SetButtonPressed(Zmey::MouseButton::LeftButton, false);
+		g_MouseCurrentState[0] = false;
 	break;
 	case WM_RBUTTONDOWN:
 		Zmey::Modules.InputController.SetButtonPressed(Zmey::MouseButton::RightButton, true);
+		g_MouseJustPressed[1] = true;
+		g_MouseCurrentState[1] = true;
 	break;
 	case WM_RBUTTONUP:
 		Zmey::Modules.InputController.SetButtonPressed(Zmey::MouseButton::RightButton, false);
+		g_MouseCurrentState[1] = false;
 	break;
 	case WM_MBUTTONDOWN:
 		Zmey::Modules.InputController.SetButtonPressed(Zmey::MouseButton::MiddleButton, true);
+		g_MouseJustPressed[2] = true;
+		g_MouseCurrentState[2] = true;
 	break;
 	case WM_MBUTTONUP:
 		Zmey::Modules.InputController.SetButtonPressed(Zmey::MouseButton::MiddleButton, false);
+		g_MouseCurrentState[2] = false;
 	break;
+	case WM_MOUSEWHEEL:
+		io.MouseWheel += GET_WHEEL_DELTA_WPARAM(wParam) > 0 ? +1.0f : -1.0f;
+		break;
 	}
 
 	return DefWindowProc(hWnd, message, wParam, lParam);
@@ -88,6 +125,31 @@ WindowHandle WindowsPlatform::SpawnWindow(unsigned width, unsigned height, const
 		NULL);
 
 	auto res = ShowWindow(hWnd, SW_RESTORE);
+
+	// UI
+	{
+		// Keyboard mapping. ImGui will use those indices to peek into the io.KeyDown[] array that we will update during the application lifetime.
+		ImGuiIO& io = ImGui::GetIO();
+		io.KeyMap[ImGuiKey_Tab] = VK_TAB;
+		io.KeyMap[ImGuiKey_LeftArrow] = VK_LEFT;
+		io.KeyMap[ImGuiKey_RightArrow] = VK_RIGHT;
+		io.KeyMap[ImGuiKey_UpArrow] = VK_UP;
+		io.KeyMap[ImGuiKey_DownArrow] = VK_DOWN;
+		io.KeyMap[ImGuiKey_PageUp] = VK_PRIOR;
+		io.KeyMap[ImGuiKey_PageDown] = VK_NEXT;
+		io.KeyMap[ImGuiKey_Home] = VK_HOME;
+		io.KeyMap[ImGuiKey_End] = VK_END;
+		io.KeyMap[ImGuiKey_Delete] = VK_DELETE;
+		io.KeyMap[ImGuiKey_Backspace] = VK_BACK;
+		io.KeyMap[ImGuiKey_Enter] = VK_RETURN;
+		io.KeyMap[ImGuiKey_Escape] = VK_ESCAPE;
+		io.KeyMap[ImGuiKey_A] = 'A';
+		io.KeyMap[ImGuiKey_C] = 'C';
+		io.KeyMap[ImGuiKey_V] = 'V';
+		io.KeyMap[ImGuiKey_X] = 'X';
+		io.KeyMap[ImGuiKey_Y] = 'Y';
+		io.KeyMap[ImGuiKey_Z] = 'Z';
+	}
 
 	return WindowHandle(hWnd);
 }
@@ -149,6 +211,22 @@ void WindowsPlatform::PumpMessages(WindowHandle handle)
 			// TODO: Detect a disconnected controller and nullify all of its inputs
 			UpdateInputControllerFromGamepad(gamepadState, i);
 		}
+	}
+
+	// UI
+	{
+		ImGuiIO& io = ImGui::GetIO();
+		for (int i = 0; i < 3; i++)
+		{
+			// If a mouse press event came, always pass it as "mouse held this frame", so we don't miss click-release events that are shorter than 1 frame.
+			io.MouseDown[i] = g_MouseJustPressed[i] || g_MouseCurrentState[i];
+			g_MouseJustPressed[i] = false;
+		}
+
+		io.KeyCtrl = (GetKeyState(VK_CONTROL) & 0x8000) != 0;
+		io.KeyShift = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
+		io.KeyAlt = (GetKeyState(VK_MENU) & 0x8000) != 0;
+		io.KeySuper = false;
 	}
 }
 

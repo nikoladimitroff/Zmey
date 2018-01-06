@@ -21,5 +21,8 @@
     <FxCompile Include="..\..\Source\Graphics\Shaders\Source\Mesh.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="..\..\Source\Graphics\Shaders\Source\UI.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

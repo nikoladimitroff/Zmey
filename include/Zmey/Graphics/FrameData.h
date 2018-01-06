@@ -10,13 +10,6 @@ namespace Zmey
 namespace Graphics
 {
 
-// TODO(alex): delete this
-struct Rect
-{
-	float x, y, width, height; // In normalized space
-	float color[4]; // R, G, B, A
-};
-
 // TODO: this needs better memory management.
 // Use some kind of block allocations
 struct FrameData
@@ -36,7 +29,11 @@ struct FrameData
 	stl::vector<Matrix4x4> MeshTransforms;
 	stl::vector<Vector3> MeshColors;
 
-	stl::vector<Rect> RectsToDraw;
+	// UI Renderer data
+	stl::vector<uint8_t> UIVertexData;
+	stl::vector<uint8_t> UIIndexData;
+	stl::vector<uint8_t> UIDrawData;
+	stl::vector<uint32_t> UIDrawVertexOffset; // TODO: this has some duplicated values and is somewhat wastefull
 };
 
 }

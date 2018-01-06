@@ -10,15 +10,15 @@ namespace Backend
 {
 namespace Shaders
 {
-const uint32_t g_RectsVS[] = {
-#include "../../Shaders/Compiled/Spir-V/RectsVS.h"
+const uint32_t g_UIVS[] = {
+#include "../../Shaders/Compiled/Spir-V/UIVS.h"
 };
-const uint32_t g_RectsVSSize = sizeof(g_RectsVS);
+const uint32_t g_UIVSSize = sizeof(g_UIVS);
 
-const uint32_t g_RectsPS[] = {
-#include "../../Shaders/Compiled/Spir-V/RectsPS.h"
+const uint32_t g_UIPS[] = {
+#include "../../Shaders/Compiled/Spir-V/UIPS.h"
 };
-const uint32_t g_RectsPSSize = sizeof(g_RectsPS);
+const uint32_t g_UIPSSize = sizeof(g_UIPS);
 
 const uint32_t g_MeshVS[] = {
 #include "../../Shaders/Compiled/Spir-V/MeshVS.h"

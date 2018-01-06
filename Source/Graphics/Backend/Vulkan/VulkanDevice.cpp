@@ -115,14 +115,8 @@ VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilites)
 	}
 	else
 	{
-		// TODO(alex): refactor this
-		int width = 1280, height = 720;
-		VkExtent2D actualExtent = { uint32_t(width), uint32_t(height) };
-
-		actualExtent.width = std::max(capabilites.minImageExtent.width, std::min(capabilites.maxImageExtent.width, actualExtent.width));
-		actualExtent.height = std::max(capabilites.minImageExtent.height, std::min(capabilites.maxImageExtent.height, actualExtent.height));
-
-		return actualExtent;
+		NOT_REACHED();
+		return VkExtent2D{};
 	}
 }
 }
@@ -358,7 +352,8 @@ void VulkanDevice::Initialize(WindowHandle windowHandle)
 		auto presentMode = ChooseSwapPresentMode(presentModes);
 		auto extent = ChooseSwapExtent(capabilities);
 
-		uint32_t imageCount = capabilities.minImageCount + 1;
+		// use at most 2 images, or minImageCount if more than 2
+		uint32_t imageCount = capabilities.minImageCount > 2 ? capabilities.minImageCount : 2;
 		if (capabilities.maxImageCount > 0 && imageCount > capabilities.maxImageCount)
 		{
 			imageCount = capabilities.maxImageCount;
@@ -524,7 +519,6 @@ void VulkanDevice::Initialize(WindowHandle windowHandle)
 		}
 	}
 
-
 	// render pass
 	VkAttachmentDescription colorAttachment = {};
 	colorAttachment.format = m_SwapChainImageFormat;
@@ -614,16 +608,36 @@ inline VkFormat InputElementFormatToVulkan(InputElementFormat format)
 {
 	switch (format)
 	{
+	case InputElementFormat::RGBA8:
+		return VK_FORMAT_R8G8B8A8_UNORM;
 	case InputElementFormat::Float2:
 		return VK_FORMAT_R32G32_SFLOAT;
 	case InputElementFormat::Float3:
 		return VK_FORMAT_R32G32B32_SFLOAT;
+	case InputElementFormat::Float4:
+		return VK_FORMAT_R32G32B32A32_SFLOAT;
 	default:
 		NOT_REACHED();
 		break;
 	}
 
 	return VK_FORMAT_UNDEFINED;
+}
+
+inline VkCullModeFlagBits CullModeToVulkan(CullMode mode)
+{
+	switch (mode)
+	{
+	case CullMode::None:
+		return VK_CULL_MODE_NONE;
+	case CullMode::Front:
+		return VK_CULL_MODE_FRONT_BIT;
+	case CullMode::Back:
+		return VK_CULL_MODE_BACK_BIT;
+	default:
+		NOT_REACHED();
+		return VK_CULL_MODE_NONE;
+	}
 }
 }
 
@@ -689,13 +703,20 @@ GraphicsPipelineState* VulkanDevice::CreateGraphicsPipelineState(const GraphicsP
 
 		switch (ie.Format)
 		{
+		case InputElementFormat::RGBA8:
+			totalSize += sizeof(uint32_t);
+			break;
 		case InputElementFormat::Float2:
 			totalSize += 2 * sizeof(float);
 			break;
 		case InputElementFormat::Float3:
 			totalSize += 3 * sizeof(float);
 			break;
+		case InputElementFormat::Float4:
+			totalSize += 4 * sizeof(float);
+			break;
 		default:
+			NOT_REACHED();
 			break;
 		}
 	}
@@ -714,27 +735,15 @@ GraphicsPipelineState* VulkanDevice::CreateGraphicsPipelineState(const GraphicsP
 
 	VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
 	inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
-	inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST;
+	inputAssembly.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST; // TODO: take into account topology from desc
 	inputAssembly.primitiveRestartEnable = VK_FALSE;
-
-	VkViewport viewport = {};
-	viewport.x = 0.0f;
-	viewport.y = (float)m_SwapChainExtent.height;
-	viewport.width = (float)m_SwapChainExtent.width;
-	viewport.height = -(float)m_SwapChainExtent.height;
-	viewport.minDepth = 0.0f;
-	viewport.maxDepth = 1.0f;
-
-	VkRect2D scissor = {};
-	scissor.offset = { 0, 0 };
-	scissor.extent = m_SwapChainExtent;
 
 	VkPipelineViewportStateCreateInfo viewportState = {};
 	viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
 	viewportState.viewportCount = 1;
-	viewportState.pViewports = &viewport;
+	viewportState.pViewports = nullptr;
 	viewportState.scissorCount = 1;
-	viewportState.pScissors = &scissor;
+	viewportState.pScissors = nullptr;
 
 	VkPipelineRasterizationStateCreateInfo rasterizer = {};
 	rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
@@ -742,7 +751,7 @@ GraphicsPipelineState* VulkanDevice::CreateGraphicsPipelineState(const GraphicsP
 	rasterizer.rasterizerDiscardEnable = VK_FALSE;
 	rasterizer.polygonMode = VK_POLYGON_MODE_FILL;
 	rasterizer.lineWidth = 1.0f;
-	rasterizer.cullMode = VK_CULL_MODE_BACK_BIT;
+	rasterizer.cullMode = CullModeToVulkan(desc.Rasterizer.CullMode);
 	rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 	rasterizer.depthBiasEnable = VK_FALSE;
 	rasterizer.depthBiasConstantFactor = 0.0f;
@@ -760,12 +769,12 @@ GraphicsPipelineState* VulkanDevice::CreateGraphicsPipelineState(const GraphicsP
 
 	VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
 	colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-	colorBlendAttachment.blendEnable = VK_FALSE;
-	colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_ONE;
+	colorBlendAttachment.blendEnable = desc.Blend.BlendEnable ? VK_TRUE : VK_FALSE;
+	colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
 	colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
 	colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
-	colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
-	colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+	colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+	colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
 	colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
 
 	VkPipelineColorBlendStateCreateInfo colorBlending = {};
@@ -781,17 +790,17 @@ GraphicsPipelineState* VulkanDevice::CreateGraphicsPipelineState(const GraphicsP
 
 	VkPushConstantRange ranges[1];
 	ranges[0].stageFlags = VK_SHADER_STAGE_ALL_GRAPHICS;
-	ranges[0].size = 43 * sizeof(float);
+	ranges[0].size = desc.ResourceTable.NumPushConstants * sizeof(float);
 	ranges[0].offset = 0;
 
 	{
 		VkSamplerCreateInfo samplerInfo = {};
 		samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-		samplerInfo.magFilter = VK_FILTER_NEAREST;
-		samplerInfo.minFilter = VK_FILTER_NEAREST;
-		samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-		samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
-		samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+		samplerInfo.magFilter = VK_FILTER_LINEAR;
+		samplerInfo.minFilter = VK_FILTER_LINEAR;
+		samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+		samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+		samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
 		samplerInfo.anisotropyEnable = VK_FALSE;
 		samplerInfo.maxAnisotropy = 1;
 		samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
@@ -853,11 +862,17 @@ GraphicsPipelineState* VulkanDevice::CreateGraphicsPipelineState(const GraphicsP
 
 	VkPipelineDepthStencilStateCreateInfo depthStencil = {};
 	depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-	depthStencil.depthTestEnable = VK_TRUE;
-	depthStencil.depthWriteEnable = VK_TRUE;
+	depthStencil.depthTestEnable = desc.DepthStencil.DepthEnable ? VK_TRUE : VK_FALSE;
+	depthStencil.depthWriteEnable = desc.DepthStencil.DepthWrite ? VK_TRUE : VK_FALSE;
 	depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
 	depthStencil.depthBoundsTestEnable = VK_FALSE;
 	depthStencil.stencilTestEnable = VK_FALSE;
+
+	VkDynamicState dynamicStates[2] = { VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR };
+	VkPipelineDynamicStateCreateInfo dynamicStateInfo = {};
+	dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+	dynamicStateInfo.dynamicStateCount = 2;
+	dynamicStateInfo.pDynamicStates = dynamicStates;
 
 	VkGraphicsPipelineCreateInfo pipelineInfo = {};
 	pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -870,7 +885,7 @@ GraphicsPipelineState* VulkanDevice::CreateGraphicsPipelineState(const GraphicsP
 	pipelineInfo.pMultisampleState = &multisampling;
 	pipelineInfo.pDepthStencilState = &depthStencil;
 	pipelineInfo.pColorBlendState = &colorBlending;
-	pipelineInfo.pDynamicState = nullptr;
+	pipelineInfo.pDynamicState = &dynamicStateInfo;
 
 	pipelineInfo.layout = layout;
 	pipelineInfo.renderPass = m_Pass;
@@ -947,7 +962,7 @@ void VulkanDevice::Present(uint32_t imageIndex)
 	}
 
 	// TODO: not cool, we should not wait for presentation
-	vkDeviceWaitIdle(m_Device);
+	//vkDeviceWaitIdle(m_Device);
 }
 
 Framebuffer* VulkanDevice::CreateFramebuffer(ImageView* imageView)
@@ -975,6 +990,8 @@ Framebuffer* VulkanDevice::CreateFramebuffer(ImageView* imageView)
 	auto result = new VulkanFramebuffer;
 	result->Framebuffer = fb;
 	result->RenderPass = m_Pass;
+	result->Width = m_SwapChainExtent.width;
+	result->Height = m_SwapChainExtent.height;
 	return result;
 }
 
@@ -1028,8 +1045,16 @@ void VulkanDevice::DestroyCommandList(CommandList* list)
 	delete list;
 }
 
-void VulkanDevice::SubmitCommandList(CommandList* list)
+void VulkanDevice::SubmitCommandLists(CommandList** lists, uint32_t count)
 {
+	TEMP_ALLOCATOR_SCOPE;
+	tmp::vector<VkCommandBuffer> cmdBuffers;
+	cmdBuffers.reserve(count);
+	for (auto i = 0u; i < count; ++i)
+	{
+		cmdBuffers.push_back(reinterpret_cast<VulkanCommandList*>(lists[i])->CmdBuffer);
+	}
+
 	VkSubmitInfo submitInfo = {};
 	submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
@@ -1038,8 +1063,8 @@ void VulkanDevice::SubmitCommandList(CommandList* list)
 	submitInfo.waitSemaphoreCount = 1;
 	submitInfo.pWaitSemaphores = waitSemaphores;
 	submitInfo.pWaitDstStageMask = waitStages;
-	submitInfo.commandBufferCount = 1;
-	submitInfo.pCommandBuffers = &reinterpret_cast<VulkanCommandList*>(list)->CmdBuffer;
+	submitInfo.commandBufferCount = count;
+	submitInfo.pCommandBuffers = cmdBuffers.data();
 
 	submitInfo.signalSemaphoreCount = 1;
 	submitInfo.pSignalSemaphores = &m_RenderFinishedAvailable;
@@ -1246,6 +1271,11 @@ void VulkanDevice::DestroyTexture(Texture* texture)
 	vkDestroyImage(m_Device, vkBuffer->TextureHandle, nullptr);
 	vkFreeMemory(m_Device, vkBuffer->Memory, nullptr);
 	delete texture;
+}
+
+UVector2 VulkanDevice::GetSwapChainSize()
+{
+	return UVector2{ m_SwapChainExtent.width, m_SwapChainExtent.height };
 }
 
 //TODO: move out to new file

@@ -49,7 +49,7 @@ public:
 
 	virtual CommandList* CreateCommandList() override;
 	virtual void DestroyCommandList(CommandList* list) override;
-	virtual void SubmitCommandList(CommandList* list) override;
+	virtual void SubmitCommandLists(CommandList** list, uint32_t count) override;
 
 	virtual Framebuffer* CreateFramebuffer(ImageView* imageView) override;
 	virtual void DestroyFramebuffer(Framebuffer* framebuffer) override;
@@ -65,6 +65,8 @@ public:
 
 	virtual uint32_t AcquireNextSwapChainImage() override;
 	virtual void Present(uint32_t imageIndex) override;
+
+	virtual UVector2 GetSwapChainSize() override;
 
 	VkDevice GetNativeDevice() { return m_Device; }
 
@@ -88,7 +90,7 @@ private:
 	VkFormat m_SwapChainImageFormat;
 	VkExtent2D m_SwapChainExtent;
 
-	VulkanCommandPoolHandle m_CommandPool{ VulkanCommandPoolDeleter{&m_Device} };
+	VulkanCommandPoolHandle m_CommandPool{ VulkanCommandPoolDeleter{ &m_Device } };
 
 	// Depth stencil
 	VkImage m_DepthStencil;

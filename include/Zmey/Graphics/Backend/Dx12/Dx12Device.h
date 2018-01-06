@@ -8,6 +8,7 @@
 
 #include <Zmey/Graphics/Backend/Dx12/Dx12Helpers.h>
 #include <Zmey/Memory/MemoryManagement.h>
+#include <Zmey/Math/Math.h>
 
 namespace Zmey
 {
@@ -61,7 +62,7 @@ public:
 
 	virtual CommandList* CreateCommandList() override;
 	virtual void DestroyCommandList(CommandList* list) override;
-	virtual void SubmitCommandList(CommandList* list) override;
+	virtual void SubmitCommandLists(CommandList** lists, uint32_t count) override;
 
 	virtual Framebuffer* CreateFramebuffer(ImageView* imageView) override;
 	virtual void DestroyFramebuffer(Framebuffer* framebuffer) override;
@@ -78,6 +79,8 @@ public:
 	virtual uint32_t AcquireNextSwapChainImage() override;
 	virtual void Present(uint32_t imageIndex) override;
 
+	virtual UVector2 GetSwapChainSize() override { return m_SwapChainSize; }
+
 private:
 	ComPtr<IDXGIFactory4> m_Factory;
 	ComPtr<ID3D12Device> m_Device;
@@ -93,10 +96,11 @@ private:
 		D3D12_CPU_DESCRIPTOR_HANDLE RTVHandle;
 	};
 	stl::vector<SwapChainImage> m_SwapChainImages;
-	ComPtr<ID3D12CommandAllocator> m_CommandAllocator;
 	ComPtr<ID3D12Fence> m_Fence;
 	UINT64 m_FenceValue;
 	HANDLE m_FenceEvent;
+
+	UVector2 m_SwapChainSize;
 };
 
 }
