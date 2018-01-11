@@ -1,7 +1,8 @@
 {
     "components" : [
         {
-            "name" : "physics"
+            "name" : "physics", 
+            "dynamic" : true
         }, 
         {
             "name" : "projectile"
@@ -10,16 +11,16 @@
             "name" : "transform"
         }, 
         {
+            "glTF_node_index" : 10, 
+            "name" : "mesh", 
             "color" : [
                 0.0, 
                 0.7367322444915771, 
                 0.8000000715255737
-            ], 
-            "name" : "mesh", 
-            "glTF_node_index" : 10
+            ]
         }
     ], 
-    "name" : "Spell", 
     "version" : "1.0", 
-    "extends" : ""
+    "extends" : "", 
+    "name" : "Spell"
 }

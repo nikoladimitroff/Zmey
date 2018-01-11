@@ -4,7 +4,7 @@
             "name" : "transform"
         }
     ], 
-    "name" : "SpawnPoint", 
     "version" : "1.0", 
-    "extends" : ""
+    "extends" : "", 
+    "name" : "SpawnPoint"
 }

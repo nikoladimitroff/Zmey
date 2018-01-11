@@ -29,7 +29,8 @@ void SpellComponent::Simulate(float deltaTime)
 	{
 		if (m_SpellExpireCallback)
 		{
-			m_SpellExpireCallback(m_EntityId[*it]);
+			// TODO: Fix physx
+			//m_SpellExpireCallback(m_EntityId[*it]);
 		}
 		
 		NotSaveErase(m_InitialSpeed, *it);
