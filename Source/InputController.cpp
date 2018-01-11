@@ -223,15 +223,15 @@ InputController::InputController()
 	}
 }
 
-void InputController::DispatchActionEventsForFrame()
+void InputController::DispatchActionEventsForFrame(float deltaTime)
 {
 	for (uint8_t i = 0u; i < MaxPlayerCount; i++)
 	{
-		DispatchActionEventsForPlayerInCurrentFrame(i);
+		DispatchActionEventsForPlayerInCurrentFrame(i, deltaTime);
 	}
 }
 
-void InputController::DispatchActionEventsForPlayerInCurrentFrame(uint8_t playerIndex)
+void InputController::DispatchActionEventsForPlayerInCurrentFrame(uint8_t playerIndex, float deltaTime)
 {
 	auto& previousState = m_PreviousState[playerIndex];
 	auto& currentState = m_CurrentState[playerIndex];
@@ -249,7 +249,7 @@ void InputController::DispatchActionEventsForPlayerInCurrentFrame(uint8_t player
 			auto lowerBound = std::lower_bound(m_ActionHandlers.begin(), m_ActionHandlers.end(), baseAction);
 			for (auto it = lowerBound; it != m_ActionHandlers.end() && it->Action == mapping.ActionName && it->PlayerIndex == playerIndex; ++it)
 			{
-				it->Delegate(axisValue);
+				it->Delegate(axisValue, deltaTime);
 			}
 		}
 	}

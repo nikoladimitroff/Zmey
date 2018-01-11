@@ -28,12 +28,12 @@ void ProjectileComponent::RemoveEntity(EntityId id)
 void ProjectileComponent::Simulate(float deltaTime)
 {
 	auto& transformManager = GetWorld().GetManager<Zmey::Components::TransformManager>();
-	for (const auto& entity : m_Projectiles)
-	{
-		auto transform = transformManager.Lookup(entity);
-		auto actorForwardVector = transform.Rotation() * Zmey::Vector3(0.f, 0.f, 1.f);
-		transform.Position() += actorForwardVector * 5.f * deltaTime;
-	}
+	//for (const auto& entity : m_Projectiles)
+	//{
+	//	auto transform = transformManager.Lookup(entity);
+	//	auto actorForwardVector = transform.Rotation() * Zmey::Vector3(0.f, 0.f, 1.f);
+	//	transform.Position() += actorForwardVector * 5.f * deltaTime;
+	//}
 }
 
 DEFINE_COMPONENT_MANAGER(ProjectileComponent, Projectile, &Zmey::Components::EmptyDefaultsToBlobImplementation, &Zmey::Components::EmptyToBlobImplementation);

@@ -91,7 +91,7 @@ private:
 	friend class InputController;
 };
 
-using InputActionDelegate = std::function<void(float axisValue)>;
+using InputActionDelegate = std::function<void(float axisValue, float deltaTime)>;
 
 struct ActionMapping
 {
@@ -142,7 +142,7 @@ class InputController
 {
 public:
 	InputController();
-	void DispatchActionEventsForFrame();
+	void DispatchActionEventsForFrame(float deltaTime);
 	ZMEY_API void AddListenerForAction(Zmey::Name actionName, uint8_t playerIndex, InputActionDelegate actionHandler);
 	ZMEY_API void RemoveListenerForAction(Zmey::Name actionName, uint8_t playerIndex, InputActionDelegate actionHandler);
 	/// <summary>
@@ -175,7 +175,7 @@ public:
 		m_CurrentState[playerIndex].GamepadAxes[static_cast<uint8_t>(axis)] = value;
 	}
 private:
-	void DispatchActionEventsForPlayerInCurrentFrame(uint8_t playerIndex);
+	void DispatchActionEventsForPlayerInCurrentFrame(uint8_t playerIndex, float deltaTime);
 
 	uint8_t MouseKeyboardPlayerIndex;
 	stl::array<InputState, MaxPlayerCount> m_CurrentState;

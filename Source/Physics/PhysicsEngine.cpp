@@ -109,7 +109,7 @@ PhysicsEngine::PhysicsEngine()
 	ASSERT_FATAL(m_Physics);
 	
 	physx::PxSceneDesc sceneDesc(m_Physics->getTolerancesScale());
-	sceneDesc.gravity = physx::PxVec3(0.0f, -9.81f, 0.0f);
+	sceneDesc.gravity = physx::PxVec3(0.0f, 0.0f, 0.0f);
 
 	sceneDesc.cpuDispatcher = m_CpuDispatcher;
 	sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;

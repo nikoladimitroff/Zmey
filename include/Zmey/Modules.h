@@ -20,8 +20,8 @@ struct GlobalModules
 	GlobalModules& operator=(GlobalModules&&) = delete;
 	GlobalModules& operator=(const GlobalModules&) = delete;
 
-	void Initialize();
-	void Uninitialize();
+	void ZMEY_API Initialize();
+	void ZMEY_API Uninitialize();
 
 private:
 	// This constructor creates the actual meaningful object; called internally from GlobalModules::Initialize

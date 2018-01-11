@@ -15,7 +15,7 @@ class PhysicsComponentManager : public Zmey::Components::ComponentManager
 {
 	DECLARE_COMPONENT_MANAGER(PhysicsComponentManager);
 public:
-	Zmey::Physics::PhysicsActor* Lookup(EntityId entity);
+	ZMEY_API Zmey::Physics::PhysicsActor* Lookup(EntityId entity);
 	virtual void InitializeFromBlob(const tmp::vector<EntityId>&, Zmey::MemoryInputStream&) override;
 	virtual void Simulate(float deltaTime) override;
 	virtual void RemoveEntity(EntityId id) override;
