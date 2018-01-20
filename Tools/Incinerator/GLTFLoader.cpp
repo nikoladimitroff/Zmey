@@ -1,6 +1,7 @@
 #include "GLTFLoader.h"
 #include <nlohmann/json.hpp>
 #include <Zmey/Graphics/Managers/MeshManager.h>
+#include <Zmey/MemoryStream.h>
 
 #include <fstream>
 
@@ -12,14 +13,14 @@ namespace GLTFLoader
 {
 namespace
 {
-nlohmann::json FindNode(nlohmann::json gltf, unsigned nodeIndex)
+nlohmann::json FindNode(const nlohmann::json& gltf, unsigned nodeIndex)
 {
 	auto nodes = gltf["nodes"];
 	assert(nodes.is_array() && nodeIndex < nodes.size());
 	return nodes[nodeIndex];
 }
 
-nlohmann::json FindMesh(nlohmann::json gltf, unsigned meshIndex)
+nlohmann::json FindMesh(const nlohmann::json& gltf, unsigned meshIndex)
 {
 	auto meshes = gltf["meshes"];
 	assert(meshes.is_array() && meshIndex < meshes.size());
@@ -28,11 +29,69 @@ nlohmann::json FindMesh(nlohmann::json gltf, unsigned meshIndex)
 	return result;
 }
 
-nlohmann::json FindAccessor(nlohmann::json gltf, unsigned accIndex)
+nlohmann::json FindAccessor(const nlohmann::json& gltf, unsigned accIndex)
 {
 	auto accs = gltf["accessors"];
 	assert(accs.is_array() && accIndex < accs.size());
 	return accs[accIndex];
+}
+
+const uint8_t* GetDataPointer(const nlohmann::json& gltf, const std::vector<std::vector<uint8_t>>& buffers, const nlohmann::json& accessor)
+{
+	assert(accessor["bufferView"].is_number_unsigned());
+	auto bufView = gltf["bufferViews"][unsigned(accessor["bufferView"])];
+	assert(bufView.find("byteStride") == bufView.end()); // No support for stride for now
+	return buffers[bufView["buffer"]].data() + unsigned(bufView["byteOffset"]);
+}
+
+// Make sure dst is big enough
+void FillDataFromBufferForIndices(const nlohmann::json& gltf,
+	const std::vector<std::vector<uint8_t>>& buffers,
+	const nlohmann::json& accessor,
+	uint32_t* dst)
+{
+	auto srcData = GetDataPointer(gltf, buffers, accessor);
+
+	switch (unsigned(accessor["componentType"]))
+	{
+	case 5121: // UNSIGNED_BYTE
+		std::copy(reinterpret_cast<const uint8_t*>(srcData),
+			reinterpret_cast<const uint8_t*>(srcData) + accessor["count"],
+			dst);
+		break;
+	case 5123:// UNSIGNED_SHORT
+		std::copy(reinterpret_cast<const uint16_t*>(srcData),
+			reinterpret_cast<const uint16_t*>(srcData) + accessor["count"],
+			dst);
+		break;
+	default:
+		assert(false);
+	}
+}
+
+void FillDataForMeshVertex(const nlohmann::json& gltf,
+	const std::vector<std::vector<uint8_t>>& buffersData,
+	const nlohmann::json& positionAccessor,
+	const nlohmann::json& normalAccessor,
+	nlohmann::json* texCoordAccessor,
+	Zmey::Graphics::MeshVertex* dst)
+{
+	assert(positionAccessor["type"] == "VEC3"
+		&& normalAccessor["type"] == "VEC3"
+		&& (!texCoordAccessor || texCoordAccessor->operator[]("type") == "VEC2"));
+	auto positionData = reinterpret_cast<const Zmey::Vector3*>(GetDataPointer(gltf, buffersData, positionAccessor));
+	auto normalData = reinterpret_cast<const Zmey::Vector3*>(GetDataPointer(gltf, buffersData, normalAccessor));
+	auto texCoordData = reinterpret_cast<const Zmey::Vector2*>(texCoordAccessor ? GetDataPointer(gltf, buffersData, *texCoordAccessor) : nullptr);
+
+	unsigned count = positionAccessor["count"];
+	for (auto i = 0u; i < count; ++i)
+	{
+		// GLTF has Right handed system so we need to invert the Z Coordinate
+		dst[i].Position = Zmey::Vector3{ positionData[i].x, positionData[i].y, -positionData[i].z };
+		dst[i].Normal = Zmey::Vector3{ normalData[i].x, normalData[i].y, -normalData[i].z };
+		dst[i].TextureUV = texCoordData ? texCoordData[i] : Zmey::Vector2{ 0.0f, 0.0f };
+
+	}
 }
 }
 
@@ -75,49 +134,42 @@ bool ParseAndIncinerate(const uint8_t* gltfData,
 		{
 			const auto& indicesAccessor = FindAccessor(gltf, mesh["primitives"][0]["indices"]);
 			assert(indicesAccessor["count"].is_number_unsigned());
+			assert(indicesAccessor["type"].is_string());
+			std::string indicesAccessorType = indicesAccessor["type"];
+			assert(indicesAccessorType == "SCALAR");
 			unsigned indicesSize = indicesAccessor["count"];
-			indices.reserve(indicesSize);
-			for (auto i = 0u; i < indicesSize; ++i)
-			{
-				//auto& face = mesh->mFaces[i];
-				//assert(face.mNumIndices == 3);
-				//indices.push_back(face.mIndices[0]);
-				//indices.push_back(face.mIndices[1]);
-				//indices.push_back(face.mIndices[2]);
-			}
+			indices.resize(indicesSize);
+			FillDataFromBufferForIndices(gltf, buffersData, indicesAccessor, indices.data());
 		}
 
 
-		//std::vector<Zmey::Graphics::MeshVertex> vertices;
-		//vertices.reserve(mesh->mNumVertices);
+		std::vector<Zmey::Graphics::MeshVertex> vertices;
+		{
+			const auto& attribs = mesh["primitives"][0]["attributes"];
+			const auto& positionAccessor = FindAccessor(gltf, attribs["POSITION"]);
+			const auto& normalAccessor = FindAccessor(gltf, attribs["NORMAL"]);
+			bool hasTexCoord = attribs.find("TEXCOORD_0") != attribs.end();
+			vertices.resize(positionAccessor["count"]);
 
-		//bool hasUVs = mesh->HasTextureCoords(0);
+			FillDataForMeshVertex(gltf,
+				buffersData,
+				positionAccessor,
+				normalAccessor,
+				hasTexCoord ? &FindAccessor(gltf, attribs["TEXCOORD_0"]) : nullptr,
+				vertices.data());
+		}
 
-		//for (auto i = 0u; i < mesh->mNumVertices; ++i)
-		//{
-		//	auto& aiVector = mesh->mVertices[i];
-		//	auto& aiNormal = mesh->mNormals[i];
-		//	auto& aiUV = hasUVs ? mesh->mTextureCoords[0][i] : aiVector3D(0, 0, 0);
-		//	vertices.push_back(Zmey::Graphics::MeshVertex{
-		//		Zmey::Vector3{ aiVector.x, aiVector.y, aiVector.z },
-		//		Zmey::Vector3{ aiNormal.x, aiNormal.y, aiNormal.z },
-		//		Zmey::Vector2{ aiUV.x, aiUV.y }
-		//		});
-		//}
+		Zmey::Graphics::MeshDataHeader data;
+		data.VerticesCount = uint64_t(vertices.size());
+		data.IndicesCount = uint64_t(indices.size());
 
+		Zmey::MemoryOutputStream memstream;
+		memstream.Write(reinterpret_cast<uint8_t*>(&data), sizeof(Zmey::Graphics::MeshDataHeader));
+		memstream.Write(reinterpret_cast<uint8_t*>(vertices.data()), vertices.size() * sizeof(Zmey::Graphics::MeshVertex));
+		memstream.Write(reinterpret_cast<uint8_t*>(indices.data()), indices.size() * sizeof(uint32_t));
 
-
-		//Zmey::Graphics::MeshDataHeader data;
-		//data.VerticesCount = uint64_t(vertices.size());
-		//data.IndicesCount = uint64_t(indices.size());
-
-		//Zmey::MemoryOutputStream memstream;
-		//memstream.Write(reinterpret_cast<uint8_t*>(&data), sizeof(Zmey::Graphics::MeshDataHeader));
-		//memstream.Write(reinterpret_cast<uint8_t*>(vertices.data()), vertices.size() * sizeof(Zmey::Graphics::MeshVertex));
-		//memstream.Write(reinterpret_cast<uint8_t*>(indices.data()), indices.size() * sizeof(uint32_t));
-
-		//std::ofstream outputFile(destinationFolder + meshName, std::ios::binary | std::ios::out | std::ios::trunc);
-		//outputFile.write(reinterpret_cast<const char*>(memstream.GetData()), memstream.GetDataSize());
+		std::ofstream outputFile(destinationFolder + meshName, std::ios::binary | std::ios::out | std::ios::trunc);
+		outputFile.write(reinterpret_cast<const char*>(memstream.GetData()), memstream.GetDataSize());
 	}
 	return true;
 }
