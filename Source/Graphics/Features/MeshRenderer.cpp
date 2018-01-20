@@ -108,7 +108,7 @@ void MeshRenderer::GenerateCommands(FrameData& frameData, RenderPass pass, ViewT
 		list->SetPushConstants(data.MeshesPipelineState, sizeof(Matrix4x4), sizeof(Matrix4x4), &frameData.MeshTransforms[i]);
 		list->SetPushConstants(data.MeshesPipelineState,  2 * sizeof(Matrix4x4), sizeof(Vector3), &frameData.MeshColors[i]);
 
-		list->Draw(mesh->IndexCount, 1, 0, 0);
+		list->DrawIndexed(mesh->IndexCount, 1, 0, 0, 0);
 	}
 }
 
