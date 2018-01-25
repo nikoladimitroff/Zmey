@@ -10,6 +10,7 @@
 #include <Zmey/Graphics/Managers/BufferManager.h>
 #include <Zmey/Graphics/Managers/TextureManager.h>
 #include <Zmey/Graphics/Managers/MeshManager.h>
+#include <Zmey/Graphics/Managers/MaterialManager.h>
 #include <Zmey/Graphics/Managers/UploadHeap.h>
 #include <stdint.h>
 
@@ -32,6 +33,7 @@ struct RendererData
 
 	BufferManager BufferManager;
 	TextureManager TextureManager;
+	MaterialManager MaterialManager;
 	MeshManager MeshManager;
 	UploadHeap UploadHeap;
 
@@ -65,6 +67,7 @@ public:
 
 	// TODO: This is very weird to be here.
 	MeshHandle MeshLoaded(stl::vector<uint8_t>&& data);
+	MaterialHandle MaterialLoaded(stl::vector<uint8_t>&& data);
 	TextureHandle TextureLoaded(stl::vector<uint8_t>&& data);
 	TextureHandle UITextureLoaded(uint8_t* data, uint32_t width, uint32_t height);
 

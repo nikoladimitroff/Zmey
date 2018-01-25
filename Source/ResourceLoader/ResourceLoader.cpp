@@ -34,6 +34,7 @@ void ResourceLoader::ReleaseOwnershipOver(Zmey::Name name)
 }
 #define FIRST_IN_ALL_RESOURCE_COLLECTIONS(Function, Name) \
 	Function(Name, m_Meshes) || \
+	Function(Name, m_Materials) || \
 	Function(Name, m_TextContents) || \
 	Function(Name, m_Worlds) || \
 	Function(Name, m_BufferedData)
@@ -86,13 +87,13 @@ void OnResourceMeshLoaded(ResourceLoader* loader, Zmey::Name name, stl::vector<u
 {
 	auto handle = Modules.Renderer.MeshLoaded(std::move(data));
 	loader->m_Meshes.push_back(std::make_pair(name, handle));
-	FORMAT_LOG(Info, ResourceLoader, "Just loaded asset for name: %llu", static_cast<uint64_t>(name));
+	FORMAT_LOG(Info, ResourceLoader, "Just loaded mesh for name: %llu", static_cast<uint64_t>(name));
 }
-void OnResourceTextureLoaded(ResourceLoader* loader, Zmey::Name name, stl::vector<uint8_t>&& data)
+void OnResourceMaterialLoaded(ResourceLoader* loader, Zmey::Name name, stl::vector<uint8_t>&& data)
 {
-	auto handle = Modules.Renderer.TextureLoaded(std::move(data));
-	loader->m_Textures.push_back(std::make_pair(name, handle));
-	FORMAT_LOG(Info, ResourceLoader, "Just loaded asset for name: %llu", static_cast<uint64_t>(name));
+	auto handle = Modules.Renderer.MaterialLoaded(std::move(data));
+	loader->m_Materials.push_back(std::make_pair(name, handle));
+	FORMAT_LOG(Info, ResourceLoader, "Just loaded material for name: %llu", static_cast<uint64_t>(name));
 }
 void OnResourceLoaded(ResourceLoader* loader, Zmey::Name name, const tmp::string& text)
 {
@@ -151,7 +152,7 @@ Zmey::Name ResourceLoader::LoadResource(const stl::string& path)
 			OnResourceLoaded(this, name, world);
 		}
 	}
-	else if (Utilities::EndsWith(path, ".dds"))
+	else if (Utilities::EndsWith(path, ".material"))
 	{
 		// TODO: add task
 		{
@@ -164,7 +165,7 @@ Zmey::Name ResourceLoader::LoadResource(const stl::string& path)
 
 			stl::vector<uint8_t> data(size);
 			stream.read((char*)data.data(), size);
-			OnResourceTextureLoaded(this, name, std::move(data));
+			OnResourceMaterialLoaded(this, name, std::move(data));
 		}
 	}
 	else

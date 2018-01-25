@@ -245,7 +245,7 @@ MeshHandle Renderer::MeshLoaded(stl::vector<uint8_t>&& data)
 	{
 		return MeshHandle(-1);
 	}
-
+	// TODO: move this code inside the mesh manager
 	MeshDataHeader* header = reinterpret_cast<MeshDataHeader*>(data.data());
 
 	Mesh newMesh;
@@ -261,6 +261,12 @@ MeshHandle Renderer::MeshLoaded(stl::vector<uint8_t>&& data)
 		data.data() + sizeof(MeshDataHeader) + (header->VerticesCount * sizeof(MeshVertex))
 	);
 	return m_Data.MeshManager.CreateMesh(newMesh);
+}
+
+MaterialHandle Renderer::MaterialLoaded(stl::vector<uint8_t>&& data)
+{
+	auto result = m_Data.MaterialManager.CreateMaterial(*reinterpret_cast<MaterialDataHeader*>(data.data()));
+	return result;
 }
 
 TextureHandle Renderer::TextureLoaded(stl::vector<uint8_t>&& data)
