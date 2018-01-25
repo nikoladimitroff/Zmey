@@ -3,6 +3,7 @@
 #include <map>
 #include <vector>
 #include <unordered_map>
+#include <unordered_set>
 #include <Zmey/Components/ComponentRegistry.h>
 
 class Incinerator
@@ -17,8 +18,8 @@ public:
 private:
 	void BuildClassIndex(const std::vector<std::string>& classFiles);
 	void IncinerateClass(const std::string& destinationFolder, const std::string& className);
-	void IncinerateWorld(const std::string& destinationFolder, const std::string& worldSectionPath, std::vector<std::string>& outMeshFiles);
-	void IncinerateScene(const std::string& destinationFolder, const std::string& contentFolder, const std::string& gltf, const std::vector<std::string>& meshFiles);
+	void IncinerateWorld(const std::string& destinationFolder, const std::string& contentFolder, const std::string& worldSectionPath, const std::vector<std::string>& gltfFiles);
+	void IncinerateScene(const std::string& destinationFolder, const std::string& contentFolder, const std::string& gltf, const std::vector<std::string>& meshFiles, std::unordered_set<std::string>& additionalResources);
 
 	struct ComponentEntry : public Zmey::Components::IDataBlob
 	{
