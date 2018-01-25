@@ -1,6 +1,7 @@
 #include "GLTFLoader.h"
 #include <nlohmann/json.hpp>
 #include <Zmey/Graphics/Managers/MeshManager.h>
+#include <Zmey/Graphics/Managers/MaterialManager.h>
 #include <Zmey/MemoryStream.h>
 
 #include <fstream>
@@ -18,6 +19,13 @@ nlohmann::json FindNode(const nlohmann::json& gltf, unsigned nodeIndex)
 	auto nodes = gltf["nodes"];
 	assert(nodes.is_array() && nodeIndex < nodes.size());
 	return nodes[nodeIndex];
+}
+
+nlohmann::json FindMaterial(const nlohmann::json& gltf, unsigned materialIndex)
+{
+	auto mats = gltf["materials"];
+	assert(mats.is_array() && materialIndex < mats.size());
+	return mats[materialIndex];
 }
 
 nlohmann::json FindMesh(const nlohmann::json& gltf, unsigned meshIndex)
@@ -99,7 +107,8 @@ bool ParseAndIncinerate(const uint8_t* gltfData,
 	uint32_t gltfSize,
 	const std::string& destinationFolder,
 	const std::string& contentFolder,
-	const std::vector<std::string>& meshFiles)
+	const std::vector<std::string>& meshFiles,
+	std::unordered_set<std::string>& additionalResources)
 {
 	auto gltf = nlohmann::json::parse(gltfData, gltfData + gltfSize);
 
@@ -116,6 +125,8 @@ bool ParseAndIncinerate(const uint8_t* gltfData,
 		std::ifstream bufferFile(contentFolder + filename, std::ios::binary);
 		bufferFile.read((char*)buffersData.back().data(), unsigned(buf["byteLength"]));
 	}
+
+	std::unordered_set<uint16_t> materialToIncinerate;
 
 	const auto extensionLen = strlen(".mesh");
 	const auto prefixLen = strlen("mesh_");
@@ -142,10 +153,12 @@ bool ParseAndIncinerate(const uint8_t* gltfData,
 			FillDataFromBufferForIndices(gltf, buffersData, indicesAccessor, indices.data());
 		}
 
+		// TODO: take into account other primitives
+		const auto& primitive = mesh["primitives"][0];
 
 		std::vector<Zmey::Graphics::MeshVertex> vertices;
 		{
-			const auto& attribs = mesh["primitives"][0]["attributes"];
+			const auto& attribs = primitive["attributes"];
 			const auto& positionAccessor = FindAccessor(gltf, attribs["POSITION"]);
 			const auto& normalAccessor = FindAccessor(gltf, attribs["NORMAL"]);
 			bool hasTexCoord = attribs.find("TEXCOORD_0") != attribs.end();
@@ -159,7 +172,15 @@ bool ParseAndIncinerate(const uint8_t* gltfData,
 				vertices.data());
 		}
 
+		uint16_t materialIndex = -1; // Default Material
+		if (primitive.find("material") != primitive.end())
+		{
+			materialIndex = uint16_t(unsigned(primitive["material"]));
+			materialToIncinerate.insert(materialIndex);
+		}
+
 		Zmey::Graphics::MeshDataHeader data;
+		data.MaterialIndex = materialIndex;
 		data.VerticesCount = uint64_t(vertices.size());
 		data.IndicesCount = uint64_t(indices.size());
 
@@ -171,6 +192,42 @@ bool ParseAndIncinerate(const uint8_t* gltfData,
 		std::ofstream outputFile(destinationFolder + meshName, std::ios::binary | std::ios::out | std::ios::trunc);
 		outputFile.write(reinterpret_cast<const char*>(memstream.GetData()), memstream.GetDataSize());
 	}
+
+	for (const auto& materialIndex : materialToIncinerate)
+	{
+		Zmey::Graphics::MaterialDataHeader dataHeader;
+		// Default data
+		dataHeader.BaseColorFactor = Zmey::Color(1.0f, 1.0f, 1.0f, 1.0f);
+
+		const auto& material = FindMaterial(gltf, materialIndex);
+		if (material.find("pbrMetallicRoughness") != material.end())
+		{
+			auto pbr = material["pbrMetallicRoughness"];
+			assert(pbr.is_object());
+			for (const auto& member : pbr.get<nlohmann::json::object_t>())
+			{
+				if (member.first == "baseColorFactor")
+				{
+					assert(member.second.is_array());
+					dataHeader.BaseColorFactor = Zmey::Color(
+						member.second[0],
+						member.second[1],
+						member.second[2],
+						member.second[3]);
+				}
+			}
+		}
+
+		Zmey::MemoryOutputStream memstream;
+		memstream.Write(reinterpret_cast<uint8_t*>(&dataHeader), sizeof(Zmey::Graphics::MaterialDataHeader));
+
+		auto fileName = std::string("material_") + std::to_string(materialIndex) + std::string(".material");
+		std::ofstream outputFile(destinationFolder + fileName, std::ios::binary | std::ios::out | std::ios::trunc);
+		outputFile.write(reinterpret_cast<const char*>(memstream.GetData()), memstream.GetDataSize());
+
+		additionalResources.insert("IncineratedDataCache/" + fileName);
+	}
+
 	return true;
 }
 }
