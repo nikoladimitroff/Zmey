@@ -118,14 +118,15 @@ void UIRenderer::GenerateCommands(FrameData& frameData, RenderPass pass, ViewTyp
 
 	const auto swapChainSize = Globals::g_Device->GetSwapChainSize();
 
-	float scale[2];
-	scale[0] = 2.0f / swapChainSize.x;
-	scale[1] = -2.0f / swapChainSize.y;
-	float translate[2];
-	translate[0] = -1.0f;
-	translate[1] = 1.0f;
-	list->SetPushConstants(data.UIData.PipelineState, 0, sizeof(float) * 2, scale);
-	list->SetPushConstants(data.UIData.PipelineState, sizeof(float) * 2, sizeof(float) * 2, translate);
+	Vector2 scale {
+		2.0f / swapChainSize.x,
+		-2.0f / swapChainSize.y
+	};
+	Vector2 translate {
+		-1.0f,
+		1.0f
+	};
+	list->SetResourceSetData<ResourceSetType::UIPosition>(data.UIData.PipelineState, scale, translate);
 
 	int indexOffset = 0;
 	TextureHandle currentHandle = -1;
@@ -139,7 +140,8 @@ void UIRenderer::GenerateCommands(FrameData& frameData, RenderPass pass, ViewTyp
 			const auto texHandle = reinterpret_cast<TextureHandle>(cmd->TextureId);
 			if (texHandle != currentHandle)
 			{
-				list->SetShaderResourceView(data.UIData.PipelineState, data.TextureManager.GetTexture(texHandle));
+				auto texture = data.TextureManager.GetTexture(texHandle);
+				list->SetResourceSetData<ResourceSetType::UITexture>(data.UIData.PipelineState, texture);
 				currentHandle = texHandle;
 			}
 

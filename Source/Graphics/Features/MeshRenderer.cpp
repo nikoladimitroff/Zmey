@@ -83,8 +83,7 @@ void MeshRenderer::GenerateCommands(FrameData& frameData, RenderPass pass, ViewT
 
 	Vector3 lightDir(-1.0, -1.0, 1.0);
 	lightDir = glm::normalize(lightDir);
-	list->SetPushConstants(data.MeshesPipelineState, 2 * sizeof(Matrix4x4) + sizeof(Vector4), sizeof(Vector3), &lightDir);
-	list->SetPushConstants(data.MeshesPipelineState, 2 * sizeof(Matrix4x4) + sizeof(Vector4) + sizeof(Vector4), sizeof(Vector3), &frameData.EyePosition);
+	list->SetResourceSetData<ResourceSetType::Light>(data.MeshesPipelineState, lightDir, frameData.EyePosition);
 	//list->SetShaderResourceView(data.MeshesPipelineState, data.TextureManager.GetTexture(frameData.TextureToUse));
 
 	for (auto i = 0u; i < frameData.MeshHandles.size(); ++i)
@@ -99,11 +98,10 @@ void MeshRenderer::GenerateCommands(FrameData& frameData, RenderPass pass, ViewT
 		list->SetIndexBuffer(ibo);
 
 		auto mat = viewProjection * frameData.MeshTransforms[i];
-		list->SetPushConstants(data.MeshesPipelineState, 0, sizeof(Matrix4x4), &mat);
-		list->SetPushConstants(data.MeshesPipelineState, sizeof(Matrix4x4), sizeof(Matrix4x4), &frameData.MeshTransforms[i]);
+		list->SetResourceSetData<ResourceSetType::Transform>(data.MeshesPipelineState, mat, frameData.MeshTransforms[i]);
 
 		auto material = data.MaterialManager.GetMaterial(mesh->Material);
-		list->SetPushConstants(data.MeshesPipelineState,  2 * sizeof(Matrix4x4), sizeof(Vector3), &material->BaseColorFactor);
+		list->SetResourceSetData<ResourceSetType::Material>(data.MeshesPipelineState, material);
 
 		list->DrawIndexed(mesh->IndexCount, 1, 0, 0, 0);
 	}
