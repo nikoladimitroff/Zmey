@@ -20,10 +20,9 @@ public:
 	virtual void RemoveEntity(EntityId id) override;
 
 	//TODO(alex): remove this after visibility objects are created
-	stl::vector<std::tuple<EntityId, Graphics::MeshHandle, Vector3>> GetMeshes();
+	stl::vector<std::tuple<EntityId, Graphics::MeshHandle>> GetMeshes();
 private:
 	stl::vector<Graphics::MeshHandle> m_Meshes;
-	stl::vector<Vector3> m_MeshColors;
 	stl::unordered_map<EntityId, EntityId::IndexType> m_EntityToIndex;
 };
 
