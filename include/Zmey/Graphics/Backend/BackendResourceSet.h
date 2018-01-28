@@ -25,7 +25,7 @@ inline uint32_t GetPushConstantCountForResourceSet(ResourceSetType type)
 	case ResourceSetType::Transform:
 		return 2 * 16; // WVP + WV Matrices (Matrix4x4)
 	case ResourceSetType::Material:
-		return 4; // Color (Vector4)
+		return 4; // Color (Vector3) + bool HasColorTexture
 	case ResourceSetType::UIPosition:
 		return 4; // Scale + Translate (Vector2)
 	case ResourceSetType::UITexture:

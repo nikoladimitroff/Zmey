@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Zmey/Graphics/Managers/MaterialManager.h>
+#include <Zmey/Modules.h>
 
 namespace Zmey
 {
@@ -12,13 +13,31 @@ uint16_t MaterialManager::s_MaterialNextId = 0;
 MaterialManager::MaterialManager()
 {
 	// Add default material
-	m_Material[MaterialHandle(-1)] = Material{ Color(0.75f, 0.75f, 0.75f, 1.0f) };
+	m_Material[MaterialHandle(-1)] = Material{
+		Color(0.75f, 0.75f, 0.75f, 1.0f),
+		TextureHandle(-1)
+	};
 }
 
-MaterialHandle MaterialManager::CreateMaterial(const MaterialDataHeader& material)
+MaterialHandle MaterialManager::CreateMaterial(const MaterialDataHeader& materialHeader)
 {
+	Material material;
+	material.BaseColorFactor = materialHeader.BaseColorFactor;
+
+	if (materialHeader.BaseColorTextureOffset != 0
+		&& materialHeader.BaseColorTextureSize != 0)
+	{
+		material.BaseColorTexture = Modules.Renderer.TextureLoaded(
+			reinterpret_cast<const uint8_t*>(&materialHeader) + materialHeader.BaseColorTextureOffset,
+			materialHeader.BaseColorTextureSize);
+	}
+	else
+	{
+		material.BaseColorTexture = -1;
+	}
+
 	auto id = s_MaterialNextId++;
-	m_Material[id] = Material{ material.BaseColorFactor };
+	m_Material[id] = material;
 	return id;
 }
 

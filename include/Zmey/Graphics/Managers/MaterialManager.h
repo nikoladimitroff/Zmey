@@ -12,11 +12,15 @@ namespace Graphics
 struct MaterialDataHeader
 {
 	Color BaseColorFactor;
+	uint64_t BaseColorTextureOffset;
+	uint64_t BaseColorTextureSize;
+	// DDSHeader for BaseColorTexture
 };
 
 struct Material
 {
 	Color BaseColorFactor;
+	TextureHandle BaseColorTexture;
 };
 
 class MaterialManager

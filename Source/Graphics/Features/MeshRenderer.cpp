@@ -84,7 +84,6 @@ void MeshRenderer::GenerateCommands(FrameData& frameData, RenderPass pass, ViewT
 	Vector3 lightDir(-1.0, -1.0, 1.0);
 	lightDir = glm::normalize(lightDir);
 	list->SetResourceSetData<ResourceSetType::Light>(data.MeshesPipelineState, lightDir, frameData.EyePosition);
-	//list->SetShaderResourceView(data.MeshesPipelineState, data.TextureManager.GetTexture(frameData.TextureToUse));
 
 	for (auto i = 0u; i < frameData.MeshHandles.size(); ++i)
 	{

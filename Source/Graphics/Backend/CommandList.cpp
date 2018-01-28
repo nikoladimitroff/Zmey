@@ -4,6 +4,7 @@
 #include <Zmey/Graphics/Managers/MaterialManager.h>
 #include <Zmey/Graphics/Backend/GraphicsPipelineState.h>
 #include <Zmey/Graphics/Backend/BackendResourceSet.h>
+#include <Zmey/Modules.h>
 
 namespace Zmey
 {
@@ -57,6 +58,17 @@ void CommandList::SetResourceSetData<ResourceSetType::Material>(GraphicsPipeline
 	assert(IsResourceSetInPipeline(pipeline, ResourceSetType::Material));
 	auto startOffset = ResourceSetConstantBufferStartOffset(pipeline, ResourceSetType::Material);
 	SetPushConstants(pipeline, startOffset, sizeof(Vector3), &material->BaseColorFactor);
+
+	uint32_t hasColorTexture = false;
+	if (material->BaseColorTexture != TextureHandle(-1))
+	{
+		hasColorTexture = true;
+
+		SetShaderResourceView(pipeline,
+			Modules.Renderer.GetRendererData().TextureManager.GetTexture(material->BaseColorTexture));
+	}
+
+	SetPushConstants(pipeline, startOffset + sizeof(Vector3), sizeof(uint32_t), &hasColorTexture);
 }
 
 template<>

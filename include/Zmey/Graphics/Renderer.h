@@ -68,8 +68,10 @@ public:
 	// TODO: This is very weird to be here.
 	MeshHandle MeshLoaded(stl::vector<uint8_t>&& data);
 	MaterialHandle MaterialLoaded(stl::vector<uint8_t>&& data);
-	TextureHandle TextureLoaded(stl::vector<uint8_t>&& data);
+	TextureHandle TextureLoaded(const uint8_t* data, uint64_t size);
 	TextureHandle UITextureLoaded(uint8_t* data, uint32_t width, uint32_t height);
+
+	RendererData& GetRendererData() { return m_Data; }
 
 private:
 	void PrepareData(FrameData& frameData);
