@@ -126,7 +126,7 @@ void Dx12CommandList::SetPushConstants(GraphicsPipelineState* layout, uint32_t o
 	CmdList->SetGraphicsRoot32BitConstants(0, count / sizeof(float), data, offset / sizeof(float));
 }
 
-void Dx12CommandList::SetShaderResourceView(GraphicsPipelineState* layout, Texture* texture)
+void Dx12CommandList::SetShaderResourceView(GraphicsPipelineState* layout, const Texture* texture)
 {
 	assert(NextSlot < 1024); // TODO: This is the random number for size of the heap for now
 	ID3D12Device* device;
@@ -145,7 +145,7 @@ void Dx12CommandList::SetShaderResourceView(GraphicsPipelineState* layout, Textu
 	gpuHandle.ptr = SRVHeap->GetGPUDescriptorHandleForHeapStart().ptr + NextSlot * device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
 	++NextSlot;
 
-	device->CreateShaderResourceView(reinterpret_cast<Dx12Texture*>(texture)->Texture.Get(), &desc, handle);
+	device->CreateShaderResourceView(reinterpret_cast<const Dx12Texture*>(texture)->Texture.Get(), &desc, handle);
 
 	CmdList->SetGraphicsRootDescriptorTable(1, gpuHandle);
 }

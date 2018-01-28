@@ -317,6 +317,12 @@
     <ClInclude Include="..\..\include\Zmey\Graphics\Managers\MaterialManager.h">
       <Filter>include\Graphics\Managers</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Graphics\ResourceSet.h">
+      <Filter>include\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\BackendResourceSet.h">
+      <Filter>include\Graphics\Backend</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\EngineLoop.cpp">
@@ -429,6 +435,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\Graphics\Managers\MaterialManager.cpp">
       <Filter>Source\Graphics\Managers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Graphics\Backend\CommandList.cpp">
+      <Filter>Source\Graphics\Backend</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

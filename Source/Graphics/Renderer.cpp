@@ -5,6 +5,7 @@
 #include <Zmey/Graphics/RendererGlobals.h>
 
 #include <Zmey/Graphics/Features.h>
+#include <Zmey/Graphics/ResourceSet.h>
 
 #include <Zmey/Graphics/Backend/Device.h>
 #include <Zmey/Graphics/Backend/CommandList.h>
@@ -66,7 +67,11 @@ bool Renderer::CreateWindowSurface(WindowHandle handle)
 	desc.Layout.Elements.push_back(Backend::InputElement{ "NORMAL", 0, Backend::InputElementFormat::Float3, 0, 3 * sizeof(float) });
 	desc.Layout.Elements.push_back(Backend::InputElement{ "TEXCOORD", 0, Backend::InputElementFormat::Float2, 0, 6 * sizeof(float)});
 	desc.Topology = Backend::PrimitiveTopology::TriangleList;
-	desc.ResourceTable.NumPushConstants = 43;
+	desc.ResourceTable.ResourceSets = {
+		ResourceSetType::Transform,
+		ResourceSetType::Material,
+		ResourceSetType::Light
+	};
 
 	m_Data.MeshesPipelineState = m_Device->CreateGraphicsPipelineState(desc);
 
@@ -93,7 +98,10 @@ bool Renderer::CreateWindowSurface(WindowHandle handle)
 		uiDesc.Layout.Elements.push_back(Backend::InputElement{ "TEXCOORD", 0, Backend::InputElementFormat::Float2, 0, 2 * sizeof(float) });
 		uiDesc.Layout.Elements.push_back(Backend::InputElement{ "COLOR", 0, Backend::InputElementFormat::RGBA8, 0, 4 * sizeof(float) });
 		uiDesc.Topology = Backend::PrimitiveTopology::TriangleList;
-		uiDesc.ResourceTable.NumPushConstants = 4;
+		uiDesc.ResourceTable.ResourceSets = {
+			ResourceSetType::UIPosition,
+			ResourceSetType::UITexture
+		};
 		uiDesc.Rasterizer.CullMode = Backend::CullMode::None;
 		uiDesc.Blend.BlendEnable = true;
 		uiDesc.DepthStencil.DepthEnable = false;
