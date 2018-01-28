@@ -1,8 +1,10 @@
 #include "GLTFLoader.h"
+#include "TextureLoader.h"
 #include <nlohmann/json.hpp>
 #include <Zmey/Graphics/Managers/MeshManager.h>
 #include <Zmey/Graphics/Managers/MaterialManager.h>
 #include <Zmey/MemoryStream.h>
+
 
 #include <fstream>
 
@@ -236,21 +238,11 @@ bool ParseAndIncinerate(const uint8_t* gltfData,
 			const auto& image = gltf["images"][baseColorTextureIndex];
 			assert(image["uri"].is_string());
 			std::string filename = image["uri"];
-			// Change file ending for now
-			// TODO: read the original and make it a dds
-			filename = filename.substr(0, filename.find_last_of('.'));
-			filename += ".dds";
 
-			std::ifstream imageFile(contentFolder + filename, std::ios::binary);
-			imageFile.seekg(0, std::ios::end);
-			size_t size = imageFile.tellg();
-			imageFile.seekg(0);
-
-			textureData.resize(size);
-			imageFile.read((char*)textureData.data(), size);
+			TextureLoader::ConvertImageToDDSMemory(contentFolder + filename, textureData);
 
 			dataHeader.BaseColorTextureOffset = sizeof(Zmey::Graphics::MaterialDataHeader);
-			dataHeader.BaseColorTextureSize = size;
+			dataHeader.BaseColorTextureSize = textureData.size();
 		}
 
 		Zmey::MemoryOutputStream memstream;
