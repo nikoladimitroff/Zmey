@@ -198,6 +198,10 @@ bool ParseAndIncinerate(const uint8_t* gltfData,
 		Zmey::Graphics::MaterialDataHeader dataHeader;
 		// Default data
 		dataHeader.BaseColorFactor = Zmey::Color(1.0f, 1.0f, 1.0f, 1.0f);
+		dataHeader.BaseColorTextureOffset = 0; // no texture
+		dataHeader.BaseColorTextureSize = 0;
+
+		uint32_t baseColorTextureIndex = -1;
 
 		const auto& material = FindMaterial(gltf, materialIndex);
 		if (material.find("pbrMetallicRoughness") != material.end())
@@ -215,11 +219,43 @@ bool ParseAndIncinerate(const uint8_t* gltfData,
 						member.second[2],
 						member.second[3]);
 				}
+				else if (member.first == "baseColorTexture")
+				{
+					assert(member.second.is_object());
+					baseColorTextureIndex = member.second["index"];
+				}
 			}
+		}
+
+		std::vector<uint8_t> textureData;
+
+		// Get Textures data
+		if (baseColorTextureIndex != -1)
+		{
+			assert(gltf["images"].is_array());
+			const auto& image = gltf["images"][baseColorTextureIndex];
+			assert(image["uri"].is_string());
+			std::string filename = image["uri"];
+			// Change file ending for now
+			// TODO: read the original and make it a dds
+			filename = filename.substr(0, filename.find_last_of('.'));
+			filename += ".dds";
+
+			std::ifstream imageFile(contentFolder + filename, std::ios::binary);
+			imageFile.seekg(0, std::ios::end);
+			size_t size = imageFile.tellg();
+			imageFile.seekg(0);
+
+			textureData.resize(size);
+			imageFile.read((char*)textureData.data(), size);
+
+			dataHeader.BaseColorTextureOffset = sizeof(Zmey::Graphics::MaterialDataHeader);
+			dataHeader.BaseColorTextureSize = size;
 		}
 
 		Zmey::MemoryOutputStream memstream;
 		memstream.Write(reinterpret_cast<uint8_t*>(&dataHeader), sizeof(Zmey::Graphics::MaterialDataHeader));
+		memstream.Write(textureData.data(), textureData.size());
 
 		auto fileName = std::string("material_") + std::to_string(materialIndex) + std::string(".material");
 		std::ofstream outputFile(destinationFolder + fileName, std::ios::binary | std::ios::out | std::ios::trunc);

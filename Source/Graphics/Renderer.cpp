@@ -279,9 +279,9 @@ MaterialHandle Renderer::MaterialLoaded(stl::vector<uint8_t>&& data)
 	return result;
 }
 
-TextureHandle Renderer::TextureLoaded(stl::vector<uint8_t>&& data)
+TextureHandle Renderer::TextureLoaded(const uint8_t* data, uint64_t size)
 {
-	DDSLoader loader(data.data(), data.size());
+	DDSLoader loader(data, size);
 
 	if (!loader.IsValid())
 	{
@@ -302,8 +302,8 @@ TextureHandle Renderer::TextureLoaded(stl::vector<uint8_t>&& data)
 	TextureDataToUpload upload;
 	upload.Texture = m_Data.TextureManager.GetTexture(result);
 	upload.ActualDataSize = loader.GetWidth() * loader.GetHeight() * 4;//TODO: Take image format into account
-	upload.StartOffsetInData = loader.GetImageData() - data.data();
-	upload.Data = std::move(data);
+	upload.StartOffsetInData = loader.GetImageData() - data;
+	upload.Data.assign(data, data + size);
 	m_TextureToUpload.push_back(std::move(upload));
 
 	return result;
