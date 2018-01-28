@@ -10,7 +10,7 @@ namespace Graphics
 using MeshHandle = uint64_t;
 using BufferHandle = uint64_t;
 using TextureHandle = uint64_t;
-using MaterialHandle = uint64_t;
+using MaterialHandle = uint16_t;
 
 enum class PixelFormat
 {

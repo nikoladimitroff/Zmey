@@ -260,6 +260,8 @@ MeshHandle Renderer::MeshLoaded(stl::vector<uint8_t>&& data)
 		uint32_t(header->IndicesCount * sizeof(uint32_t)),
 		data.data() + sizeof(MeshDataHeader) + (header->VerticesCount * sizeof(MeshVertex))
 	);
+	// TODO: this ID must be the one returned from MaterialLoaded and not depend on internals of the material manager
+	newMesh.Material = header->MaterialIndex;
 	return m_Data.MeshManager.CreateMesh(newMesh);
 }
 

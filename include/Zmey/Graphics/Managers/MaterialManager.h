@@ -16,16 +16,18 @@ struct MaterialDataHeader
 
 struct Material
 {
+	Color BaseColorFactor;
 };
 
 class MaterialManager
 {
 public:
+	MaterialManager();
 	MaterialHandle CreateMaterial(const MaterialDataHeader& material);
 	const Material* GetMaterial(MaterialHandle handle) const;
 private:
 	stl::unordered_map<MaterialHandle, Material> m_Material;
-	static uint64_t s_MaterialNextId;
+	static uint16_t s_MaterialNextId;
 };
 
 }

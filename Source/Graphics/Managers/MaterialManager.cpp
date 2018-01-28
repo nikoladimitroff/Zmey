@@ -7,12 +7,18 @@ namespace Zmey
 namespace Graphics
 {
 
-uint64_t MaterialManager::s_MaterialNextId = 0;
+uint16_t MaterialManager::s_MaterialNextId = 0;
+
+MaterialManager::MaterialManager()
+{
+	// Add default material
+	m_Material[MaterialHandle(-1)] = Material{ Color(0.75f, 0.75f, 0.75f, 1.0f) };
+}
 
 MaterialHandle MaterialManager::CreateMaterial(const MaterialDataHeader& material)
 {
 	auto id = s_MaterialNextId++;
-	m_Material[id] = Material();
+	m_Material[id] = Material{ material.BaseColorFactor };
 	return id;
 }
 

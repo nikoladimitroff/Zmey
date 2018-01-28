@@ -21,12 +21,10 @@ struct MeshRendererGatherJobData
 {
 	MeshHandle& HandleSlot;
 	Matrix4x4& MatrixSlot;
-	Vector3& ColorSlot;
 
 	Components::TransformManager& TransformManager;
 	EntityId Id;
 	MeshHandle Handle;
-	Vector3 Color;
 };
 
 void GatherDataEntryPoint(void* param)
@@ -40,8 +38,6 @@ void GatherDataEntryPoint(void* param)
 		glm::translate(transform.Position()) *
 		glm::toMat4(transform.Rotation()) *
 		glm::scale(transform.Scale());
-
-	data->ColorSlot = data->Color;
 }
 }
 
@@ -51,7 +47,6 @@ void MeshRenderer::GatherData(FrameData& frameData, World& world)
 	const auto& meshes = meshManager.GetMeshes();
 	frameData.MeshHandles.resize(meshes.size());
 	frameData.MeshTransforms.resize(meshes.size());
-	frameData.MeshColors.resize(meshes.size());
 	auto& transformManager = world.GetManager<Components::TransformManager>();
 
 	TEMP_ALLOCATOR_SCOPE;
@@ -62,7 +57,7 @@ void MeshRenderer::GatherData(FrameData& frameData, World& world)
 
 	for (auto i = 0u; i < meshes.size(); ++i)
 	{
-		jobsData.push_back(MeshRendererGatherJobData{ frameData.MeshHandles[i], frameData.MeshTransforms[i], frameData.MeshColors[i], transformManager, std::get<0>(meshes[i]), std::get<1>(meshes[i]), std::get<2>(meshes[i])});
+		jobsData.push_back(MeshRendererGatherJobData{ frameData.MeshHandles[i], frameData.MeshTransforms[i], transformManager, std::get<0>(meshes[i]), std::get<1>(meshes[i])});
 		jobs.push_back(Job::JobDecl{ GatherDataEntryPoint, &jobsData[i] });
 	}
 
@@ -106,7 +101,9 @@ void MeshRenderer::GenerateCommands(FrameData& frameData, RenderPass pass, ViewT
 		auto mat = viewProjection * frameData.MeshTransforms[i];
 		list->SetPushConstants(data.MeshesPipelineState, 0, sizeof(Matrix4x4), &mat);
 		list->SetPushConstants(data.MeshesPipelineState, sizeof(Matrix4x4), sizeof(Matrix4x4), &frameData.MeshTransforms[i]);
-		list->SetPushConstants(data.MeshesPipelineState,  2 * sizeof(Matrix4x4), sizeof(Vector3), &frameData.MeshColors[i]);
+
+		auto material = data.MaterialManager.GetMaterial(mesh->Material);
+		list->SetPushConstants(data.MeshesPipelineState,  2 * sizeof(Matrix4x4), sizeof(Vector3), &material->BaseColorFactor);
 
 		list->DrawIndexed(mesh->IndexCount, 1, 0, 0, 0);
 	}
