@@ -8,6 +8,7 @@
 #include <Zmey/Graphics/Backend/Vulkan/VulkanCommandList.h>
 #include <Zmey/Graphics/Backend/Vulkan/VulkanBuffer.h>
 #include <Zmey/Graphics/Backend/Vulkan/VulkanTexture.h>
+#include <Zmey/Graphics/Backend/BackendResourceSet.h>
 #include <Zmey/Graphics/RendererGlobals.h>
 
 namespace Zmey
@@ -790,7 +791,7 @@ GraphicsPipelineState* VulkanDevice::CreateGraphicsPipelineState(const GraphicsP
 
 	VkPushConstantRange ranges[1];
 	ranges[0].stageFlags = VK_SHADER_STAGE_ALL_GRAPHICS;
-	ranges[0].size = desc.ResourceTable.NumPushConstants * sizeof(float);
+	ranges[0].size = GatherPushConstantCount(desc.ResourceTable.ResourceSets) * sizeof(float);
 	ranges[0].offset = 0;
 
 	{
@@ -901,6 +902,7 @@ GraphicsPipelineState* VulkanDevice::CreateGraphicsPipelineState(const GraphicsP
 	}
 
 	auto result = new VulkanPipelineState;
+	result->Desc = desc;
 	result->Layout = layout;
 	result->SetLayout = setLayout;
 	result->Pipeline = pipeline;

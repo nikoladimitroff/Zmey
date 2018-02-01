@@ -174,11 +174,19 @@ void PhysicsEngine::Simulate(float deltaTime)
 
 	m_TimeAccumulator -= PhysicsEngine::TimeStep;
 	TEMP_ALLOCATOR_SCOPE;
-	uint32_t scratchMemorySize = 1024 * 1024; // 1mb
-	tmp::unique_array<uint8_t> scratchMemory = tmp::make_unique_array<uint8_t>(scratchMemorySize);
+	const uint32_t desiredSize = 1024 * 1024; // 1mb
+	const uint32_t alignment = 16 * 1024; // 16 KB align needed
+	size_t sizeWithAlignment = desiredSize + alignment;
+	tmp::unique_array<uint8_t> scratchMemory = tmp::make_unique_array<uint8_t>(sizeWithAlignment);
 	{
 		physx::PxSceneWriteLock writeLock(*m_Scene);
-		m_Scene->simulate(PhysicsEngine::TimeStep, nullptr, scratchMemory.get(), scratchMemorySize);
+		void* scratchMemoryAddress = scratchMemory.get();
+
+		m_Scene->simulate(
+			PhysicsEngine::TimeStep,
+			nullptr,
+			std::align(alignment, desiredSize, scratchMemoryAddress, sizeWithAlignment),
+			desiredSize);
 	}
 	m_HasIssuedSimulate = true;
 }

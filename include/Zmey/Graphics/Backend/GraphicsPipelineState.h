@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <Zmey/Memory/MemoryManagement.h>
+#include <Zmey/Graphics/ResourceSet.h>
 
 namespace Zmey
 {
@@ -45,7 +46,7 @@ enum class PrimitiveTopology : uint8_t
 
 struct ResourceTableDesc
 {
-	uint32_t NumPushConstants = 0;
+	stl::vector<ResourceSetType> ResourceSets;
 };
 
 enum class CullMode : uint8_t

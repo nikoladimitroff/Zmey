@@ -1,6 +1,8 @@
 #pragma once
 
 #include <stdint.h>
+#include <Zmey/Math/Math.h>
+#include <Zmey/Graphics/ResourceSet.h>
 #include <Zmey/Graphics/Backend/BackendDeclarations.h>
 
 namespace Zmey
@@ -29,12 +31,15 @@ public:
 	virtual void SetVertexBuffer(const Buffer* vbo, uint32_t vertexStride) = 0;
 	virtual void SetIndexBuffer(const Buffer* ibo) = 0;
 
-	virtual void SetPushConstants(GraphicsPipelineState* layout, uint32_t offset, uint32_t count, const void* data) = 0;
-	virtual void SetShaderResourceView(GraphicsPipelineState* layout, Texture* texture) = 0;
-
 	virtual void CopyBufferToTexture(Buffer* buffer, Texture* texture) = 0;
-};
 
+	template<ResourceSetType Type, typename... Args>
+	void SetResourceSetData(GraphicsPipelineState* layout, Args&&... args);
+
+private:
+	virtual void SetPushConstants(GraphicsPipelineState* layout, uint32_t offset, uint32_t count, const void* data) = 0;
+	virtual void SetShaderResourceView(GraphicsPipelineState* layout, const Texture* texture) = 0;
+};
 }
 }
 }

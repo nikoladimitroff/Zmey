@@ -17,8 +17,6 @@ void MeshComponentDefaults(IDataBlob& blob)
 {
 	Zmey::Name nullName(Zmey::Name::NullName());
 	blob.WriteData("mesh", reinterpret_cast<uint8_t*>(&nullName), sizeof(nullName));
-	Vector3 defaultColor(0.75f, 0.75f, 0.75f);
-	blob.WriteData("color", reinterpret_cast<uint8_t*>(&defaultColor), sizeof(Vector3));
 }
 
 void MeshComponentToBlob(const nlohmann::json& rawJson, IDataBlob& blob)
@@ -33,16 +31,6 @@ void MeshComponentToBlob(const nlohmann::json& rawJson, IDataBlob& blob)
 		blob.WriteData("mesh", reinterpret_cast<uint8_t*>(&name), sizeof(name));
 		blob.RequestResource(meshPath.c_str(), pathLength);
 	}
-
-	if (rawJson.find("color") != rawJson.end())
-	{
-		ASSERT_FATAL(rawJson["color"].is_array());
-		float color[3];
-		color[0] = rawJson["color"][0];
-		color[1] = rawJson["color"][1];
-		color[2] = rawJson["color"][2];
-		blob.WriteData("color", reinterpret_cast<uint8_t*>(&color), sizeof(color));
-	}
 }
 
 void MeshComponentManager::InitializeFromBlob(const tmp::vector<EntityId>& entities, Zmey::MemoryInputStream& stream)
@@ -56,11 +44,6 @@ void MeshComponentManager::InitializeFromBlob(const tmp::vector<EntityId>& entit
 		m_EntityToIndex[entities[i]] = uint32_t(m_Meshes.size());
 		m_Meshes.push_back(meshHandle);
 	}
-
-	EntityId::IndexType currentEntities = static_cast<EntityId::IndexType>(m_MeshColors.size());
-	m_MeshColors.resize(currentEntities + entities.size());
-	size_t colorBufferLength = sizeof(Vector3) * entities.size();
-	stream.Read(reinterpret_cast<uint8_t*>(&m_MeshColors[currentEntities]), colorBufferLength);
 }
 
 void MeshComponentManager::Simulate(float deltaTime)
@@ -77,13 +60,13 @@ void MeshComponentManager::RemoveEntity(EntityId id)
 	}
 }
 
-stl::vector<std::tuple<EntityId, Graphics::MeshHandle, Vector3>> MeshComponentManager::GetMeshes()
+stl::vector<std::tuple<EntityId, Graphics::MeshHandle>> MeshComponentManager::GetMeshes()
 {
-	stl::vector<std::tuple<EntityId, Graphics::MeshHandle, Vector3>> result;
+	stl::vector<std::tuple<EntityId, Graphics::MeshHandle>> result;
 	result.reserve(m_EntityToIndex.size());
 	for (auto& en : m_EntityToIndex)
 	{
-		result.emplace_back(en.first, m_Meshes[en.second], m_MeshColors[en.second]);
+		result.emplace_back(en.first, m_Meshes[en.second]);
 	}
 
 	return result;

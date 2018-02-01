@@ -5,6 +5,7 @@
 #include <Zmey/Graphics/RendererGlobals.h>
 
 #include <Zmey/Graphics/Features.h>
+#include <Zmey/Graphics/ResourceSet.h>
 
 #include <Zmey/Graphics/Backend/Device.h>
 #include <Zmey/Graphics/Backend/CommandList.h>
@@ -66,7 +67,11 @@ bool Renderer::CreateWindowSurface(WindowHandle handle)
 	desc.Layout.Elements.push_back(Backend::InputElement{ "NORMAL", 0, Backend::InputElementFormat::Float3, 0, 3 * sizeof(float) });
 	desc.Layout.Elements.push_back(Backend::InputElement{ "TEXCOORD", 0, Backend::InputElementFormat::Float2, 0, 6 * sizeof(float)});
 	desc.Topology = Backend::PrimitiveTopology::TriangleList;
-	desc.ResourceTable.NumPushConstants = 43;
+	desc.ResourceTable.ResourceSets = {
+		ResourceSetType::Transform,
+		ResourceSetType::Material,
+		ResourceSetType::Light
+	};
 
 	m_Data.MeshesPipelineState = m_Device->CreateGraphicsPipelineState(desc);
 
@@ -93,7 +98,10 @@ bool Renderer::CreateWindowSurface(WindowHandle handle)
 		uiDesc.Layout.Elements.push_back(Backend::InputElement{ "TEXCOORD", 0, Backend::InputElementFormat::Float2, 0, 2 * sizeof(float) });
 		uiDesc.Layout.Elements.push_back(Backend::InputElement{ "COLOR", 0, Backend::InputElementFormat::RGBA8, 0, 4 * sizeof(float) });
 		uiDesc.Topology = Backend::PrimitiveTopology::TriangleList;
-		uiDesc.ResourceTable.NumPushConstants = 4;
+		uiDesc.ResourceTable.ResourceSets = {
+			ResourceSetType::UIPosition,
+			ResourceSetType::UITexture
+		};
 		uiDesc.Rasterizer.CullMode = Backend::CullMode::None;
 		uiDesc.Blend.BlendEnable = true;
 		uiDesc.DepthStencil.DepthEnable = false;
@@ -245,7 +253,7 @@ MeshHandle Renderer::MeshLoaded(stl::vector<uint8_t>&& data)
 	{
 		return MeshHandle(-1);
 	}
-
+	// TODO: move this code inside the mesh manager
 	MeshDataHeader* header = reinterpret_cast<MeshDataHeader*>(data.data());
 
 	Mesh newMesh;
@@ -260,12 +268,19 @@ MeshHandle Renderer::MeshLoaded(stl::vector<uint8_t>&& data)
 		uint32_t(header->IndicesCount * sizeof(uint32_t)),
 		data.data() + sizeof(MeshDataHeader) + (header->VerticesCount * sizeof(MeshVertex))
 	);
+	// TODO: this ID must be the one returned from MaterialLoaded and not depend on internals of the material manager
+	newMesh.Material = header->MaterialIndex;
 	return m_Data.MeshManager.CreateMesh(newMesh);
 }
 
-TextureHandle Renderer::TextureLoaded(stl::vector<uint8_t>&& data)
+MaterialHandle Renderer::MaterialLoaded(stl::vector<uint8_t>&& data)
 {
-	DDSLoader loader(data.data(), data.size());
+	return m_Data.MaterialManager.CreateMaterial(*reinterpret_cast<MaterialDataHeader*>(data.data()));
+}
+
+TextureHandle Renderer::TextureLoaded(const uint8_t* data, uint64_t size)
+{
+	DDSLoader loader(data, size);
 
 	if (!loader.IsValid())
 	{
@@ -286,8 +301,8 @@ TextureHandle Renderer::TextureLoaded(stl::vector<uint8_t>&& data)
 	TextureDataToUpload upload;
 	upload.Texture = m_Data.TextureManager.GetTexture(result);
 	upload.ActualDataSize = loader.GetWidth() * loader.GetHeight() * 4;//TODO: Take image format into account
-	upload.StartOffsetInData = loader.GetImageData() - data.data();
-	upload.Data = std::move(data);
+	upload.StartOffsetInData = loader.GetImageData() - data;
+	upload.Data.assign(data, data + size);
 	m_TextureToUpload.push_back(std::move(upload));
 
 	return result;

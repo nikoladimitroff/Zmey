@@ -108,12 +108,12 @@ void VulkanCommandList::SetPushConstants(GraphicsPipelineState* layout, uint32_t
 		data);
 }
 
-void VulkanCommandList::SetShaderResourceView(GraphicsPipelineState* layout, Texture* texture)
+void VulkanCommandList::SetShaderResourceView(GraphicsPipelineState* layout, const Texture* texture)
 {
 	auto device = reinterpret_cast<VulkanDevice*>(Globals::g_Device)->GetNativeDevice();
 
 	auto vkPipeline = reinterpret_cast<VulkanPipelineState*>(layout);
-	auto vkTexture = reinterpret_cast<VulkanTexture*>(texture);
+	auto vkTexture = reinterpret_cast<const VulkanTexture*>(texture);
 
 	VkDescriptorSetAllocateInfo allocInfo = {};
 	allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
