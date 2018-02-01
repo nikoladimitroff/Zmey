@@ -74,10 +74,6 @@ class ExportZmey(bpy.types.Operator, ExportHelper):
                     "name" : "mesh",
                     "glTF_node_index" : blender_objects.index(obj)
                 }
-                # check for color inside the material
-                if len(obj.data.materials) > 0 and obj.data.materials[0].diffuse_color:
-                    c = obj.data.materials[0].diffuse_color
-                    mesh_component["color"] = [c.r, c.g, c.b]
                 data["components"].append(mesh_component)
 
             file = open(self.directory + t.name + ".type", "w", encoding="utf8", newline="\n")
