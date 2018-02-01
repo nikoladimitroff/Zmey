@@ -29,7 +29,7 @@ public:
 	virtual void Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t startVertex, uint32_t startInstance) override;
 	virtual void DrawIndexed(uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, uint32_t vertexOffset, uint32_t firstInstance) override;
 	virtual void SetPushConstants(GraphicsPipelineState* layout, uint32_t offset, uint32_t count, const void* data) override;
-	virtual void SetShaderResourceView(GraphicsPipelineState* layout, Texture* texture) override;
+	virtual void SetShaderResourceView(GraphicsPipelineState* layout, const Texture* texture) override;
 	virtual void SetVertexBuffer(const Buffer* vbo, uint32_t vertexStride) override;
 	virtual void SetIndexBuffer(const Buffer* ibo) override;
 	virtual void CopyBufferToTexture(Buffer* buffer, Texture* texture) override;

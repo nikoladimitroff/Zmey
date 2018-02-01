@@ -20,6 +20,7 @@ cbuffer VertexPushs : register(b0) PUSH_CONSTANT
 	float4x4 WorldViewProjectionMatrix;
 	float4x4 WorldMatrix;
 	float3 Color;
+	bool HasColorTexture;
 	float3 LightDirection; // Directional Light
 	float3 EyePosition;
 };
@@ -43,8 +44,11 @@ float4 PixelShaderMain(VertexOutput input) : SV_TARGET
 	// Simple diffuse lighting
 	float4 color = float4(Color, 1.0);
 
-	//float4 texColor = txBuffer.Sample(txBufferSampler, input.TextureUV);
-	//color = /*color **/ texColor;
+	if (HasColorTexture)
+	{
+		float4 texColor = txBuffer.Sample(txBufferSampler, input.TextureUV);
+		color *= texColor;
+	}
 
 	// diffuse
 	float diffuseFactor = saturate(dot(input.Normal, -LightDirection));

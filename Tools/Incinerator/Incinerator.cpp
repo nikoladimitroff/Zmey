@@ -2,8 +2,6 @@
 
 #include <iostream>
 #include <fstream>
-#include <vector>
-#include <unordered_set>
 #include <map>
 #define WIN32_LEAN_AND_MEAN
 #define NOMINMAX
@@ -84,20 +82,13 @@ void Incinerator::Incinerate(const Options& options)
 	auto mkdirResult = ::CreateDirectory(compiledDir.c_str(), NULL);
 	assert(mkdirResult != ERROR_PATH_NOT_FOUND);
 
-	std::vector<std::string> meshes;
+	auto gltfs = FindAllFiles(contentDir, gltfExtension);
+	assert(gltfs.size() == 1); // TODO: fix this
 
 	auto worlds = FindAllFiles(contentDir, worldExtension);
 	for (const auto& worldSectionFile : worlds)
 	{
-		IncinerateWorld(compiledDir, worldSectionFile, meshes);
-	}
-
-	// Read glTF and create meshes
-	auto gltfs = FindAllFiles(contentDir, gltfExtension);
-	assert(gltfs.size() == 1); // TODO: fix this
-	for (const auto& gltf : gltfs)
-	{
-		IncinerateScene(compiledDir, contentDir, gltf, meshes);
+		IncinerateWorld(compiledDir, contentDir, worldSectionFile, gltfs);
 	}
 }
 
@@ -197,7 +188,7 @@ void Incinerator::IncinerateClass(const std::string& destinationFolder, const st
 	outputFile.write(reinterpret_cast<const char*>(memstream.GetData()), memstream.GetDataSize());
 }
 
-void Incinerator::IncinerateWorld(const std::string& destinationFolder, const std::string& worldSectionPath, std::vector<std::string>& outMeshFiles)
+void Incinerator::IncinerateWorld(const std::string& destinationFolder, const std::string& contentFolder, const std::string& worldSectionPath, const std::vector<std::string>& gltfs)
 {
 	std::ifstream worldFile(worldSectionPath);
 	nlohmann::json rawData;
@@ -276,6 +267,24 @@ void Incinerator::IncinerateWorld(const std::string& destinationFolder, const st
 		resourceList.insert(classPath);
 	}
 
+	std::vector<std::string> meshesToIncinerate;
+	for (const auto& name : resourceList)
+	{
+		// Record it if is a mesh file
+		// TODO: better check
+		if (name.find(".mesh") != std::string::npos)
+		{
+			auto filenameStart = name.find_last_of("/") + 1;
+			meshesToIncinerate.push_back(name.substr(filenameStart, name.size() - filenameStart));
+		}
+	}
+
+	// Burn the gltf now as it can request additional resources like materials
+	for (const auto& gltf : gltfs)
+	{
+		IncinerateScene(destinationFolder, contentFolder, gltf, meshesToIncinerate, resourceList);
+	}
+
 	// Serialization time
 	Zmey::MemoryOutputStream memstream;
 	memstream << "1.0"; // Version
@@ -285,13 +294,6 @@ void Incinerator::IncinerateWorld(const std::string& destinationFolder, const st
 	for (const auto& name : resourceList)
 	{
 		memstream << name;
-		// Record it if is a mesh file
-		// TODO: better check
-		if (name.find(".mesh") != std::string::npos)
-		{
-			auto filenameStart = name.find_last_of("/") + 1;
-			outMeshFiles.push_back(name.substr(filenameStart, name.size() - filenameStart));
-		}
 	}
 
 	// Entities
@@ -329,7 +331,7 @@ void Incinerator::IncinerateWorld(const std::string& destinationFolder, const st
 	outputFile.write(reinterpret_cast<const char*>(memstream.GetData()), memstream.GetDataSize());
 }
 
-void Incinerator::IncinerateScene(const std::string& destinationFolder, const std::string& contentFolder, const std::string& gltf, const std::vector<std::string>& meshFiles)
+void Incinerator::IncinerateScene(const std::string& destinationFolder, const std::string& contentFolder, const std::string& gltf, const std::vector<std::string>& meshFiles, std::unordered_set<std::string>& additionalResources)
 {
 	TEMP_ALLOCATOR_SCOPE;
 	Zmey::tmp::vector<uint8_t> gltfSceneData;
@@ -344,5 +346,10 @@ void Incinerator::IncinerateScene(const std::string& destinationFolder, const st
 		gltfFile.read((char*)gltfSceneData.data(), gltfSize);
 	}
 
-	Zmey::Incinerator::GLTFLoader::ParseAndIncinerate(gltfSceneData.data(), gltfSceneData.size(), destinationFolder, contentFolder, meshFiles);
+	Zmey::Incinerator::GLTFLoader::ParseAndIncinerate(gltfSceneData.data(),
+		gltfSceneData.size(),
+		destinationFolder,
+		contentFolder,
+		meshFiles,
+		additionalResources);
 }

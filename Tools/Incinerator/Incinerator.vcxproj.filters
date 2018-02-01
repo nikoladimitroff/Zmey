@@ -6,10 +6,16 @@
     <ClCompile Include="GLTFLoader.cpp">
       <Filter>Loaders</Filter>
     </ClCompile>
+    <ClCompile Include="TextureLoader.cpp">
+      <Filter>Loaders</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Incinerator.h" />
     <ClInclude Include="GLTFLoader.h">
+      <Filter>Loaders</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureLoader.h">
       <Filter>Loaders</Filter>
     </ClInclude>
   </ItemGroup>

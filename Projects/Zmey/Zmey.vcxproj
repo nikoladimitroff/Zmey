@@ -133,6 +133,7 @@
     <ClInclude Include="..\..\include\Zmey\EngineLoop.h" />
     <ClInclude Include="..\..\include\Zmey\EntityManager.h" />
     <ClInclude Include="..\..\include\Zmey\Game.h" />
+    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\BackendResourceSet.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Device.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\Backend\BackendDeclarations.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Buffer.h" />
@@ -156,12 +157,14 @@
     <ClInclude Include="..\..\include\Zmey\Graphics\FrameData.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\GraphicsObjects.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\Managers\BufferManager.h" />
+    <ClInclude Include="..\..\include\Zmey\Graphics\Managers\MaterialManager.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\Managers\MeshManager.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\Managers\TextureManager.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\Managers\UploadHeap.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\Renderer.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\RendererGlobals.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\RenderPasses.h" />
+    <ClInclude Include="..\..\include\Zmey\Graphics\ResourceSet.h" />
     <ClInclude Include="..\..\include\Zmey\Graphics\View.h" />
     <ClInclude Include="..\..\include\Zmey\Hash.h" />
     <ClInclude Include="..\..\include\Zmey\InputController.h" />
@@ -204,6 +207,7 @@
     <ClCompile Include="..\..\Source\Components\TransformManager.cpp" />
     <ClCompile Include="..\..\Source\EngineLoop.cpp" />
     <ClCompile Include="..\..\Source\EntityManager.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Backend\CommandList.cpp" />
     <ClCompile Include="..\..\Source\Graphics\Backend\Dx12\Dx12Device.cpp" />
     <ClCompile Include="..\..\Source\Graphics\Backend\Dx12\Dx12CommandList.cpp" />
     <ClCompile Include="..\..\Source\Graphics\Backend\Vulkan\VulkanDevice.cpp" />
@@ -212,6 +216,7 @@
     <ClCompile Include="..\..\Source\Graphics\Features\MeshRenderer.cpp" />
     <ClCompile Include="..\..\Source\Graphics\Features\UIRenderer.cpp" />
     <ClCompile Include="..\..\Source\Graphics\Managers\BufferManager.cpp" />
+    <ClCompile Include="..\..\Source\Graphics\Managers\MaterialManager.cpp" />
     <ClCompile Include="..\..\Source\Graphics\Managers\MeshManager.cpp" />
     <ClCompile Include="..\..\Source\Graphics\Managers\TextureManager.cpp" />
     <ClCompile Include="..\..\Source\Graphics\Managers\UploadHeap.cpp" />

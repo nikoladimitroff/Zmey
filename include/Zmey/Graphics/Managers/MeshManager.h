@@ -18,6 +18,7 @@ struct MeshVertex
 
 struct MeshDataHeader
 {
+	uint16_t MaterialIndex;
 	uint64_t VerticesCount;
 	uint64_t IndicesCount;
 	// MeshVertex[VerticesCount]
@@ -29,6 +30,7 @@ struct Mesh
 	uint32_t IndexCount;
 	BufferHandle VertexBuffer;
 	BufferHandle IndexBuffer;
+	MaterialHandle Material;
 };
 
 class MeshManager

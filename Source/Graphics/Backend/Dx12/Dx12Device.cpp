@@ -9,6 +9,7 @@
 #include <Zmey/Graphics/Backend/Dx12/Dx12Shaders.h>
 #include <Zmey/Graphics/Backend/Dx12/Dx12CommandList.h>
 #include <Zmey/Graphics/Backend/Dx12/Dx12Texture.h>
+#include <Zmey/Graphics/Backend/BackendResourceSet.h>
 
 namespace Zmey
 {
@@ -236,7 +237,7 @@ GraphicsPipelineState* Dx12Device::CreateGraphicsPipelineState(const GraphicsPip
 	D3D12_ROOT_PARAMETER rootParam;
 	rootParam.ParameterType = D3D12_ROOT_PARAMETER_TYPE_32BIT_CONSTANTS;
 	rootParam.ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
-	rootParam.Constants.Num32BitValues = psDesc.ResourceTable.NumPushConstants;
+	rootParam.Constants.Num32BitValues = GatherPushConstantCount(psDesc.ResourceTable.ResourceSets);
 	rootParam.Constants.RegisterSpace = 0;
 	rootParam.Constants.ShaderRegister = 0;
 

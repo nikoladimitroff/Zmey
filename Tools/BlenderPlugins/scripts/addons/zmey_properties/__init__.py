@@ -107,10 +107,6 @@ class ExportZmey(bpy.types.Operator, ExportHelper):
                         "name" : "mesh",
                         "glTF_node_index" : current_index
                     }
-                    # check for color inside the material
-                    if  obj.data.materials and len(obj.data.materials) > 0 and obj.data.materials[0].diffuse_color:
-                        c = obj.data.materials[0].diffuse_color
-                        mesh_component["color"] = [c.r, c.g, c.b]
                     entity["components"].append(mesh_component)
 
                 entities_list.append(entity)
