@@ -275,8 +275,7 @@ MeshHandle Renderer::MeshLoaded(stl::vector<uint8_t>&& data)
 
 MaterialHandle Renderer::MaterialLoaded(stl::vector<uint8_t>&& data)
 {
-	auto result = m_Data.MaterialManager.CreateMaterial(*reinterpret_cast<MaterialDataHeader*>(data.data()));
-	return result;
+	return m_Data.MaterialManager.CreateMaterial(*reinterpret_cast<MaterialDataHeader*>(data.data()));
 }
 
 TextureHandle Renderer::TextureLoaded(const uint8_t* data, uint64_t size)
