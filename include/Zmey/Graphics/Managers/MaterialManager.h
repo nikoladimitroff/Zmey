@@ -11,6 +11,7 @@ namespace Graphics
 
 struct MaterialDataHeader
 {
+	uint16_t MaterialIndex;
 	Color BaseColorFactor;
 	uint64_t BaseColorTextureOffset;
 	uint64_t BaseColorTextureSize;
@@ -31,7 +32,6 @@ public:
 	const Material* GetMaterial(MaterialHandle handle) const;
 private:
 	stl::unordered_map<MaterialHandle, Material> m_Material;
-	static uint16_t s_MaterialNextId;
 };
 
 }

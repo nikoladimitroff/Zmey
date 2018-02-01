@@ -347,7 +347,7 @@ void Incinerator::IncinerateScene(const std::string& destinationFolder, const st
 	}
 
 	Zmey::Incinerator::GLTFLoader::ParseAndIncinerate(gltfSceneData.data(),
-		gltfSceneData.size(),
+		uint32_t(gltfSceneData.size()),
 		destinationFolder,
 		contentFolder,
 		meshFiles,

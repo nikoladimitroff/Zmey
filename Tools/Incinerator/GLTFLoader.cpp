@@ -199,6 +199,7 @@ bool ParseAndIncinerate(const uint8_t* gltfData,
 	{
 		Zmey::Graphics::MaterialDataHeader dataHeader;
 		// Default data
+		dataHeader.MaterialIndex = materialIndex;
 		dataHeader.BaseColorFactor = Zmey::Color(1.0f, 1.0f, 1.0f, 1.0f);
 		dataHeader.BaseColorTextureOffset = 0; // no texture
 		dataHeader.BaseColorTextureSize = 0;

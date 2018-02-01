@@ -8,8 +8,6 @@ namespace Zmey
 namespace Graphics
 {
 
-uint16_t MaterialManager::s_MaterialNextId = 0;
-
 MaterialManager::MaterialManager()
 {
 	// Add default material
@@ -36,7 +34,7 @@ MaterialHandle MaterialManager::CreateMaterial(const MaterialDataHeader& materia
 		material.BaseColorTexture = -1;
 	}
 
-	auto id = s_MaterialNextId++;
+	auto id = materialHeader.MaterialIndex;
 	m_Material[id] = material;
 	return id;
 }
