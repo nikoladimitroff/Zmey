@@ -95,8 +95,8 @@ void GiftOfTheSanctumGame::Initialize()
 	// SetupPlayersToSpawnPoints
 	SetupPlayersToSpawnPoints();
 
-	GetWorld()->GetManager<SpellComponent>().SetSpellExpireListener([this](Zmey::EntityId id) {
-		GetWorld()->DestroyEntity(id);
+	GetWorld()->GetManager<Zmey::Components::SpellComponent>().SetSpellExpireListener([this](Zmey::EntityId id) {
+		m_ForErase.push_back(id);
 	});
 }
 
@@ -120,19 +120,11 @@ void GiftOfTheSanctumGame::CastSpell(uint8_t playerIndex, uint8_t spellIndex)
 	auto spell = pxManager.Lookup(spellId);
 	auto actorForwardVector = Zmey::Vector3(0.f, 0.f, 1.f);
 	spell->TeleportTo(transform.Position() + actorForwardVector * 3.f);
-	spell->ApplyForce(actorForwardVector * 900.f);
 
+	auto& spellManager = GetWorld()->GetManager<Zmey::Components::SpellComponent>();
 
-	//Append spell instance to active spells
-	auto& spellManager = GetWorld()->GetManager<SpellComponent>();
-	spellManager.Push(SpellComponent::EntryDescriptor{
-	1.0f,//InitialSpeed
-	1.0f,//ImpactDamage
-	1.0f,//InitialMass
-	1.0f,//CooldownTime
-	1.0f,//LifeTime
-	spellId//EntityId
-		});
+	spell->ApplyForce(actorForwardVector * spellManager.GetInitialSpeed(spellId));
+
 }
 
 void GiftOfTheSanctumGame::Simulate(float deltaTime)
@@ -148,6 +140,11 @@ void GiftOfTheSanctumGame::Simulate(float deltaTime)
 		--m_CurrentRing;
 	}
 
+	for (auto& eraseMe : m_ForErase)
+	{
+		GetWorld()->DestroyEntity(eraseMe);
+	}
+	m_ForErase.clear();
 	DoUI();
 }
 

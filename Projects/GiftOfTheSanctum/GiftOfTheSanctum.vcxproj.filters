@@ -13,15 +13,9 @@
     <ClCompile Include="..\..\Games\GiftOfTheSanctum\Source\GiftOfTheSanctumGame.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Games\GiftOfTheSanctum\Source\SpellComponentManager.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Games\GiftOfTheSanctum\Source\GiftOfTheSanctumGame.h">
-      <Filter>Source</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Games\GiftOfTheSanctum\Source\SpellComponentManager.h">
       <Filter>Source</Filter>
     </ClInclude>
   </ItemGroup>

@@ -4,7 +4,7 @@
 #include <Zmey/Utilities.h>
 #include <Zmey/EntityManager.h>
 #include <Zmey/Math/Math.h>
-#include <SpellComponentManager.h>
+#include <Zmey/Components/SpellComponentManager.h>
 
 
 // TODO: Initialize game loop before game and we can use stl instead std
@@ -45,6 +45,8 @@ private:
 
 	HeroCollection m_Players;
 	//SpellCollection m_ActiveSpells;
+
+	std::vector<Zmey::EntityId> m_ForErase;
 
 	EntityVector m_SpawnPoints;
 	float m_CurrentTime = 0.0f;
