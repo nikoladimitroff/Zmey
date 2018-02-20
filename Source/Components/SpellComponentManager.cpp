@@ -96,7 +96,7 @@ void SpellComponent::Simulate(float deltaTime)
 		if (m_SpellExpireCallback)
 		{
 			// TODO: Fix physx
-			//m_SpellExpireCallback(m_EntityId[*it]);
+			m_SpellExpireCallback(m_EntityToIndex[*it]);
 		}
 		
 		ITERATE_SPELL_ATTRIBUTES(ERASE_ACTIVE_SPELL);

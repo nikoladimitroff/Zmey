@@ -221,7 +221,7 @@ void PhysicsEngine::FetchResults()
 	}
 
 	{
-		physx::PxSceneWriteLock writeLock(*m_Scene);
+		physx::PxSceneReadLock writeLock(*m_Scene);
 
 		physx::PxU32 error(physx::PxErrorCode::eNO_ERROR);
 		m_Scene->fetchResults(true, &error);
