@@ -10,6 +10,7 @@
 // TODO: Initialize game loop before game and we can use stl instead std
 using EntityVector = std::vector<Zmey::EntityId>;
 
+// TODO: Make component for this
 struct HeroCollection
 {
 	void Resize(size_t size)

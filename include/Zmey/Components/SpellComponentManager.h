@@ -36,7 +36,7 @@ public:
 	virtual void InitializeFromBlob(const Zmey::tmp::vector<Zmey::EntityId>&, Zmey::MemoryInputStream&) override;
 	virtual void Simulate(float deltaTime) override;
 	virtual void RemoveEntity(Zmey::EntityId id) override;
-
+	// TODO: Make component for this
 	using SpellExpireDelegate = std::function<void(Zmey::EntityId id)>;
 
 	ZMEY_API void SetSpellExpireListener(SpellExpireDelegate delegate) { m_SpellExpireCallback = delegate; };

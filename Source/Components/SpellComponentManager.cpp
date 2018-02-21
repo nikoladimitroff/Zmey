@@ -102,11 +102,16 @@ void SpellComponent::Simulate(float deltaTime)
 		ITERATE_SPELL_ATTRIBUTES(ERASE_ACTIVE_SPELL);
 		NotSaveErase(m_EntityToIndex, *it);
 	}
+#undef ERASE_ACTIVE_SPELL
 }
 
 void SpellComponent::RemoveEntity(Zmey::EntityId id)
 {
-
+	auto position = FindElementIndex(m_EntityToIndex, id);
+#define ERASE_ACTIVE_SPELL(TYPE, PROPERTY, ...) NotSaveErase(m_##PROPERTY, position);
+	ITERATE_SPELL_ATTRIBUTES(ERASE_ACTIVE_SPELL);
+	NotSaveErase(m_EntityToIndex, position);
+#undef ERASE_ACTIVE_SPELL
 }
 
 void SpellComponent::Push(SpellComponent::EntryDescriptor desc)
