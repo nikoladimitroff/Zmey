@@ -1,10 +1,10 @@
 {
-    "extends" : "", 
     "components" : [
         {
             "name" : "transform"
         }
     ], 
-    "name" : "SpawnPoint", 
-    "version" : "1.0"
+    "extends" : "", 
+    "version" : "1.0", 
+    "name" : "SpawnPoint"
 }

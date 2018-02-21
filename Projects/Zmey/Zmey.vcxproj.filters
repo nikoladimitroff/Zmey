@@ -90,8 +90,14 @@
     <Filter Include="Source\ThirdParty">
       <UniqueIdentifier>{0e881a45-f0aa-44cf-a8c1-c89830491904}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Components\Game">
+      <UniqueIdentifier>{12b0803c-4f08-45f9-877e-3c83831e08a3}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source\ThirdParty\imgui">
       <UniqueIdentifier>{4acbc6fc-218f-45a3-b930-1684a09731b1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\Components\Game">
+      <UniqueIdentifier>{573ec492-4fcc-46ba-9259-d2445651154c}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -296,6 +302,9 @@
     <ClInclude Include="..\..\ThirdParty\include\imgui\imconfig.h">
       <Filter>Source\ThirdParty\imgui</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\Zmey\Components\SpellComponentManager.h">
+      <Filter>include\Components\Game</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\ThirdParty\include\imgui\imgui.h">
       <Filter>Source\ThirdParty\imgui</Filter>
     </ClInclude>
@@ -420,6 +429,9 @@
     </ClCompile>
     <ClCompile Include="..\..\Source\Graphics\Backend\Vulkan\VulkanDevice.cpp">
       <Filter>Source\Graphics\Backend\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\Components\SpellComponentManager.cpp">
+      <Filter>Source\Components\Game</Filter>
     </ClCompile>
     <ClCompile Include="..\..\ThirdParty\include\imgui\imgui.cpp">
       <Filter>Source\ThirdParty\imgui</Filter>

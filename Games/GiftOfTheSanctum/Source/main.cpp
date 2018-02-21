@@ -5,8 +5,6 @@
 #include <Zmey/Modules.h>
 #include <GiftOfTheSanctumGame.h>
 
-
-
 int main()
 {
 	GiftOfTheSanctumGame game;

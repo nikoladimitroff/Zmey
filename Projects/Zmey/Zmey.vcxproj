@@ -127,6 +127,7 @@
     <ClInclude Include="..\..\include\Zmey\Components\ComponentRegistryCommon.h" />
     <ClInclude Include="..\..\include\Zmey\Components\MeshComponentManager.h" />
     <ClInclude Include="..\..\include\Zmey\Components\ProjectileComponent.h" />
+    <ClInclude Include="..\..\include\Zmey\Components\SpellComponentManager.h" />
     <ClInclude Include="..\..\include\Zmey\Components\TagManager.h" />
     <ClInclude Include="..\..\include\Zmey\Components\TransformManager.h" />
     <ClInclude Include="..\..\include\Zmey\Config.h" />
@@ -203,6 +204,7 @@
     <ClCompile Include="..\..\Source\Components\ComponentRegistry.cpp" />
     <ClCompile Include="..\..\Source\Components\MeshComponentManager.cpp" />
     <ClCompile Include="..\..\Source\Components\ProjectileComponent.cpp" />
+    <ClCompile Include="..\..\Source\Components\SpellComponentManager.cpp" />
     <ClCompile Include="..\..\Source\Components\TagManager.cpp" />
     <ClCompile Include="..\..\Source\Components\TransformManager.cpp" />
     <ClCompile Include="..\..\Source\EngineLoop.cpp" />

@@ -1,11 +1,19 @@
 {
-    "extends" : "", 
     "components" : [
         {
+            "dynamic" : true, 
             "name" : "physics"
         }, 
         {
             "name" : "projectile"
+        }, 
+        {
+            "life_time" : 5.0, 
+            "impact_damage" : 1.0, 
+            "cooldown_time" : 1.0, 
+            "name" : "projectilespell", 
+            "initial_speed" : 100.0, 
+            "initial_mass" : 1.0
         }, 
         {
             "name" : "transform"
@@ -15,6 +23,7 @@
             "name" : "mesh"
         }
     ], 
-    "name" : "Spell", 
-    "version" : "1.0"
+    "extends" : "", 
+    "version" : "1.0", 
+    "name" : "Spell"
 }

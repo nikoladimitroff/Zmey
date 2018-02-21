@@ -101,7 +101,7 @@ void SimulateFrame(void* data)
 {
 	auto simulateData = (SimulateData*)data;
 
-	Modules.InputController.DispatchActionEventsForFrame();
+	Modules.InputController.DispatchActionEventsForFrame(simulateData->DeltaTime);
 
 	Modules.PhysicsEngine.Simulate(simulateData->DeltaTime);
 	simulateData->GameInstance->Simulate(simulateData->DeltaTime);

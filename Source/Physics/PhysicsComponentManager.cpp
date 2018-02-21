@@ -15,6 +15,23 @@ void PhysicsComponentManager::Simulate(float deltaTime)
 {
 }
 
+
+void PhysicsComponentDefaults(Components::IDataBlob& blob)
+{
+	bool dynamic = false;
+	blob.WriteData("dynamic", reinterpret_cast<uint8_t*>(&dynamic), sizeof(dynamic));
+}
+
+void PhysicsComponentToBlob(const nlohmann::json& rawJson, Components::IDataBlob& blob)
+{
+	if (rawJson.find("dynamic") != rawJson.end())
+	{
+		ASSERT_FATAL(rawJson["dynamic"].is_boolean());
+		bool dynamic = rawJson["dynamic"];
+		blob.WriteData("dynamic", reinterpret_cast<uint8_t*>(&dynamic), sizeof(dynamic));
+	}
+}
+
 void PhysicsComponentManager::InitializeFromBlob(const tmp::vector<EntityId>& entities, Zmey::MemoryInputStream& stream)
 {
 	auto& physEngine = Zmey::Modules.PhysicsEngine;
@@ -35,6 +52,9 @@ void PhysicsComponentManager::InitializeFromBlob(const tmp::vector<EntityId>& en
 	actorDescription.Geometry = capsuleGeometry.get();
 	for (auto& entityId : entities)
 	{
+		bool dynamic = false;
+		stream.Read(reinterpret_cast<uint8_t*>(&dynamic), sizeof(dynamic));
+		actorDescription.IsStatic = !dynamic;
 		auto actor = physEngine.CreatePhysicsActor(entityId, actorDescription);
 		m_Actors.push_back(std::move(actor));
 		m_EntityToActor[entityId] = static_cast<EntityId::IndexType>(m_Actors.size() - 1u);
@@ -59,7 +79,7 @@ Zmey::Physics::PhysicsActor* PhysicsComponentManager::Lookup(EntityId entity)
 	return nullptr;
 }
 
-DEFINE_COMPONENT_MANAGER(PhysicsComponentManager, Physics, &Zmey::Components::EmptyDefaultsToBlobImplementation, &Zmey::Components::EmptyToBlobImplementation);
+DEFINE_COMPONENT_MANAGER(PhysicsComponentManager, Physics, PhysicsComponentDefaults, PhysicsComponentToBlob);
 
 }
 }

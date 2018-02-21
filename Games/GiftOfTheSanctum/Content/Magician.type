@@ -1,13 +1,14 @@
 {
-    "extends" : "", 
     "components" : [
         {
+            "dynamic" : true, 
             "name" : "physics"
         }, 
         {
             "name" : "transform"
         }
     ], 
-    "name" : "Magician", 
-    "version" : "1.0"
+    "extends" : "", 
+    "version" : "1.0", 
+    "name" : "Magician"
 }
