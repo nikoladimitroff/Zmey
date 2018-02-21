@@ -114,13 +114,13 @@ class ExportZmey(bpy.types.Operator, ExportHelper):
             "entities" : entities_list
         }
 
-        file = open(self.filepath, "w", encoding="utf8", newline="\n")
+        file = open(self.directory + self.filepath, "w", encoding="utf8", newline="\n")
         file.write(json.dumps(world, indent=4, separators=(', ', ' : ')))
         file.write("\n")
         file.close()
 
         # Export glTF
-        bpy.ops.export_scene.gltf(filepath=self.filepath.rsplit(".", 1)[0] + ".gltf")
+        bpy.ops.export_scene.gltf(filepath=self.directory + self.filepath.rsplit(".", 1)[0] + ".gltf")
 
         bpy.context.window_manager.progress_end()
         return {'FINISHED'}

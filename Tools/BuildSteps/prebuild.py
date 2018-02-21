@@ -16,13 +16,18 @@ def find_repo_root():
 REPO_ROOT_DIR = path.abspath(find_repo_root())
 
 
-def get_last_modified_time(directory):
+def get_last_modified_time_directory(directory):
     unflattened_tree = ((path.join(subdir, f) for f in files)
                         for subdir, _, files in os.walk(directory))
     flattened_tree = (f for list in unflattened_tree for f in list)
     stat_time = max(os.stat(str(f)).st_mtime for f in flattened_tree)
     return time.localtime(stat_time)
 
+def get_last_modified_time(path):
+    if os.path.isdir(path):
+        return get_last_modified_time_directory(path)
+    else:
+        return time.localtime(os.stat(path).st_mtime)
 
 def run_tools(tools):
     print("Running checks for changed content...")
@@ -34,10 +39,10 @@ def run_tools(tools):
         data_storage = json.loads("{}")
 
     for tool_description in tools:
-        last_changed = get_last_modified_time(tool_description.directory)
-        last_recorded = time.strptime(data_storage.get(tool_description.directory) or time.ctime(0))
+        last_changed = get_last_modified_time(tool_description.path)
+        last_recorded = time.strptime(data_storage.get(tool_description.path) or time.ctime(0))
         if last_recorded < last_changed:
-            print(f"Detected that dir {tool_description.directory} has changed. "
+            print(f"Detected that dir {tool_description.path} has changed. "
                   f"Running {tool_description.cmd}...")
             process_handle = subprocess.run(tool_description.cmd, cwd=REPO_ROOT_DIR, timeout=20,
                                             stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -47,15 +52,15 @@ def run_tools(tools):
             except subprocess.CalledProcessError as err:
                 print(f"Processed failed with return code: {err.returncode}")
                 sys.exit(1)
-            data_storage[tool_description.directory] = time.asctime()
+            data_storage[tool_description.path] = time.asctime()
 
     with open(prebuild_data_path, mode="w", encoding="utf8") as prebuild_data_file:
         prebuild_data_file.write(json.dumps(data_storage))
 
 
 class ToolDescription:
-    def __init__(self, directory, cmd):
-        self.directory = directory
+    def __init__(self, path, cmd):
+        self.path = path
         self.cmd = cmd
 
 
@@ -84,10 +89,24 @@ def main():
     content_dir = path.join(REPO_ROOT_DIR, "Games/GiftOfTheSanctum/Content")
     incinerator_compiler = path.join(args.output, "Incinerator.exe")
 
+    if not "BLENDER_PATH" in os.environ:
+        print("No BLENDER_PATH env variable defined. Cannot export blender scene without it. Aborting")
+        sys.exit(1)
+
+    blender_path = path.join(os.environ["BLENDER_PATH"], "blender.exe")
+    blender_file = path.join(content_dir, "Blender", "World.blend")
+    blender_exporter = (blender_path,
+        blender_file,
+        "-b",
+        "-P", path.join(REPO_ROOT_DIR, "Tools", "BlenderPlugins", "export_scene.py"),
+        "--",
+        "--output-folder", content_dir)
+
     engine_tools = (
         ToolDescription(shaders_dir, shader_compiler),
     )
     game_tools = (
+        ToolDescription(blender_file, blender_exporter),
         ToolDescription(content_dir, (incinerator_compiler, "--game", "Games/GiftOfTheSanctum")),
     )
     tools_to_run = (engine_tools, game_tools)[args.isgame]
