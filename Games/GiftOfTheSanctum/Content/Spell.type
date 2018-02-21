@@ -1,29 +1,26 @@
 {
+    "name" : "Spell", 
+    "extends" : "", 
+    "version" : "1.0", 
     "components" : [
         {
-            "dynamic" : true, 
-            "name" : "physics"
+            "name" : "physics", 
+            "dynamic" : true
         }, 
         {
-            "name" : "projectile"
-        }, 
-        {
-            "life_time" : 5.0, 
-            "impact_damage" : 1.0, 
-            "cooldown_time" : 1.0, 
-            "name" : "projectilespell", 
             "initial_speed" : 100.0, 
+            "impact_damage" : 1.0, 
+            "life_time" : 5.0, 
+            "name" : "projectilespell", 
+            "cooldown_time" : 1.0, 
             "initial_mass" : 1.0
         }, 
         {
             "name" : "transform"
         }, 
         {
-            "glTF_node_index" : 10, 
-            "name" : "mesh"
+            "name" : "mesh", 
+            "glTF_node_index" : 10
         }
-    ], 
-    "extends" : "", 
-    "version" : "1.0", 
-    "name" : "Spell"
+    ]
 }

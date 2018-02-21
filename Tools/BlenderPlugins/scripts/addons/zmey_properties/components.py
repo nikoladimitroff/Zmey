@@ -50,32 +50,18 @@ class ZmeyComponent_Tag(bpy.types.PropertyGroup):
     def export(self):
         return {"name": "tag", "tags" : [self.tag]}
 
-class ZmeyComponent_Projectile(bpy.types.PropertyGroup):
-    @classmethod
-    def register(cls):
-        pass
-
-    def draw(self, layout):
-        pass
-
-    def export(self):
-        return { "name" : "projectile" }
-
 zmey_component_list = [
     (ZmeyComponent_Physics, "physics"),
     (ZmeyComponent_Tag, "tag"),
-    (ZmeyComponent_Projectile, "projectile"),
     (ZmeyComponent_ProjectileSpell, "projectilespell")
     ]
 
 def register():
     bpy.utils.register_class(ZmeyComponent_Physics)
     bpy.utils.register_class(ZmeyComponent_Tag)
-    bpy.utils.register_class(ZmeyComponent_Projectile)
     bpy.utils.register_class(ZmeyComponent_ProjectileSpell)
 
 def unregister():
     bpy.utils.unregister_class(ZmeyComponent_Physics)
     bpy.utils.unregister_class(ZmeyComponent_Tag)
-    bpy.utils.unregister_class(ZmeyComponent_Projectile)
     bpy.utils.unregister_class(ZmeyComponent_ProjectileSpell)
