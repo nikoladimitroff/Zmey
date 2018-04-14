@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outFile": "build/Overmind.js",
+    "removeComments": true
+  },
+  "include": [
+    "src/**/*"
+  ]
+}

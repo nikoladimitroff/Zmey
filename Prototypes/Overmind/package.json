@@ -1,0 +1,21 @@
+{
+  "name": "overmind",
+  "version": "0.0.0",
+  "description": "",
+  "devDependencies": {
+    "rimraf": "~2.6.2",
+    "tslint": "~5.9.1",
+    "tslint-microsoft-contrib": "~5.0.3",
+    "tsutils": "~2.24.0",
+    "typescript": "~2.8.1"
+  },
+  "main": "index.js",
+  "scripts": {
+    "clean": "rimraf coverage build tmp",
+    "build": "tsc -p tsconfig.release.json",
+    "watch": "tsc -w -p tsconfig.release.json",
+    "lint": "tslint -t stylish --project \"tsconfig.json\""
+  },
+  "author": "Zmey Corp.",
+  "license": "MIT"
+}
