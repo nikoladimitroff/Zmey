@@ -84,6 +84,9 @@ export class Vector2 {
     public lerpTo(v: Vector2, alpha: number): Vector2 {
         return v.subtract(this).multiply(alpha).add(this);
     }
+    public clamp(min: Vector2, max: Vector2): Vector2 {
+        return Vector2.max(min, Vector2.min(this, max));
+    }
     public min(): number {
         return Math.min(this.x, this.y);
     }

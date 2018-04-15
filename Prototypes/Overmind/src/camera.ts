@@ -24,19 +24,18 @@ export class Camera {
     public translate(vec: math.Vector2): void {
         this.position = this.position.add(vec);
         const viewport = this.getVisibleViewport();
-        this.position = math.Vector2.max(this.position, math.Vector2.zero);
-        this.position = math.Vector2.min(this.position, this.worldSize.subtract(viewport));
+        this.position = this.position.clamp(math.Vector2.zero, this.worldSize.subtract(viewport));
     }
     public zoom(zoomDelta: number): void {
         // Can't zoom out more than the map size
         const canvasSize = new math.Vector2(this.context.canvas.width, this.context.canvas.height);
-        const canvasToWorld = canvasSize.divide(this.worldSize).min();
+        const canvasToWorld = canvasSize.divide(this.worldSize).max();
         const minConstrainedZoom = Math.max(this.minZoom, canvasToWorld);
         const clamp = (number: number, min: number, max: number) => Math.max(min, Math.min(number, max));
         this.zoomLevel = clamp(this.zoomLevel + zoomDelta, minConstrainedZoom, this.maxZoom);
         // if the visible viewport now doesn't fill the screen, reverse translate so it does
         const newViewport = this.getVisibleViewport();
-        this.position = math.Vector2.min(this.position, this.worldSize.subtract(newViewport));
+        this.position = this.position.clamp(math.Vector2.zero, this.worldSize.subtract(newViewport));
     }
     public getVisibleViewport(): math.Vector2 {
         return new math.Vector2(this.context.canvas.width, this.context.canvas.height).multiply(1 / this.zoomLevel);

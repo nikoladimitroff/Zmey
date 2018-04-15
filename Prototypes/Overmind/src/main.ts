@@ -31,6 +31,7 @@ class GameLoop {
         Resizer.installHandler(this.context.canvas);
         // Install extra handler for mouse wheel
         window.addEventListener("wheel", (event) =>
+            // Normalize by the window height; otherwise the values are in pixels scrolled
             this.camera.zoom(event.wheelDelta / window.innerHeight)
         , false);
         const sceneDescription = await fetchJSON("content/scene.json");
@@ -49,7 +50,7 @@ class GameLoop {
         }
         if (mousePos.y < windowBorderCoeff * this.context.canvas.height) {
             cameraOffset.y = -cameraMovementSpeed;
-        } else if (mousePos.y > (1 - windowBorderCoeff) * window.innerHeight) {
+        } else if (mousePos.y > (1 - windowBorderCoeff) * this.context.canvas.height) {
             cameraOffset.y = cameraMovementSpeed;
         }
         if (!cameraOffset.isZero()) {
