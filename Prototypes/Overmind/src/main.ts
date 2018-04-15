@@ -1,3 +1,4 @@
+import { Mouser } from "./mouser"
 import { Resizer } from "./resizer";
 import { Scene } from "./scene";
 
@@ -21,6 +22,7 @@ class GameLoop {
         this.context = context;
     }
     public async init(): Promise<any> {
+        Mouser.installHandler();
         Resizer.installHandler(this.context.canvas);
         const sceneDescription = await fetchJSON("content/scene.json");
         this.scene = await Scene.parseSceneDescription(sceneDescription);
