@@ -1,4 +1,5 @@
 {
+    terrain: "url: content/map.jpg",
     objects: [{
             x: 10,
             y: 10,

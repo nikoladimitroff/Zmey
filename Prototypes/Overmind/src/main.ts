@@ -1,6 +1,8 @@
 import { Mouser } from "./mouser"
 import { Resizer } from "./resizer";
 import { Scene } from "./scene";
+import { Camera } from './camera';
+import * as math from './math';
 
 async function fetchJSON(url: string): Promise<any> {
     let promise = new Promise(resolve => {
@@ -17,9 +19,11 @@ async function fetchJSON(url: string): Promise<any> {
 
 class GameLoop {
     private scene: Scene;
+    private camera: Camera;
     private context: CanvasRenderingContext2D;
     constructor(context: CanvasRenderingContext2D) {
         this.context = context;
+        this.camera = new Camera(context);
     }
     public async init(): Promise<any> {
         Mouser.installHandler();
@@ -27,23 +31,49 @@ class GameLoop {
         const sceneDescription = await fetchJSON("content/scene.json");
         this.scene = await Scene.parseSceneDescription(sceneDescription);
     }
+    private updateFrame(): void {
+        // If the mouse is within the outermost X% of the window, move the camera around
+        const mousePos = Mouser.state.screenPosition;
+        const windowBorderCoeff = 0.025;
+        const cameraMovementSpeed = 2.5;
+        let cameraOffset = new math.Vector2(0, 0);
+        if (mousePos.x < windowBorderCoeff * this.context.canvas.width) {
+            cameraOffset.x = -cameraMovementSpeed;
+        } else if (mousePos.x > (1 - windowBorderCoeff) * this.context.canvas.width) {
+            cameraOffset.x = cameraMovementSpeed;
+        }
+        if (mousePos.y < windowBorderCoeff * this.context.canvas.height) {
+            cameraOffset.y = -cameraMovementSpeed;
+        } else if (mousePos.y > (1 - windowBorderCoeff) * window.outerHeight) {
+            cameraOffset.y = cameraMovementSpeed;
+        }
+        if (!cameraOffset.isZero()) {
+            this.camera.translate(cameraOffset);
+        }
+    }
+    private renderFrame(): void {
+        this.scene.render(this.context, this.camera);
+    }
     public run(): void {
         const runFrame = () => {
-            this.scene.render(this.context);
+            if (this.scene.worldSize.lengthSquared() !== 0) {
+                this.camera.setWorldSize(this.scene.worldSize);
+            }
+            this.updateFrame();
+            this.renderFrame();
             requestAnimationFrame(runFrame);
         }
         runFrame();
     }
 }
 
-
 async function main(): Promise<any> {
     const canvas = document.querySelector("canvas") as HTMLCanvasElement;
-    console.log(canvas);
-
     const loop = new GameLoop(canvas.getContext("2d") as CanvasRenderingContext2D);
     await loop.init();
     loop.run();
+    // Expose as global for debugging
+    (window as any).loop = loop;
 }
 
 main();

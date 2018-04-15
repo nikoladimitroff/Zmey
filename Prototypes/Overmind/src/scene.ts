@@ -1,3 +1,6 @@
+import { Camera } from './camera';
+import * as math from './math';
+
 export class GameObject {
     public x: number;
     public y: number;
@@ -18,9 +21,9 @@ export class RectangleGameObject extends GameObject {
         console.assert(this.isValid());
         if (this.color) {
             context.fillStyle = this.color;
-            context.fillRect(this.x, this.y, this.width, this.height);
+            context.fillRect(this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
         } else {
-            context.drawImage(this.image as HTMLImageElement, this.x, this.y, this.width, this.height);
+            context.drawImage(this.image as HTMLImageElement, this.x - this.width / 2, this.y - this.height / 2, this.width, this.height);
         }
     }
 }
@@ -49,8 +52,11 @@ export class CircleGameObject extends GameObject {
 
 export class Scene {
     public objects: Array<GameObject>;
+    public worldSize: math.Vector2;
+    private terrain: HTMLImageElement;
     constructor() {
         this.objects = [];
+        this.worldSize = new math.Vector2(0, 0);
     }
     private static parseGameObject(obj: any): GameObject {
         let newGameObject: GameObject = new GameObject();
@@ -85,12 +91,25 @@ export class Scene {
             const newGameObject = Scene.parseGameObject(obj);
             scene.objects.push(newGameObject);
         }
+        scene.terrain = document.createElement("img") as HTMLImageElement;
+        console.assert(json.terrain.startsWith("url:"));
+        scene.terrain.src = json.terrain.replace("url:", "").trim();
+        scene.terrain.onload = () => scene.worldSize.set(scene.terrain.naturalWidth, scene.terrain.naturalHeight);
         return scene;
     }
-    public render(context: CanvasRenderingContext2D): void {
+    public render(context: CanvasRenderingContext2D, camera: Camera): void {
         context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+        const cameraPosition = camera.getPosition();
+        const viewport = camera.getVisibleViewport();
+        context.drawImage(this.terrain,
+            cameraPosition.x, cameraPosition.y, viewport.x, viewport.y,
+            0, 0, context.canvas.width, context.canvas.height);
+
+        context.save();
+        camera.applyTransform();
         for (const obj of this.objects) {
             obj.render(context);
         }
+        context.restore();
     }
 }
