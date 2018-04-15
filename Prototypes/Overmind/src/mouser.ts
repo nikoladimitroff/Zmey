@@ -10,11 +10,14 @@ export const enum MouseButton {
 export class MouseState {
     public screenPosition: math.Vector2;
     public buttonState: { [button: number]: boolean};
-    public wheel: number;
+    public _wheel: number;
+    public get wheel(): number {
+        return this._wheel / window.innerHeight;
+    }
     constructor() {
-        this.screenPosition = new math.Vector2(window.outerWidth / 2, window.outerHeight / 2);
+        this.screenPosition = new math.Vector2(window.innerWidth / 2, window.innerHeight / 2);
         this.buttonState = [false, false, false];
-        this.wheel = 0;
+        this._wheel = 0;
     }
 }
 
@@ -24,7 +27,7 @@ export class Mouser {
         Mouser.state = new MouseState();
 
         window.addEventListener("mousemove", function (event) {
-            if (event.clientX > window.outerWidth || event.clientY > window.outerHeight) {
+            if (event.clientX > window.innerWidth || event.clientY > window.innerHeight) {
                 return;
             }
             Mouser.state.screenPosition.set(event.clientX, event.clientY);
@@ -36,7 +39,7 @@ export class Mouser {
             Mouser.state.buttonState[event.button] = false;
         }, false);
         window.addEventListener("wheel", function (event) {
-            Mouser.state.wheel += event.deltaY;
+            Mouser.state._wheel += event.wheelDelta;
         }, false);
     }
 }

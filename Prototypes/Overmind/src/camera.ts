@@ -3,6 +3,8 @@ import * as math from "./math"
 export class Camera {
     private context: CanvasRenderingContext2D;
     private zoomLevel: number;
+    private minZoom: number;
+    private maxZoom: number;
     private position: math.Vector2;
     private worldSize: math.Vector2;
     constructor(context: CanvasRenderingContext2D) {
@@ -26,7 +28,15 @@ export class Camera {
         this.position = math.Vector2.min(this.position, this.worldSize.subtract(viewport));
     }
     public zoom(zoomDelta: number): void {
-        this.zoomLevel += zoomDelta;
+        // Can't zoom out more than the map size
+        const canvasSize = new math.Vector2(this.context.canvas.width, this.context.canvas.height);
+        const canvasToWorld = canvasSize.divide(this.worldSize).min();
+        const minConstrainedZoom = Math.max(this.minZoom, canvasToWorld);
+        const clamp = (number: number, min: number, max: number) => Math.max(min, Math.min(number, max));
+        this.zoomLevel = clamp(this.zoomLevel + zoomDelta, minConstrainedZoom, this.maxZoom);
+        // if the visible viewport now doesn't fill the screen, reverse translate so it does
+        const newViewport = this.getVisibleViewport();
+        this.position = math.Vector2.min(this.position, this.worldSize.subtract(newViewport));
     }
     public getVisibleViewport(): math.Vector2 {
         return new math.Vector2(this.context.canvas.width, this.context.canvas.height).multiply(1 / this.zoomLevel);
@@ -36,6 +46,13 @@ export class Camera {
     }
     public setWorldSize(size: math.Vector2): void {
         this.worldSize.set(size);
+    }
+    public needsWorldSize(): boolean {
+        return this.worldSize.isZero();
+    }
+    public setZoomLevels(min: number, max: number): void {
+        this.minZoom = min;
+        this.maxZoom = max;
     }
 
 }

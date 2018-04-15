@@ -84,6 +84,12 @@ export class Vector2 {
     public lerpTo(v: Vector2, alpha: number): Vector2 {
         return v.subtract(this).multiply(alpha).add(this);
     }
+    public min(): number {
+        return Math.min(this.x, this.y);
+    }
+    public max(): number {
+        return Math.max(this.x, this.y);
+    }
     public equals(v: Vector2): boolean {
         return this.x == v.x && this.y == v.y;
     }
