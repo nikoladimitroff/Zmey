@@ -87,6 +87,9 @@ export class Vector2 {
     public equals(v: Vector2): boolean {
         return this.x == v.x && this.y == v.y;
     }
+    public isZero(): boolean {
+        return this.x === 0 && this.y === 0;
+    }
     public toArray(): Array<number> {
         return [this.x, this.y];
     }
@@ -104,5 +107,11 @@ export class Vector2 {
     }
     public toString(): string {
         return "(" + this.x + ", " + this.y + ")";
+    }
+    public static max(v: Vector2, u: Vector2): Vector2 {
+        return new Vector2(Math.max(v.x, u.x), Math.max(v.y, u.y));
+    }
+    public static min(v: Vector2, u: Vector2): Vector2 {
+        return new Vector2(Math.min(v.x, u.x), Math.min(v.y, u.y));
     }
 }
