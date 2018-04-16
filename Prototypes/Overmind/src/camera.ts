@@ -15,8 +15,8 @@ export class Camera {
         this.worldSize = math.Vector2.zero.clone();
     }
     public applyTransform(): void {
-        this.context.translate(-this.position.x, -this.position.y);
-        this.context.scale(this.zoomLevel, this.zoomLevel);
+        // this.context.translate(-this.position.x, -this.position.y);
+        // this.context.scale(this.zoomLevel, this.zoomLevel);
     }
     public transformVector(vec: math.Vector2): math.Vector2 {
         return vec.subtract(this.position).multiply(this.zoomLevel);
@@ -52,6 +52,9 @@ export class Camera {
     public setZoomLevels(min: number, max: number): void {
         this.minZoom = min;
         this.maxZoom = max;
+    }
+    public getZoom(): number {
+        return this.zoomLevel;
     }
 
 }
