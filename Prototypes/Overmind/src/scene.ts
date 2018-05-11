@@ -1,11 +1,17 @@
 import { Camera } from './camera';
 import * as math from './math';
+import  { PlayerBook } from './player';
+import  { UnitBook } from './unittypes';
 
 export class GameObject {
-    public x: number;
-    public y: number;
+
+    public position: math.Vector2;
     public color: string | null;
     public image: HTMLImageElement | null;
+
+    constructor() {
+        this.position = new math.Vector2(0, 0);
+    }
     protected isValid(): boolean {
         return this.color !== null || this.image !== null;
     }
@@ -21,9 +27,8 @@ export class RectangleGameObject extends GameObject {
         console.assert(this.isValid());
         const w = camera.getZoom() * this.width;
         const h = camera.getZoom() * this.height;
-        const x = (this.x - camera.getPosition().x) * camera.getZoom();
-        const y = (this.y - camera.getPosition().y) * camera.getZoom();
-        console.log(this.x);
+        const x = (this.position.x - camera.getPosition().x) * camera.getZoom();
+        const y = (this.position.y - camera.getPosition().y) * camera.getZoom();
         if (this.color) {
             context.fillStyle = this.color;
             context.fillRect(x - w / 2, y -  h / 2, w, h);
@@ -38,8 +43,8 @@ export class CircleGameObject extends GameObject {
     public render(context: CanvasRenderingContext2D, camera: Camera): void {
         console.assert(this.isValid());
         const r = camera.getZoom() * this.radius;
-        const x = (this.x - camera.getPosition().x) * camera.getZoom();
-        const y = (this.y - camera.getPosition().y) * camera.getZoom();
+        const x = (this.position.x - camera.getPosition().x) * camera.getZoom();
+        const y = (this.position.y - camera.getPosition().y) * camera.getZoom();
         context.save();
         context.beginPath();
         context.arc(x, y, r, 0, Math.PI * 2, true);
@@ -65,39 +70,28 @@ export class Scene {
         this.objects = [];
         this.worldSize = new math.Vector2(0, 0);
     }
-    private static parseGameObject(obj: any): GameObject {
-        let newGameObject: GameObject = new GameObject();
-        if (obj.type === "rect") {
-            newGameObject = new RectangleGameObject();
-            (newGameObject as RectangleGameObject).width = obj.width;
-            (newGameObject as RectangleGameObject).height = obj.height;
-        } else if (obj.type === "circle") {
-            newGameObject = new CircleGameObject();
-            (newGameObject as CircleGameObject).radius = obj.radius;
-        } else {
-            console.assert(false && "Parsing error: unknown game object");
-        }
 
-        newGameObject.x = obj.x;
-        newGameObject.y = obj.y;
-        if (obj.texture.startsWith("color:")) {
-            newGameObject.color = obj.texture.replace("color:", "").trim()
-        } else if (obj.texture.startsWith("url:")) {
-            let texture = document.createElement("img") as HTMLImageElement;
-            texture.src = obj.texture.replace("url:", "").trim();
-            newGameObject.image = texture;
-        }
-        else {
-            console.assert(false && "Parsing error: each gameobject.texture must be either a color or an image!");
-        }
+    private static parseGameObject(obj: any, _0: PlayerBook, units: UnitBook): GameObject {
+        let newGameObject: GameObject = new GameObject();
+
+        newGameObject = new RectangleGameObject();
+        (newGameObject as RectangleGameObject).width = 25;
+        (newGameObject as RectangleGameObject).height = 25;
+
+
+        newGameObject.position.x = obj.x;
+        newGameObject.position.y = obj.y;
+        newGameObject.image = units.getUnitByType(obj.type).image;
+        console.log(newGameObject.image);
         return newGameObject;
     }
-    public static parseSceneDescription(json: any): Scene {
+    public static parseSceneDescription(json: any, players: PlayerBook, units: UnitBook): Scene {
         let scene = new Scene();
         for (const obj of json.objects) {
-            const newGameObject = Scene.parseGameObject(obj);
+            const newGameObject = Scene.parseGameObject(obj, players, units);
             scene.objects.push(newGameObject);
         }
+
         scene.terrain = document.createElement("img") as HTMLImageElement;
         console.assert(json.terrain.startsWith("url:"));
         scene.terrain.src = json.terrain.replace("url:", "").trim();

@@ -2,6 +2,8 @@ import { Mouser } from "./mouser"
 import { Resizer } from "./resizer";
 import { Scene } from "./scene";
 import { Camera } from './camera';
+import {PlayerBook} from './player';
+import {UnitBook} from './unittypes';
 import * as math from './math';
 
 async function fetchJSON(url: string): Promise<any> {
@@ -10,6 +12,7 @@ async function fetchJSON(url: string): Promise<any> {
         req.overrideMimeType("application/json");
         req.open('GET', url, true);
         req.onload  = function() {
+            console.log( req.responseText);
             resolve(eval("new Object(" + req.responseText + ")"));
         };
         req.send(null);
@@ -19,6 +22,8 @@ async function fetchJSON(url: string): Promise<any> {
 
 class GameLoop {
     private scene: Scene;
+    private playerBook: PlayerBook;
+    private unitBook: UnitBook;
     private camera: Camera;
     private context: CanvasRenderingContext2D;
     constructor(context: CanvasRenderingContext2D) {
@@ -34,8 +39,19 @@ class GameLoop {
             // Normalize by the window height; otherwise the values are in pixels scrolled
             this.camera.zoom(event.wheelDelta / window.innerHeight)
         , false);
+
+        
+        const unitsDescription = await fetchJSON("content/units.json");
+        this.unitBook = await UnitBook.parseBook(unitsDescription);
+        
+        const playersDescription = await fetchJSON("content/player.json");
+        this.playerBook = await PlayerBook.parseBook(playersDescription);
+
         const sceneDescription = await fetchJSON("content/scene.json");
-        this.scene = await Scene.parseSceneDescription(sceneDescription);
+        this.scene = await Scene.parseSceneDescription(sceneDescription, this.playerBook, this.unitBook);
+
+        console.log(this.playerBook);
+        console.log(this.unitBook);
     }
     private updateFrame(): void {
         // If the mouse is within the innermost X% of the window, move the camera around
