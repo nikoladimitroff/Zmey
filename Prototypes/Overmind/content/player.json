@@ -2,12 +2,12 @@
     players: [{
             name: "Tosho",
             id: 1,
-            flag: "url: color: rgba(255, 0, 0, 1)"
+            flag: "color: rgba(255, 0, 0, 1)"
         },
         {
             name: "Gosho",
             id: 2,
-            flag: "url: color: rgba(0, 255, 0, 1)"
+            flag: "color: rgba(0, 255, 0, 1)"
         },
     ]
 }

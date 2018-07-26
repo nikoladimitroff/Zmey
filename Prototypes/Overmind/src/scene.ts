@@ -81,7 +81,8 @@ export class Scene {
 
         newGameObject.position.x = obj.x;
         newGameObject.position.y = obj.y;
-        newGameObject.image = units.getUnitByType(obj.type).image;
+        newGameObject.image = document.createElement("img") as HTMLImageElement;
+        newGameObject.image.src = units.getUnitByType(obj.type).image;
         console.log(newGameObject.image);
         return newGameObject;
     }
@@ -93,8 +94,7 @@ export class Scene {
         }
 
         scene.terrain = document.createElement("img") as HTMLImageElement;
-        console.assert(json.terrain.startsWith("url:"));
-        scene.terrain.src = json.terrain.replace("url:", "").trim();
+        scene.terrain.src = json.terrain;
         scene.terrain.onload = () => scene.worldSize.set(scene.terrain.naturalWidth, scene.terrain.naturalHeight);
         return scene;
     }

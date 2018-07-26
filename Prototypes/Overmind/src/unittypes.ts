@@ -10,7 +10,7 @@ export class Unit extends RectangleGameObject {
 
 export class UnitPrototype {
      public description: UnitDescription;
-     public image: HTMLImageElement | null;
+     public image: string;
 }
 
 export class UnitBook {

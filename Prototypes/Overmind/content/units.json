@@ -7,7 +7,7 @@
             armorFactor: 1,
             weaponFactor: 1,
             skillFactor: 1,
-            texture: "url: content/PikemanH3_icon.png",
+            image: "content/PikemanH3_icon.png",
         },
         {
             name: "Sharpshooter",
@@ -17,7 +17,7 @@
             armorFactor: 1,
             weaponFactor: 1,
             skillFactor: 1,
-            texture: "url: content/Sharpshooter_icon.png",
+            image: "content/Sharpshooter_icon.png",
         },
     ]
 }
