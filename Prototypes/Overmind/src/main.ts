@@ -5,6 +5,7 @@ import { Camera } from './camera';
 import {PlayerBook} from './player';
 import {UnitBook} from './unittypes';
 import * as math from './math';
+import { BrushManager } from './brushes';
 
 async function fetchJSON(url: string): Promise<any> {
     let promise = new Promise(resolve => {
@@ -26,10 +27,12 @@ class GameLoop {
     private unitBook: UnitBook;
     private camera: Camera;
     private context: CanvasRenderingContext2D;
+    private brushManager: BrushManager;
     constructor(context: CanvasRenderingContext2D) {
         this.context = context;
         this.camera = new Camera(context);
         this.camera.setZoomLevels(0.5, 2);
+        this.brushManager = new BrushManager();
     }
     public async init(): Promise<any> {
         Mouser.installHandler();
@@ -72,6 +75,8 @@ class GameLoop {
         if (!cameraOffset.isZero()) {
             this.camera.translate(cameraOffset);
         }
+
+        this.brushManager.update(this.scene, this.camera);
     }
     private renderFrame(): void {
         this.scene.render(this.context, this.camera);

@@ -1,8 +1,32 @@
 {
     terrain: "content/map.jpg",
     objects: [{
-            x: 10,
-            y: 10,
+            x: 100,
+            y: 150,
+            type: "Pikeman",
+            player: "Tosho"
+        },
+        {
+            x: 120,
+            y: 150,
+            type: "Pikeman",
+            player: "Tosho"
+        },
+        {
+            x: 140,
+            y: 150,
+            type: "Pikeman",
+            player: "Tosho"
+        },
+        {
+            x: 160,
+            y: 150,
+            type: "Pikeman",
+            player: "Tosho"
+        },
+        {
+            x: 180,
+            y: 150,
             type: "Pikeman",
             player: "Tosho"
         }

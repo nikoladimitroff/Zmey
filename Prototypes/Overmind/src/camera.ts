@@ -21,6 +21,9 @@ export class Camera {
     public transformVector(vec: math.Vector2): math.Vector2 {
         return vec.subtract(this.position).multiply(this.zoomLevel);
     }
+    public untransformVector(vec: math.Vector2): math.Vector2 {
+        return vec.divide(this.zoomLevel).add(this.position);
+    }
     public translate(vec: math.Vector2): void {
         this.position = this.position.add(vec);
         const viewport = this.getVisibleViewport();
