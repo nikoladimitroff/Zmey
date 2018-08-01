@@ -1,0 +1,23 @@
+{
+    unitTypes: [{
+            name: "Pikeman",
+            mentalToughness: 1,
+            physicalToughness: 1,
+            baseDamage: 1,
+            armorFactor: 1,
+            weaponFactor: 1,
+            skillFactor: 1,
+            image: "content/PikemanH3_icon.png",
+        },
+        {
+            name: "Sharpshooter",
+            mentalToughness: 1,
+            physicalToughness: 1,
+            baseDamage: 1,
+            armorFactor: 1,
+            weaponFactor: 1,
+            skillFactor: 1,
+            image: "content/Sharpshooter_icon.png",
+        },
+    ]
+}
