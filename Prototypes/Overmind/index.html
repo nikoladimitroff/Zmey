@@ -1,22 +1,38 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <style>
-            html, body, canvas {
-                margin: 0;
-                padding: 0;
-                width: 100vw;
-                height: 100vh;
-                overflow: hidden;
-                -webkit-user-select: none;
-                user-select: none;
-                background-color: lightsalmon;
-            }
-        </style>
+        <link rel="stylesheet" type="text/css" href="styles.css">
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
         <script src="thirdparty/require.js"></script>
         <script src="build/Overmind.js"></script>
     </head>
     <body>
+        <main id="ui">
+            <section id="resource-panel">
+                <div class="ui-item-info" v-for="resource in resources">
+                    <div class="ui-item-icon" v-bind:style="{ backgroundImage: 'url(' + resource.image + ')' }">
+                    </div>
+                    <div class="ui-item-name">
+                        {{resource.name}}
+                    </div>
+                    <div class="ui-item-quantity">
+                        {{treasury[resource.name]}}
+                    </div>
+                </div>
+            </section>
+            <section id="unit-panel">
+                <div class="ui-item-info" v-for="unit in units">
+                    <div class="ui-item-icon" v-bind:style="{ backgroundImage: 'url(' + unit.image + ')' }">
+                    </div>
+                    <div class="ui-item-name">
+                        {{unit.name}}
+                    </div>
+                    <div class="ui-item-quantity">
+                        {{countUnitByName(unit.name)}}
+                    </div>
+                </div>
+            </section>
+        </main>
         <canvas></canvas>
     </body>
     <script>

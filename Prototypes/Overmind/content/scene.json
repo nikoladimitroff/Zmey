@@ -1,5 +1,6 @@
 {
     terrain: "content/map.jpg",
+    humanPlayer: "Tosho",
     objects: [{
             x: 100,
             y: 150,
@@ -44,5 +45,5 @@
             size: 25,
             gainPerSecond: 2,
         },
-    ]
+    ],
 }

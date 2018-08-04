@@ -9,18 +9,15 @@ export class Unit extends RectangleGameObject {
 }
 
 export class UnitPrototype {
+    public name: string;
      public description: UnitDescription;
      public image: string;
 }
 
 export class UnitBook {
-    public prototypes: any;
+    public prototypes: UnitPrototype[];
     constructor() {
-        this.prototypes = {};
-    }
-
-    public getUnitByType(type: string): UnitPrototype {
-        return this.prototypes[type];
+        this.prototypes = [];
     }
 
     private static parseUnitTypes(obj: any): UnitPrototype {
@@ -28,15 +25,15 @@ export class UnitBook {
         checkAndSet(newPrototype, obj, "name");
         checkAndSet(newPrototype, obj, "image");
         for(var prop in newPrototype.description) {
-            checkAndSet(newPrototype.description, obj, prop);    
+            checkAndSet(newPrototype.description, obj, prop);
         }
         return newPrototype;
-    }    
+    }
 
     public static parseBook(json: any): UnitBook {
         let book = new UnitBook();
         for (const obj of json.unitTypes) {
-            book.prototypes[obj.name] = (UnitBook.parseUnitTypes(obj));
+            book.prototypes.push(UnitBook.parseUnitTypes(obj));
         }
         return book;
     }

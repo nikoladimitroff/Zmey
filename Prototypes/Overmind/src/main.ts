@@ -7,6 +7,7 @@ import {UnitBook} from './unittypes';
 import * as math from './math';
 import { BrushManager } from './brushes';
 import { EconomyManager } from './economy';
+import { UIController } from './ui';
 
 async function fetchJSON(url: string): Promise<any> {
     let promise = new Promise(resolve => {
@@ -30,12 +31,15 @@ class GameLoop {
     private context: CanvasRenderingContext2D;
     private brushManager: BrushManager;
     private economy: EconomyManager;
+
+    private ui: UIController;
     constructor(context: CanvasRenderingContext2D) {
         this.context = context;
         this.camera = new Camera(context);
         this.camera.setZoomLevels(0.5, 2);
         this.economy = new EconomyManager();
         this.brushManager = new BrushManager();
+        this.ui = new UIController();
     }
     public async init(): Promise<any> {
         Mouser.installHandler();
@@ -61,6 +65,8 @@ class GameLoop {
         this.economy.spawnNodes(this.scene);
 
         this.brushManager.startTimers(this.economy, this.scene);
+
+        this.ui.initialize(this.economy, this.unitBook, this.scene, sceneDescription.humanPlayer);
 
         console.log(this.playerBook);
         console.log(this.unitBook);

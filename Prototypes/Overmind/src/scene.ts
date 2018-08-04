@@ -8,6 +8,10 @@ export class GameObject {
     public position: math.Vector2;
     public color: string | null;
     public image: HTMLImageElement | null;
+    // NOTE: The following 2 properties aren't available on all game objects
+    // so only use if you are sure they are units
+    public owningPlayer: string;
+    public unitType: string;
 
     constructor() {
         this.position = new math.Vector2(0, 0);
@@ -82,7 +86,13 @@ export class Scene {
         newGameObject.position.x = obj.x;
         newGameObject.position.y = obj.y;
         newGameObject.image = document.createElement("img") as HTMLImageElement;
-        newGameObject.image.src = units.getUnitByType(obj.type).image;
+        const unitType = units.prototypes.find(u => u.name === obj.type);
+        if (!unitType) {
+            throw new Error(`Unit type ${obj.type} is not recognized!`);
+        }
+        newGameObject.image.src = unitType.image;
+        newGameObject.owningPlayer = obj.player;
+        newGameObject.unitType = obj.type;
         console.log(newGameObject.image);
         return newGameObject;
     }

@@ -1,0 +1,34 @@
+html, body, canvas {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    -webkit-user-select: none;
+    user-select: none;
+    background-color: lightsalmon;
+}
+
+#ui {
+    position: absolute;
+    border: 2px solid black;
+    color: white;
+}
+#ui > section {
+    display: inline-block;
+    border: 2px solid black;
+}
+.ui-item-info div {
+    display: inline-block;
+}
+.ui-item-icon {
+    width: 1em;
+    height: 1em;
+    background-size: cover;
+}
+.ui-item-name {
+    width: 6em;
+}
+.ui-item-quantity {
+    text-align: right;
+}
