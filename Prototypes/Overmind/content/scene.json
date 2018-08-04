@@ -35,12 +35,14 @@
             x: 200,
             y: 150,
             type: "Wood",
-            size: 25
+            size: 25,
+            gainPerSecond: 1,
         },{
             x: 210,
             y: 150,
             type: "Gold",
-            size: 25
+            size: 25,
+            gainPerSecond: 2,
         },
     ]
 }

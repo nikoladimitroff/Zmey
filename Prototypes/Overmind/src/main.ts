@@ -34,8 +34,8 @@ class GameLoop {
         this.context = context;
         this.camera = new Camera(context);
         this.camera.setZoomLevels(0.5, 2);
-        this.brushManager = new BrushManager();
         this.economy = new EconomyManager();
+        this.brushManager = new BrushManager(this.economy);
     }
     public async init(): Promise<any> {
         Mouser.installHandler();

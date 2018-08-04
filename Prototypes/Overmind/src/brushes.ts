@@ -3,12 +3,13 @@ import { Vector2 } from './vector';
 import { Camera } from './camera';
 import { Mouser } from './mouser';
 import { MouseButton } from './mouser';
-import { ResourceNode } from './economy';
+import { ResourceNode, EconomyManager } from './economy';
 
 
 enum BrushType {
     GatheringPoint = "red",
-    MoveCorridor = "blue"
+    MoveCorridor = "blue",
+    MiningArea = "brown"
 }
 
 export class BrushGameObject extends GameObject {
@@ -47,7 +48,7 @@ export class BrushGameObject extends GameObject {
         this.minPoint = this.path.reduce((min, x) => Vector2.min(min, x), this.path[0]);
         this.maxPoint = this.path.reduce((max, x) => Vector2.max(max, x), this.path[0]);
     }
-    public liesOnPath(point: Vector2): boolean {
+    public liesWithinPath(point: Vector2): boolean {
         return point.x <= this.maxPoint.x && point.y <= this.maxPoint.y &&
             point.x >= this.minPoint.x && point.y >= this.minPoint.y;
     }
@@ -64,17 +65,22 @@ enum Keys {
 }
 
 export class BrushManager {
-    constructor() {
+    constructor(economy: EconomyManager) {
+        this.economy = economy;
         this.activeBrush = null;
         this.activeBrushType = BrushType.GatheringPoint;
         this.gatheringPoints = [];
         this.corridors = [];
+        this.miningAreas = [];
         document.addEventListener('keydown', (event) => {
             if (event.keyCode == Keys.One) {
                 this.activeBrushType = BrushType.GatheringPoint;
             }
             else if (event.keyCode == Keys.Two) {
                 this.activeBrushType = BrushType.MoveCorridor;
+            }
+            else if (event.keyCode == Keys.Three) {
+                this.activeBrushType = BrushType.MiningArea;
             }
         });
     }
@@ -92,17 +98,18 @@ export class BrushManager {
             this.applyBrushEffect();
             this.activeBrush = null;
         }
+        // TODO: Move actuators to timers
         // move units
         for (const corridor of this.corridors) {
-            const startingGatheringPoint = this.gatheringPoints.find(x => x.liesOnPath(corridor.path[0]));
-            const endGatheringPoint = this.gatheringPoints.find(x => x.liesOnPath(corridor.path[corridor.path.length - 1]));
+            const startingGatheringPoint = this.gatheringPoints.find(x => x.liesWithinPath(corridor.path[0]));
+            const endGatheringPoint = this.gatheringPoints.find(x => x.liesWithinPath(corridor.path[corridor.path.length - 1]));
             if (!startingGatheringPoint || !endGatheringPoint) {
                 continue;
             }
             corridor.color = 'yellow';
             const canUnitBeMoved = (x: GameObject) =>
                 x.constructor !== ResourceNode && // Don't move resources
-                startingGatheringPoint.liesOnPath(x.position) &&
+                startingGatheringPoint.liesWithinPath(x.position) &&
                 Math.random() < 0.01;
             const unitsToMove = scene.objects.filter(canUnitBeMoved);
             for(let unit of unitsToMove)
@@ -110,6 +117,8 @@ export class BrushManager {
                 unit.position = endGatheringPoint.generatePointInAABB();
             }
         }
+        // Mine resources
+        this.economy.gatherResourcesFrom(this.miningAreas);
     }
 
     private applyBrushEffect(): void {
@@ -123,11 +132,17 @@ export class BrushManager {
         else if (this.activeBrush.type == BrushType.MoveCorridor) {
             this.corridors.push(this.activeBrush);
         }
+        else if (this.activeBrush.type == BrushType.MiningArea) {
+            this.miningAreas.push(this.activeBrush);
+        }
     }
+
+    private economy: EconomyManager;
 
     private activeBrush: BrushGameObject | null;
     private activeBrushType: BrushType;
 
     private gatheringPoints: BrushGameObject[];
     private corridors: BrushGameObject[];
+    private miningAreas: BrushGameObject[];
 }
