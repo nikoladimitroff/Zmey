@@ -30,5 +30,17 @@
             type: "Pikeman",
             player: "Tosho"
         }
+    ],
+    resources: [{
+            x: 200,
+            y: 150,
+            type: "Wood",
+            size: 25
+        },{
+            x: 210,
+            y: 150,
+            type: "Gold",
+            size: 25
+        },
     ]
 }

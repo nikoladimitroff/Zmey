@@ -6,6 +6,7 @@ import {PlayerBook} from './player';
 import {UnitBook} from './unittypes';
 import * as math from './math';
 import { BrushManager } from './brushes';
+import { EconomyManager } from './economy';
 
 async function fetchJSON(url: string): Promise<any> {
     let promise = new Promise(resolve => {
@@ -28,11 +29,13 @@ class GameLoop {
     private camera: Camera;
     private context: CanvasRenderingContext2D;
     private brushManager: BrushManager;
+    private economy: EconomyManager;
     constructor(context: CanvasRenderingContext2D) {
         this.context = context;
         this.camera = new Camera(context);
         this.camera.setZoomLevels(0.5, 2);
         this.brushManager = new BrushManager();
+        this.economy = new EconomyManager();
     }
     public async init(): Promise<any> {
         Mouser.installHandler();
@@ -43,15 +46,20 @@ class GameLoop {
             this.camera.zoom(event.wheelDelta / window.innerHeight)
         , false);
 
-        
+
         const unitsDescription = await fetchJSON("content/units.json");
         this.unitBook = await UnitBook.parseBook(unitsDescription);
-        
+
         const playersDescription = await fetchJSON("content/player.json");
         this.playerBook = await PlayerBook.parseBook(playersDescription);
 
+        const resourceDescription = await fetchJSON("content/resources.json");
+        this.economy.parseResourceBook(resourceDescription);
+
         const sceneDescription = await fetchJSON("content/scene.json");
         this.scene = await Scene.parseSceneDescription(sceneDescription, this.playerBook, this.unitBook);
+        this.economy.parseResourceNodes(sceneDescription.resources);
+        this.economy.spawnNodes(this.scene);
 
         console.log(this.playerBook);
         console.log(this.unitBook);

@@ -3,6 +3,7 @@ import { Vector2 } from './vector';
 import { Camera } from './camera';
 import { Mouser } from './mouser';
 import { MouseButton } from './mouser';
+import { ResourceNode } from './economy';
 
 
 enum BrushType {
@@ -99,14 +100,18 @@ export class BrushManager {
                 continue;
             }
             corridor.color = 'yellow';
-            const unitsToMove = scene.objects.filter(x => startingGatheringPoint.liesOnPath(x.position) && Math.random() < 0.01);
+            const canUnitBeMoved = (x: GameObject) =>
+                x.constructor !== ResourceNode && // Don't move resources
+                startingGatheringPoint.liesOnPath(x.position) &&
+                Math.random() < 0.01;
+            const unitsToMove = scene.objects.filter(canUnitBeMoved);
             for(let unit of unitsToMove)
             {
                 unit.position = endGatheringPoint.generatePointInAABB();
             }
         }
     }
-    
+
     private applyBrushEffect(): void {
         if (!this.activeBrush) {
             return;

@@ -1,0 +1,11 @@
+{
+    resourceTypes: [{
+            name: "Wood",
+            image: "content/wood.jpg",
+        },
+        {
+            name: "Gold",
+            image: "content/gold.jpg",
+        },
+    ]
+}
