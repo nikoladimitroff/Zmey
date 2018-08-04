@@ -1,13 +1,14 @@
 import { EconomyManager } from './economy';
 import { UnitBook } from './unittypes';
 import { Scene, GameObject } from './scene';
+import { PlayerBook } from './player';
 
 declare class Vue {
     constructor(obj: any);
 }
 export class UIController {
     private vueApp: any;
-    public initialize(economy: EconomyManager, unitBook: UnitBook, scene: Scene, humanPlayerName: string) {
+    public initialize(economy: EconomyManager, unitBook: UnitBook, playerBook: PlayerBook, scene: Scene, humanPlayerName: string) {
         const countUnitByName = (unitName: string) => {
             const isUnitOfType = (o: GameObject) =>
                 o.owningPlayer == humanPlayerName &&
@@ -20,8 +21,11 @@ export class UIController {
                 resources: economy.resources,
                 treasury: economy.treasury,
                 units: unitBook.prototypes,
-                countUnitByName: countUnitByName
+                countUnitByName: countUnitByName,
+                humanPlayer: playerBook.players.find(p => p.name == humanPlayerName)
             }
         });
+        // use here to silence warning about unused var
+        this.vueApp;
     }
 }

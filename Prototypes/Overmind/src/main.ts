@@ -66,7 +66,7 @@ class GameLoop {
 
         this.brushManager.startTimers(this.economy, this.scene);
 
-        this.ui.initialize(this.economy, this.unitBook, this.scene, sceneDescription.humanPlayer);
+        this.ui.initialize(this.economy, this.unitBook, this.playerBook, this.scene, sceneDescription.humanPlayer);
 
         console.log(this.playerBook);
         console.log(this.unitBook);

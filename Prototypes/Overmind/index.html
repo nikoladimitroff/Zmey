@@ -8,6 +8,12 @@
     </head>
     <body>
         <main id="ui">
+            <section id="player-info">
+                <div class="player-name">
+                    {{humanPlayer.name}}
+                </div>
+                <div class="player-flag" v-bind:style="{ backgroundColor: humanPlayer.flag }"></div>
+            </section>
             <section id="resource-panel">
                 <div class="ui-item-info" v-for="resource in resources">
                     <div class="ui-item-icon" v-bind:style="{ backgroundImage: 'url(' + resource.image + ')' }">

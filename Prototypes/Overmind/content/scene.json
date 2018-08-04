@@ -30,6 +30,18 @@
             y: 150,
             type: "Pikeman",
             player: "Tosho"
+        },
+        {
+            x: 560,
+            y: 150,
+            type: "Pikeman",
+            player: "Gosho"
+        },
+        {
+            x: 680,
+            y: 150,
+            type: "Pikeman",
+            player: "Gosho"
         }
     ],
     resources: [{

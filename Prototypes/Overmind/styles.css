@@ -7,16 +7,16 @@ html, body, canvas {
     -webkit-user-select: none;
     user-select: none;
     background-color: lightsalmon;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 #ui {
     position: absolute;
-    border: 2px solid black;
+    border: 2px solid white;
     color: white;
 }
 #ui > section {
     display: inline-block;
-    border: 2px solid black;
 }
 .ui-item-info div {
     display: inline-block;
@@ -31,4 +31,25 @@ html, body, canvas {
 }
 .ui-item-quantity {
     text-align: right;
+}
+section#player-info {
+    display: block;
+    border-bottom: 2px solid white;
+}
+:root {
+    --player-name-size: 3em;
+}
+.player-name {
+    display: inline-block;
+    font-size: var(--player-name-size);
+    margin-left: 0.25em;
+    margin-right: 0.25em;
+    text-transform: uppercase;
+}
+.player-flag {
+    display: inline-block;
+    width: calc(var(--player-name-size) * 16 / 9);
+    height: calc(var(--player-name-size) * 1);
+    margin-top: 0.5em;
+    margin-right: 0.5em;
 }
