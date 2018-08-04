@@ -35,7 +35,7 @@ class GameLoop {
         this.camera = new Camera(context);
         this.camera.setZoomLevels(0.5, 2);
         this.economy = new EconomyManager();
-        this.brushManager = new BrushManager(this.economy);
+        this.brushManager = new BrushManager();
     }
     public async init(): Promise<any> {
         Mouser.installHandler();
@@ -45,7 +45,6 @@ class GameLoop {
             // Normalize by the window height; otherwise the values are in pixels scrolled
             this.camera.zoom(event.wheelDelta / window.innerHeight)
         , false);
-
 
         const unitsDescription = await fetchJSON("content/units.json");
         this.unitBook = await UnitBook.parseBook(unitsDescription);
@@ -60,6 +59,8 @@ class GameLoop {
         this.scene = await Scene.parseSceneDescription(sceneDescription, this.playerBook, this.unitBook);
         this.economy.parseResourceNodes(sceneDescription.resources);
         this.economy.spawnNodes(this.scene);
+
+        this.brushManager.startTimers(this.economy, this.scene);
 
         console.log(this.playerBook);
         console.log(this.unitBook);

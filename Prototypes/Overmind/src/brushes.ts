@@ -4,6 +4,7 @@ import { Camera } from './camera';
 import { Mouser } from './mouser';
 import { MouseButton } from './mouser';
 import { ResourceNode, EconomyManager } from './economy';
+import { TimerManager } from './timers';
 
 
 enum BrushType {
@@ -65,8 +66,7 @@ enum Keys {
 }
 
 export class BrushManager {
-    constructor(economy: EconomyManager) {
-        this.economy = economy;
+    constructor() {
         this.activeBrush = null;
         this.activeBrushType = BrushType.GatheringPoint;
         this.gatheringPoints = [];
@@ -98,7 +98,14 @@ export class BrushManager {
             this.applyBrushEffect();
             this.activeBrush = null;
         }
-        // TODO: Move actuators to timers
+    }
+
+    public startTimers(economy: EconomyManager, scene: Scene): void {
+        TimerManager.startTimer(1000, () => economy.gatherResourcesFrom(this.miningAreas), true);
+        TimerManager.startTimer(1000, this.transportUnitsAcrossCorridors.bind(this, scene), true);
+    }
+
+    private transportUnitsAcrossCorridors(scene: Scene): void {
         // move units
         for (const corridor of this.corridors) {
             const startingGatheringPoint = this.gatheringPoints.find(x => x.liesWithinPath(corridor.path[0]));
@@ -109,16 +116,14 @@ export class BrushManager {
             corridor.color = 'yellow';
             const canUnitBeMoved = (x: GameObject) =>
                 x.constructor !== ResourceNode && // Don't move resources
-                startingGatheringPoint.liesWithinPath(x.position) &&
-                Math.random() < 0.01;
-            const unitsToMove = scene.objects.filter(canUnitBeMoved);
-            for(let unit of unitsToMove)
+                startingGatheringPoint.liesWithinPath(x.position);
+            const corridorBandwithPerSecond = 1;
+            const unitsToMove = scene.objects.filter(canUnitBeMoved).slice(0, corridorBandwithPerSecond);
+            for (let unit of unitsToMove)
             {
                 unit.position = endGatheringPoint.generatePointInAABB();
             }
         }
-        // Mine resources
-        this.economy.gatherResourcesFrom(this.miningAreas);
     }
 
     private applyBrushEffect(): void {
@@ -136,8 +141,6 @@ export class BrushManager {
             this.miningAreas.push(this.activeBrush);
         }
     }
-
-    private economy: EconomyManager;
 
     private activeBrush: BrushGameObject | null;
     private activeBrushType: BrushType;

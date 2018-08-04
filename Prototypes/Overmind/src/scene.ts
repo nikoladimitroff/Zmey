@@ -106,11 +106,8 @@ export class Scene {
             cameraPosition.x, cameraPosition.y, viewport.x, viewport.y,
             0, 0, context.canvas.width, context.canvas.height);
 
-        context.save();
-        camera.applyTransform();
         for (const obj of this.objects) {
             obj.render(context, camera);
         }
-        context.restore();
     }
 }
