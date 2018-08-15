@@ -5,7 +5,7 @@ import { Mouser } from './mouser';
 import { MouseButton } from './mouser';
 import { ResourceNode, EconomyManager } from './economy';
 import { TimerManager } from './timers';
-
+import { Player } from './player';
 
 enum BrushType {
     GatheringPoint = "red",
@@ -103,6 +103,23 @@ export class BrushManager {
     public startTimers(economy: EconomyManager, scene: Scene): void {
         TimerManager.startTimer(1000, () => economy.gatherResourcesFrom(this.miningAreas), true);
         TimerManager.startTimer(1000, this.transportUnitsAcrossCorridors.bind(this, scene), true);
+        TimerManager.startTimer(1000, this.simulateBattles.bind(this, scene), true);
+    }
+
+    private simulateBattles(scene: Scene): void {
+        for (const gp of this.gatheringPoints) {
+            const getUnitByPlayer = (playerName: String, u: GameObject) => 
+            u.owningPlayer == playerName && gp.liesWithinPath(u.position);
+            const u1 = scene.objects.filter(getUnitByPlayer.bind(this, scene.players.players[0].name));
+            const u2 = scene.objects.filter(getUnitByPlayer.bind(this, scene.players.players[1].name));
+            if(u1.length && u2.length) {
+                const unitsToRemove = Math.min( u1.length, u2.length);
+                for (let i = 0; i < unitsToRemove; ++i) {
+                    scene.objects.splice(scene.objects.indexOf(u1[i]), 1);
+                    scene.objects.splice(scene.objects.indexOf(u2[i]), 1);
+                }
+            }
+        }
     }
 
     private transportUnitsAcrossCorridors(scene: Scene): void {

@@ -2,44 +2,44 @@
     terrain: "content/map.jpg",
     humanPlayer: "Tosho",
     objects: [{
-            x: 100,
-            y: 150,
+            x: 500,
+            y: 550,
             type: "Pikeman",
             player: "Tosho"
         },
         {
-            x: 120,
-            y: 150,
+            x: 520,
+            y: 550,
             type: "Pikeman",
             player: "Tosho"
         },
         {
-            x: 140,
-            y: 150,
-            type: "Pikeman",
-            player: "Tosho"
-        },
-        {
-            x: 160,
-            y: 150,
-            type: "Pikeman",
-            player: "Tosho"
-        },
-        {
-            x: 180,
-            y: 150,
+            x: 540,
+            y: 550,
             type: "Pikeman",
             player: "Tosho"
         },
         {
             x: 560,
-            y: 150,
+            y: 550,
+            type: "Pikeman",
+            player: "Tosho"
+        },
+        {
+            x: 580,
+            y: 550,
+            type: "Pikeman",
+            player: "Tosho"
+        },
+        {
+            x: 860,
+            y: 550,
             type: "Pikeman",
             player: "Gosho"
         },
         {
-            x: 680,
-            y: 150,
+            x: 980,
+            y: 550,
             type: "Pikeman",
             player: "Gosho"
         }

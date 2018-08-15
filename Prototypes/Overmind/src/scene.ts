@@ -85,7 +85,7 @@ export class Scene {
     public objects: Array<GameObject>;
     public worldSize: math.Vector2;
     private terrain: HTMLImageElement;
-    private players: PlayerBook;
+    public players: PlayerBook;
     constructor(players: PlayerBook) {
         this.players = players;
         this.objects = [];
