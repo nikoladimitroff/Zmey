@@ -6,6 +6,8 @@ import { Mouser } from './mouser';
 import { MouseButton } from './mouser';
 import { ResourceNode, EconomyManager } from './economy';
 import { TimerManager } from './timers';
+import { Army } from './unittypes';
+import { BattleSim } from './battlesim'
 //import { Player } from './player';
 
 enum BrushType {
@@ -110,14 +112,34 @@ export class BrushManager {
     private simulateBattles(scene: Scene): void {
         for (const gp of this.gatheringPoints) {
             const getUnitByPlayer = (playerName: String, u: GameObject) => 
+            u.constructor === Army &&
             u.owningPlayer == playerName && gp.liesWithinPath(u.position);
-            const u1 = scene.objects.filter(getUnitByPlayer.bind(this, scene.players.players[0].name));
-            const u2 = scene.objects.filter(getUnitByPlayer.bind(this, scene.players.players[1].name));
+            let u1: Army[] = scene.objects.filter(getUnitByPlayer.bind(this, scene.players.players[0].name)) as Army[];
+            let u2: Army[] = scene.objects.filter(getUnitByPlayer.bind(this, scene.players.players[1].name)) as Army[];
             if(u1.length && u2.length) {
-                const unitsToRemove = Math.min( u1.length, u2.length);
-                for (let i = 0; i < unitsToRemove; ++i) {
-                    scene.objects.splice(scene.objects.indexOf(u1[i]), 1);
-                    scene.objects.splice(scene.objects.indexOf(u2[i]), 1);
+
+                let executeTroops = function(a: Army, cnt: number) {
+                    if( a.count < cnt) {
+                        scene.objects.splice( scene.objects.indexOf(a) , 1);
+                    }
+                    else {
+                        a.count -= cnt;
+                    }
+                }
+                let doBattle = function(longer: Army[], shorter: Army[]) {
+
+                    for ( let i = 0; i < longer.length; ++i) {
+                        const randomArmyIdx = Math.floor(Math.random() * shorter.length);
+                        let result = BattleSim.Simulate(longer[i], shorter[randomArmyIdx], 1);
+                        executeTroops(longer[i], result.redUnitsLost);
+                        executeTroops(shorter[randomArmyIdx], result.blueUnitsLost);
+                    }
+                }
+                if (u1.length >  u2.length) {
+                    doBattle(u1, u2);
+                }
+                else {
+                    doBattle(u2, u1);
                 }
             }
         }

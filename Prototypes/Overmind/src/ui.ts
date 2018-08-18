@@ -1,6 +1,7 @@
 import { EconomyManager } from './economy';
 import { UnitBook } from './unittypes';
-import { Scene, GameObject } from './scene';
+import { Scene } from './scene';
+import { GameObject } from './gameobject';
 import { PlayerBook } from './player';
 
 declare class Vue {

@@ -2,7 +2,7 @@ import { Camera } from './camera';
 import * as math from './math';
 import  { PlayerBook } from './player';
 import  { RectangleGameObject, GameObject } from './gameobject'
-import  { UnitBook, Army } from './unittypes';
+import  { UnitBook, Army, UnitPrototype } from './unittypes';
 
 export class Scene {
     public objects: Array<GameObject>;
@@ -50,6 +50,7 @@ export class Scene {
             throw new Error(`Unit type ${obj.type} is not recognized!`);
         }
         newGameObject.image.src = unitType.image;
+        newGameObject.description = unitType.description;
         newGameObject.owningPlayer = obj.player;
         newGameObject.unitType = obj.type;
         newGameObject.count = obj.count;
@@ -94,7 +95,7 @@ export class Scene {
                 }
                 obj.renderBorder(context, camera, owner.flag);
                 if(obj.constructor === Army) {
-                    obj.rendeCount(context, camera, (obj as Army).count.toString());
+                    obj.rendeCount(context, camera, Math.ceil((obj as Army).count).toString());
                 }
             }
         }

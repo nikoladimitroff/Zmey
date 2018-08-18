@@ -1,7 +1,14 @@
-import {UnitDescription} from './battlesim';
 import {RectangleGameObject} from './gameobject';
 import {checkAndSet} from './utils';
 
+export class UnitDescription {
+    public mentalToughness: number;
+    public physicalToughness: number;
+    public baseDamage: number;
+    public armorFactor: number;
+    public weaponFactor: number;
+    public skillFactor: number;
+}
 
 export class Army extends RectangleGameObject {
     public player: string;
@@ -11,8 +18,8 @@ export class Army extends RectangleGameObject {
 
 export class UnitPrototype {
     public name: string;
-     public description: UnitDescription;
-     public image: string;
+    public description: UnitDescription;
+    public image: string;
 }
 
 export class UnitBook {
@@ -25,9 +32,7 @@ export class UnitBook {
         let newPrototype = new UnitPrototype();
         checkAndSet(newPrototype, obj, "name");
         checkAndSet(newPrototype, obj, "image");
-        for(var prop in newPrototype.description) {
-            checkAndSet(newPrototype.description, obj, prop);
-        }
+        checkAndSet(newPrototype, obj, "description");
         return newPrototype;
     }
 
