@@ -5,43 +5,50 @@
             x: 500,
             y: 550,
             type: "Pikeman",
-            player: "Tosho"
+            player: "Tosho",
+            count: 150
         },
         {
             x: 520,
             y: 550,
             type: "Pikeman",
-            player: "Tosho"
+            player: "Tosho",
+            count: 150
         },
         {
             x: 540,
             y: 550,
             type: "Pikeman",
-            player: "Tosho"
+            player: "Tosho",
+            count: 150
         },
         {
             x: 560,
             y: 550,
             type: "Pikeman",
-            player: "Tosho"
+            player: "Tosho",
+            count: 150
         },
         {
             x: 580,
             y: 550,
             type: "Pikeman",
-            player: "Tosho"
+            player: "Tosho",
+            count: 150
         },
         {
             x: 860,
             y: 550,
             type: "Pikeman",
-            player: "Gosho"
+            player: "Gosho",
+            count: 150
         },
         {
             x: 980,
             y: 550,
             type: "Pikeman",
-            player: "Gosho"
+            player: "Gosho",
+            count: 150
         }
     ],
     resources: [{

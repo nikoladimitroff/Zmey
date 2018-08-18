@@ -1,11 +1,12 @@
-import { GameObject, Scene } from './scene';
+import { Scene } from './scene';
+import { GameObject } from './gameobject';
 import { Vector2 } from './vector';
 import { Camera } from './camera';
 import { Mouser } from './mouser';
 import { MouseButton } from './mouser';
 import { ResourceNode, EconomyManager } from './economy';
 import { TimerManager } from './timers';
-import { Player } from './player';
+//import { Player } from './player';
 
 enum BrushType {
     GatheringPoint = "red",

@@ -1,4 +1,5 @@
-import { Scene, CircleGameObject } from './scene';
+import { CircleGameObject } from './gameobject';
+import { Scene } from './scene';
 import { BrushGameObject } from './brushes';
 
 export class Resource {

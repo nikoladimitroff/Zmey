@@ -1,11 +1,12 @@
 import {UnitDescription} from './battlesim';
-import {RectangleGameObject} from './scene';
+import {RectangleGameObject} from './gameobject';
 import {checkAndSet} from './utils';
 
 
-export class Unit extends RectangleGameObject {
+export class Army extends RectangleGameObject {
     public player: string;
     public description: UnitDescription;
+    public count: number;
 }
 
 export class UnitPrototype {
