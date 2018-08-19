@@ -24,6 +24,7 @@ async function fetchJSON(url: string): Promise<any> {
     return await promise;
 }
 
+
 class GameLoop {
     private scene: Scene;
     private playerBook: PlayerBook;
@@ -43,6 +44,7 @@ class GameLoop {
         this.brushManager = new BrushManager();
         this.ui = new UIController();
         this.terrain = new Terrain(125);
+        this.tiles = new Image();
     }
     public async init(): Promise<any> {
         Mouser.installHandler();
@@ -66,14 +68,16 @@ class GameLoop {
         this.scene = await Scene.parseSceneDescription(sceneDescription, this.playerBook, this.unitBook);
         this.economy.parseResourceNodes(sceneDescription.resources);
         this.economy.spawnNodes(this.scene);
+        // TODO: make this synchronously
+        this.tiles.onload = function() {
+            this.terrain.render(this.context, this.tiles);
+        }.bind(this);
+        this.tiles.src = './content/tiles/terrain.png';
 
         this.brushManager.startTimers(this.economy, this.scene);
 
         this.ui.initialize(this.economy, this.unitBook, this.playerBook, this.scene, sceneDescription.humanPlayer);
-        setTimeout(function() {
-            this.terrain.render(this.context);
-        }.bind(this), 10);
-        
+ 
         console.log(this.playerBook);
         console.log(this.unitBook);
     }
