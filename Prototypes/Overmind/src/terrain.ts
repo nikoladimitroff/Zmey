@@ -26,12 +26,7 @@ noise.seed(12);
 
 export class Terrain {
 
-    constructor(s: number) {
-        this.size = s;
-        this.elevationMap = new Array<Array<number>>(this.size);
-        for(let i = 0; i < this.size; ++i) {
-            this.elevationMap[i] = new Array<number>(this.size);
-        }
+    constructor() {
     }
     public generateElevation(): void {
         for(let i = 0; i < this.elevationMap.length; ++i) {
@@ -44,43 +39,35 @@ export class Terrain {
     public static drawTile(context: CanvasRenderingContext2D, tiles: HTMLImageElement, terrainType: string , tileType: string, target: any) {
         context.drawImage(tiles, Terrain.terrains[terrainType].x + Terrain.tilePositions[tileType].x,
                                              Terrain.terrains[terrainType].y + Terrain.tilePositions[tileType].y,
-                                              32, 32, target.x , target.y , target.sizeX, target.sizeY);
+                                              32, 32, target.x , target.y , Terrain.tileSize, Terrain.tileSize);
     }
 
     public render(context: CanvasRenderingContext2D, tiles: HTMLImageElement): void {
-        let sizeX = Math.floor(context.canvas.width / this.size);
-        let sizeY = Math.floor(context.canvas.height / this.size);
+        let sizeW = Math.floor(context.canvas.width / Terrain.tileSize);
+        let sizeH = Math.floor(context.canvas.height / Terrain.tileSize);
 
-        for (let i = 0; i < this.size; ++i) {
-            for (let j = 0; j < this.size; ++j) {
+        for (let i = 0; i < sizeH; ++i) {
+            for (let j = 0; j < sizeW; ++j) {
                 const ele = noise.simplex2(j / 50, i / 50);
 
-                const target = {x: j * sizeX,
-                                y: i * sizeY,
-                                sizeX: sizeX,
-                                sizeY: sizeY};
-                if (ele > 0.8)
-                {
+                const target = {x: j * Terrain.tileSize,
+                                y: i * Terrain.tileSize};
+                if (ele > 0.8) {
                     Terrain.drawTile(context, tiles, "Snow", "mid", target);
                 }
-                else if(ele > 0.6)
-                {
+                else if(ele > 0.6) {
                     Terrain.drawTile(context, tiles, "BlackDirt", "mid", target);
                 }
-                else if(ele > 0.5)
-                {
+                else if(ele > 0.5) {
                     Terrain.drawTile(context, tiles, "LightDirt", "mid", target);
                 }
-                else if(ele > 0.0)
-                {
+                else if(ele > 0.0) {
                     Terrain.drawTile(context, tiles, "Grass", "mid", target);
                 }
-                else if (ele > -0.3)
-                {
+                else if (ele > -0.3) {
                     Terrain.drawTile(context, tiles, "Sand", "mid", target);
                 }
-                else
-                {
+                else {
                     Terrain.drawTile(context, tiles, "Water", "mid", target);
                 }
             }
@@ -88,8 +75,8 @@ export class Terrain {
 
      }
 
-    private elevationMap: number[][];
     private size: number;
+    private static tileSize = 32;
     private static tilePositions: any = { misk1: {x : 0, y: 0  }, tloc: {x : 32, y: 0  }, troc: {x : 64, y: 0  },
                                           misc2: {x : 0, y: 32 }, bloc: {x : 32, y: 32 }, broc: {x : 64, y: 32 },
                                           tlic:  {x : 0, y: 64 }, ti  : {x : 32, y: 64 }, tric: {x : 64, y: 64 },

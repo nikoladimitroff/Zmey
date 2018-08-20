@@ -43,7 +43,7 @@ class GameLoop {
         this.economy = new EconomyManager();
         this.brushManager = new BrushManager();
         this.ui = new UIController();
-        this.terrain = new Terrain(125);
+        this.terrain = new Terrain();
         this.tiles = new Image();
     }
     public async init(): Promise<any> {
@@ -70,7 +70,7 @@ class GameLoop {
         this.economy.spawnNodes(this.scene);
         // TODO: make this synchronously
         this.tiles.onload = function() {
-            this.terrain.render(this.context, this.tiles);
+            this.terrain.render(this.scene.terrain.getContext('2d'), this.tiles);
         }.bind(this);
         this.tiles.src = './content/tiles/terrain.png';
 
@@ -104,8 +104,7 @@ class GameLoop {
         this.brushManager.update(this.scene, this.camera);
     }
     private renderFrame(): void {
-        //this.scene.render(this.context, this.camera);
-
+        this.scene.render(this.context, this.camera);
     }
     public run(): void {
         const runFrame = () => {
@@ -114,7 +113,7 @@ class GameLoop {
             }
             this.updateFrame();
             this.renderFrame();
-            requestAnimationFrame(runFrame);
+            window.requestAnimationFrame(runFrame);
         }
         runFrame();
     }

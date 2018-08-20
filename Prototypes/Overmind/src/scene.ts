@@ -7,12 +7,13 @@ import  { UnitBook, Army, UnitPrototype } from './unittypes';
 export class Scene {
     public objects: Array<GameObject>;
     public worldSize: math.Vector2;
-    private terrain: HTMLImageElement;
+    public terrain: HTMLCanvasElement;
     public players: PlayerBook;
     constructor(players: PlayerBook) {
         this.players = players;
         this.objects = [];
         this.worldSize = new math.Vector2(0, 0);
+        this.terrain = document.createElement("canvas");
     }
 
     private static parseGameObject(obj: any, _0: PlayerBook, units: UnitBook): GameObject {
@@ -73,9 +74,8 @@ export class Scene {
             }
         }
 
-        scene.terrain = document.createElement("img") as HTMLImageElement;
-        scene.terrain.src = json.terrain;
-        scene.terrain.onload = () => scene.worldSize.set(scene.terrain.naturalWidth, scene.terrain.naturalHeight);
+        scene.worldSize.x = scene.terrain.width = json.terrain.width * 32 /*tile size*/;
+        scene.worldSize.y = scene.terrain.height = json.terrain.height * 32 /*tile size*/;
         return scene;
     }
     public render(context: CanvasRenderingContext2D, camera: Camera): void {
