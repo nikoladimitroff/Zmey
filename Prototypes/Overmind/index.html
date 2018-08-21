@@ -39,6 +39,27 @@
                     </div>
                 </div>
             </section>
+            <h1>Display Options</h1>
+            <label class="container">enableBrushesABBA
+                <input type="checkbox" v-model="displayOption.enableBrushesABBA">
+                <span class="checkmark"></span>
+            </label>
+            <label class="container">hideGatheringPoints
+                <input type="checkbox" v-model="displayOption.hideGatheringPoints">
+                <span class="checkmark"></span>
+            </label>
+            <label class="container">hideCorridors
+                <input type="checkbox" v-model="displayOption.hideCorridors">
+                <span class="checkmark"></span>
+            </label>
+            <label class="container">hideMiningAreas
+                <input type="checkbox" v-model="displayOption.hideMiningAreas">
+                <span class="checkmark"></span>
+            </label>
+            <label class="container">hideUrbanAreas
+                <input type="checkbox" v-model="displayOption.hideUrbanAreas">
+                <span class="checkmark"></span>
+            </label>
         </main>
         <canvas></canvas>
     </body>

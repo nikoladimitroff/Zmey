@@ -76,7 +76,7 @@ class GameLoop {
 
         this.brushManager.startTimers(this.economy, this.scene);
 
-        this.ui.initialize(this.economy, this.unitBook, this.playerBook, this.scene, sceneDescription.humanPlayer);
+        this.ui.initialize(this.economy, this.unitBook, this.playerBook, this.scene, sceneDescription.humanPlayer, this.camera.displayOptions);
  
         console.log(this.playerBook);
         console.log(this.unitBook);
@@ -116,6 +116,10 @@ class GameLoop {
             window.requestAnimationFrame(runFrame);
         }
         runFrame();
+    }
+
+    public setCameraOption(option: string, value: any):void {
+        this.camera.displayOptions[option] = value;
     }
 }
 

@@ -1,5 +1,14 @@
 import * as math from "./math"
 
+
+export class DisplayOptions {
+    public enableBrushesABBA : boolean = false;
+    public hideGatheringPoints: boolean = false;
+    public hideCorridors: boolean = false;
+    public hideMiningAreas: boolean = false;
+    public hideUrbanAreas: boolean = false;
+}
+
 export class Camera {
     private context: CanvasRenderingContext2D;
     private zoomLevel: number;
@@ -7,9 +16,10 @@ export class Camera {
     private maxZoom: number;
     private position: math.Vector2;
     private worldSize: math.Vector2;
+    public displayOptions: DisplayOptions;
     constructor(context: CanvasRenderingContext2D) {
         this.context = context;
-
+        this.displayOptions = new DisplayOptions();
         this.zoomLevel = 1;
         this.position = math.Vector2.zero.clone();
         this.worldSize = math.Vector2.zero.clone();

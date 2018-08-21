@@ -1,7 +1,7 @@
 import { Scene } from './scene';
 import { GameObject } from './gameobject';
 import { Vector2 } from './vector';
-import { Camera } from './camera';
+import { Camera, DisplayOptions } from './camera';
 import { Mouser } from './mouser';
 import { MouseButton } from './mouser';
 import { ResourceNode, EconomyManager } from './economy';
@@ -9,10 +9,18 @@ import { TimerManager } from './timers';
 import { BattleSim } from './battlesim'
 //import { Player } from './player';
 
-enum BrushType {
-    GatheringPoint = "red",
-    MoveCorridor = "blue",
-    MiningArea = "brown"
+class BrushType {
+
+    public baseColor: string;
+    public rectColor: string;
+    constructor(baseColor: string, rectColor: string) {
+        this.baseColor = baseColor;
+        this.rectColor = rectColor;
+    }
+    public static GatheringPoint:BrushType = new BrushType('rgba(218, 68, 121, 1)', 'rgba(218, 68, 121 , 0.31)');
+    public static MoveCorridor:BrushType = new BrushType('rgba(235, 219, 189, 1)' , 'rgba(235, 219, 189, 0.31)');
+    public static MiningArea:BrushType = new BrushType('rgba(90, 91, 91, 1)' , 'rgba(90, 91, 91, 0.31)');
+    public static UrbanAreas:BrushType = new BrushType('rgba(117,199,34, 1)' ,'rgba(117,199,34, 0.31)');
 }
 
 export class BrushGameObject extends GameObject {
@@ -24,9 +32,12 @@ export class BrushGameObject extends GameObject {
         super();
         this.path = [];
         this.type = type;
-        this.color = type;
     }
+    
     public render(context: CanvasRenderingContext2D, camera: Camera): void {
+        if(!this.shouldShow(camera.displayOptions)) {
+            return;
+        }
         console.assert(this.isValid());
         context.beginPath();
         const mapPointToScreen = (p: Vector2) => camera.transformVector(p);
@@ -36,16 +47,15 @@ export class BrushGameObject extends GameObject {
             context.lineTo(point.x, point.y);
         }
         context.lineWidth = 10 * camera.getZoom();
-        context.strokeStyle = this.color as string;
+        context.strokeStyle = this.type.baseColor;
         context.stroke();
 
-        // UNCOMMENT TO DISPLAY DEBUG AABB
-        //if (this.minPoint) {
-        //    context.strokeStyle = "purple";
-        //    const min = camera.transformVector(this.minPoint);
-        //    const max = camera.transformVector(this.maxPoint);
-        //    context.strokeRect(min.x, min.y, max.x - min.x, max.y - min.y);
-        //}
+        if (this.minPoint && camera.displayOptions.enableBrushesABBA) {
+           context.fillStyle = this.type.rectColor;
+           const min = camera.transformVector(this.minPoint);
+           const max = camera.transformVector(this.maxPoint);
+           context.fillRect(min.x, min.y, max.x - min.x, max.y - min.y);
+        }
     }
     public computeAABB(): void {
         this.minPoint = this.path.reduce((min, x) => Vector2.min(min, x), this.path[0]);
@@ -59,12 +69,29 @@ export class BrushGameObject extends GameObject {
     public generatePointInAABB(): Vector2 {
         return this.minPoint.lerpTo(this.maxPoint, Math.random());
     }
+
+    private shouldShow(opt: DisplayOptions): boolean {
+        if(this.type == BrushType.GatheringPoint && !opt.hideGatheringPoints) {
+            return true;
+        }
+        else if(this.type == BrushType.MoveCorridor && !opt.hideCorridors) {
+            return true;
+        }
+        else if(this.type == BrushType.MiningArea && !opt.hideMiningAreas) {
+            return true;
+        }
+        else if(this.type == BrushType.UrbanAreas && !opt.hideUrbanAreas) {
+            return true;
+        }
+        return false;
+    }
 }
 
 enum Keys {
     One = 49,
     Two = 50,
-    Three = 51
+    Three = 51,
+    Four = 52,
 }
 
 export class BrushManager {
@@ -74,6 +101,7 @@ export class BrushManager {
         this.gatheringPoints = [];
         this.corridors = [];
         this.miningAreas = [];
+        this.urbanAreas = [];
         document.addEventListener('keydown', (event) => {
             if (event.keyCode == Keys.One) {
                 this.activeBrushType = BrushType.GatheringPoint;
@@ -83,6 +111,8 @@ export class BrushManager {
             }
             else if (event.keyCode == Keys.Three) {
                 this.activeBrushType = BrushType.MiningArea;
+            } else if (event.keyCode == Keys.Four) {
+                this.activeBrushType = BrushType.UrbanAreas;
             }
         });
     }
@@ -144,6 +174,9 @@ export class BrushManager {
         }
         else if (this.activeBrush.type == BrushType.MiningArea) {
             this.miningAreas.push(this.activeBrush);
+        } 
+        else if (this.activeBrush.type == BrushType.UrbanAreas) {
+            this.urbanAreas.push(this.activeBrush);
         }
     }
 
@@ -153,4 +186,5 @@ export class BrushManager {
     private gatheringPoints: BrushGameObject[];
     private corridors: BrushGameObject[];
     private miningAreas: BrushGameObject[];
+    private urbanAreas: BrushGameObject[];
 }
