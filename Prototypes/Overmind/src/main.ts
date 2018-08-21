@@ -8,6 +8,7 @@ import * as math from './math';
 import { BrushManager } from './brushes';
 import { EconomyManager } from './economy';
 import { UIController } from './ui';
+import { Terrain } from './terrain'
 
 async function fetchJSON(url: string): Promise<any> {
     let promise = new Promise(resolve => {
@@ -15,13 +16,14 @@ async function fetchJSON(url: string): Promise<any> {
         req.overrideMimeType("application/json");
         req.open('GET', url, true);
         req.onload  = function() {
-            console.log( req.responseText);
+            //console.log( req.responseText);
             resolve(eval("new Object(" + req.responseText + ")"));
         };
         req.send(null);
     });
     return await promise;
 }
+
 
 class GameLoop {
     private scene: Scene;
@@ -31,6 +33,7 @@ class GameLoop {
     private context: CanvasRenderingContext2D;
     private brushManager: BrushManager;
     private economy: EconomyManager;
+    private terrain: Terrain;
 
     private ui: UIController;
     constructor(context: CanvasRenderingContext2D) {
@@ -40,6 +43,8 @@ class GameLoop {
         this.economy = new EconomyManager();
         this.brushManager = new BrushManager();
         this.ui = new UIController();
+        this.terrain = new Terrain();
+        this.tiles = new Image();
     }
     public async init(): Promise<any> {
         Mouser.installHandler();
@@ -63,11 +68,16 @@ class GameLoop {
         this.scene = await Scene.parseSceneDescription(sceneDescription, this.playerBook, this.unitBook);
         this.economy.parseResourceNodes(sceneDescription.resources);
         this.economy.spawnNodes(this.scene);
+        // TODO: make this synchronously
+        this.tiles.onload = function() {
+            this.terrain.render(this.scene.terrain.getContext('2d'), this.tiles);
+        }.bind(this);
+        this.tiles.src = './content/tiles/terrain.png';
 
         this.brushManager.startTimers(this.economy, this.scene);
 
         this.ui.initialize(this.economy, this.unitBook, this.playerBook, this.scene, sceneDescription.humanPlayer);
-
+ 
         console.log(this.playerBook);
         console.log(this.unitBook);
     }
@@ -103,7 +113,7 @@ class GameLoop {
             }
             this.updateFrame();
             this.renderFrame();
-            requestAnimationFrame(runFrame);
+            window.requestAnimationFrame(runFrame);
         }
         runFrame();
     }
