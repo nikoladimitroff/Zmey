@@ -1,0 +1,6 @@
+{
+    buildingTypes: [{
+            name: "MainTower",
+        },
+    ]
+}

@@ -3,6 +3,7 @@ import * as math from './math';
 import  { PlayerBook } from './player';
 import  { RectangleGameObject, GameObject } from './gameobject'
 import  { UnitBook, Army, UnitPrototype } from './unittypes';
+import  { Building } from './buildings'
 
 export class Scene {
     public objects: Array<GameObject>;
@@ -58,6 +59,17 @@ export class Scene {
         return newGameObject;
     }
 
+    private static parseStartingBuilding(json: any) : GameObject {
+        let startingBuilding = new Building();
+        startingBuilding.width = 150;
+        startingBuilding.height = 150;
+        startingBuilding.position.x = json.startingPosition.x;
+        startingBuilding.position.y = json.startingPosition.y;
+        startingBuilding.image = document.createElement("img") as HTMLImageElement;
+        startingBuilding.image.src = "./content/buildings/main-tower.png";
+        return startingBuilding;
+    }
+
     public static parseSceneDescription(json: any, players: PlayerBook, units: UnitBook): Scene {
         let scene = new Scene(players);
         for (const obj of json.objects) {
@@ -74,8 +86,13 @@ export class Scene {
             }
         }
 
+        scene.objects.push(Scene.parseStartingBuilding(json));
+
         scene.worldSize.x = scene.terrain.width = json.terrain.width * 32 /*tile size*/;
         scene.worldSize.y = scene.terrain.height = json.terrain.height * 32 /*tile size*/;
+
+
+
         return scene;
     }
     public render(context: CanvasRenderingContext2D, camera: Camera): void {
