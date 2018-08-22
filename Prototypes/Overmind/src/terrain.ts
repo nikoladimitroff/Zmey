@@ -1,5 +1,3 @@
-import { Vector2 } from './vector';
-import { Camera } from './camera';
 
 noise.seed(12);
 
@@ -27,13 +25,6 @@ noise.seed(12);
 export class Terrain {
 
     constructor() {
-    }
-    public generateElevation(): void {
-        for(let i = 0; i < this.elevationMap.length; ++i) {
-            for(let j = 0; j < this.elevationMap.length; ++j) {
-                this.elevationMap[j][i] = perlin(j, i);
-            }
-        }
     }
 
     public static drawTile(context: CanvasRenderingContext2D, tiles: HTMLImageElement, terrainType: string , tileType: string, target: any) {
@@ -75,7 +66,6 @@ export class Terrain {
 
      }
 
-    private size: number;
     private static tileSize = 32;
     private static tilePositions: any = { misk1: {x : 0, y: 0  }, tloc: {x : 32, y: 0  }, troc: {x : 64, y: 0  },
                                           misc2: {x : 0, y: 32 }, bloc: {x : 32, y: 32 }, broc: {x : 64, y: 32 },

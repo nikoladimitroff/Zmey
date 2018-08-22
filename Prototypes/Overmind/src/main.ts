@@ -2,40 +2,24 @@ import { Mouser } from "./mouser"
 import { Resizer } from "./resizer";
 import { Scene } from "./scene";
 import { Camera } from './camera';
-import {PlayerBook} from './player';
-import {UnitBook} from './unittypes';
 import * as math from './math';
 import { BrushManager } from './brushes';
 import { EconomyManager } from './economy';
 import { UIController } from './ui';
-import { Terrain } from './terrain'
-
-async function fetchJSON(url: string): Promise<any> {
-    let promise = new Promise(resolve => {
-        let req = new XMLHttpRequest();
-        req.overrideMimeType("application/json");
-        req.open('GET', url, true);
-        req.onload  = function() {
-            //console.log( req.responseText);
-            resolve(eval("new Object(" + req.responseText + ")"));
-        };
-        req.send(null);
-    });
-    return await promise;
-}
-
-
+import { Terrain } from './terrain';
+import { fetchJSON } from './utils'
+import { GameLibrary } from './gamelibrary'
 class GameLoop {
     private scene: Scene;
-    private playerBook: PlayerBook;
-    private unitBook: UnitBook;
+
     private camera: Camera;
     private context: CanvasRenderingContext2D;
     private brushManager: BrushManager;
     private economy: EconomyManager;
     private terrain: Terrain;
-
+    private library: GameLibrary;
     private ui: UIController;
+    private tiles: HTMLImageElement;
     constructor(context: CanvasRenderingContext2D) {
         this.context = context;
         this.camera = new Camera(context);
@@ -45,6 +29,7 @@ class GameLoop {
         this.ui = new UIController();
         this.terrain = new Terrain();
         this.tiles = new Image();
+        this.library = new GameLibrary()
     }
     public async init(): Promise<any> {
         Mouser.installHandler();
@@ -55,31 +40,27 @@ class GameLoop {
             this.camera.zoom(event.wheelDelta / window.innerHeight)
         , false);
 
-        const unitsDescription = await fetchJSON("content/units.json");
-        this.unitBook = await UnitBook.parseBook(unitsDescription);
-
-        const playersDescription = await fetchJSON("content/player.json");
-        this.playerBook = await PlayerBook.parseBook(playersDescription);
+        await this.library.init("content/units.json",
+         "content/player.json",
+          "content/buildings.json")
 
         const resourceDescription = await fetchJSON("content/resources.json");
         this.economy.parseResourceBook(resourceDescription);
 
         const sceneDescription = await fetchJSON("content/scene.json");
-        this.scene = await Scene.parseSceneDescription(sceneDescription, this.playerBook, this.unitBook);
+        this.scene = await Scene.parseSceneDescription(sceneDescription, this.library);
         this.economy.parseResourceNodes(sceneDescription.resources);
         this.economy.spawnNodes(this.scene);
         // TODO: make this synchronously
-        this.tiles.onload = function() {
+        this.tiles.onload = function(): void {
             this.terrain.render(this.scene.terrain.getContext('2d'), this.tiles);
         }.bind(this);
         this.tiles.src = './content/tiles/terrain.png';
 
         this.brushManager.startTimers(this.economy, this.scene);
 
-        this.ui.initialize(this.economy, this.unitBook, this.playerBook, this.scene, sceneDescription.humanPlayer, this.camera.displayOptions);
+        this.ui.initialize(this.economy, this.library.unitBook, this.library.playerBook, this.scene, sceneDescription.humanPlayer, this.camera.displayOptions);
  
-        console.log(this.playerBook);
-        console.log(this.unitBook);
     }
     private updateFrame(): void {
         // If the mouse is within the innermost X% of the window, move the camera around
@@ -119,7 +100,7 @@ class GameLoop {
     }
 
     public setCameraOption(option: string, value: any):void {
-        this.camera.displayOptions[option] = value;
+        (this.camera.displayOptions as any)[option] = value;
     }
 }
 

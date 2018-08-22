@@ -1,6 +1,13 @@
 {
     buildingTypes: [{
             name: "MainTower",
+            controlRange: 250,
+            populationLimit: 100,
+        },
+        {
+            name: "Tent",
+            controlRange: 0,
+            populationLimit: 100,
         },
     ]
 }

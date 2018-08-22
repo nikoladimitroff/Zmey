@@ -1,5 +1,5 @@
 import { Army, UnitDescription } from './unittypes';
-import { Scene } from './Scene';
+import { Scene } from './scene';
 import { BrushGameObject } from './brushes';
 import { GameObject } from './gameobject';
 export class BattleReport {

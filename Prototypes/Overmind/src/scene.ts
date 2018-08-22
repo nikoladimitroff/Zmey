@@ -1,18 +1,21 @@
 import { Camera } from './camera';
 import * as math from './math';
-import  { PlayerBook } from './player';
+import  { PlayerBook} from './player';
 import  { RectangleGameObject, GameObject } from './gameobject'
-import  { UnitBook, Army, UnitPrototype } from './unittypes';
+import  { UnitBook, Army } from './unittypes';
 import  { Building } from './buildings'
+import  { GameLibrary } from './gamelibrary'
 
 export class Scene {
     public objects: Array<GameObject>;
     public worldSize: math.Vector2;
     public terrain: HTMLCanvasElement;
     public players: PlayerBook;
+    public controlSuppliers: Array<GameObject>;
     constructor(players: PlayerBook) {
         this.players = players;
         this.objects = [];
+        this.controlSuppliers = [];
         this.worldSize = new math.Vector2(0, 0);
         this.terrain = document.createElement("canvas");
     }
@@ -59,7 +62,7 @@ export class Scene {
         return newGameObject;
     }
 
-    private static parseStartingBuilding(json: any) : GameObject {
+    private static parseStartingBuilding(json: any, library: GameLibrary) : GameObject {
         let startingBuilding = new Building();
         startingBuilding.width = 150;
         startingBuilding.height = 150;
@@ -67,31 +70,35 @@ export class Scene {
         startingBuilding.position.y = json.startingPosition.y;
         startingBuilding.image = document.createElement("img") as HTMLImageElement;
         startingBuilding.image.src = "./content/buildings/main-tower.png";
+        let mainTowerProto = library.buildingBook.prototypes.find(u => u.name === 'MainTower');
+        if(mainTowerProto) {
+            startingBuilding.type = mainTowerProto;
+        }
         return startingBuilding;
     }
 
-    public static parseSceneDescription(json: any, players: PlayerBook, units: UnitBook): Scene {
-        let scene = new Scene(players);
+    public static parseSceneDescription(json: any, library: GameLibrary): Scene {
+        let scene = new Scene(library.playerBook);
         for (const obj of json.objects) {
-            const unitType = units.prototypes.find(u => u.name === obj.type);
+            const unitType = library.unitBook.prototypes.find(u => u.name === obj.type);
             if(unitType)
             {
-                const newGameObject = Scene.parseArmy(obj, players, units);
+                const newGameObject = Scene.parseArmy(obj, library.playerBook, library.unitBook);
                 scene.objects.push(newGameObject);
             }
             else
             {
-                const newGameObject = Scene.parseGameObject(obj, players, units);
+                const newGameObject = Scene.parseGameObject(obj, library.playerBook, library.unitBook);
                 scene.objects.push(newGameObject);
             }
         }
 
-        scene.objects.push(Scene.parseStartingBuilding(json));
+        let mainBuilding = Scene.parseStartingBuilding(json, library);
+        scene.objects.push(mainBuilding);
+        scene.players.at(0).buildings.push(mainBuilding as Building);
 
         scene.worldSize.x = scene.terrain.width = json.terrain.width * 32 /*tile size*/;
         scene.worldSize.y = scene.terrain.height = json.terrain.height * 32 /*tile size*/;
-
-
 
         return scene;
     }
