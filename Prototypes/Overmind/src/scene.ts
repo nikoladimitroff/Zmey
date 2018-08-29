@@ -43,8 +43,8 @@ export class Scene {
     private static parseArmy(obj: any, _0: PlayerBook, units: UnitBook): GameObject {
 
         let newGameObject: Army = new Army();
-        (newGameObject as RectangleGameObject).width = 25;
-        (newGameObject as RectangleGameObject).height = 25;
+        (newGameObject as RectangleGameObject).width = 15;
+        (newGameObject as RectangleGameObject).height = 15;
 
 
         newGameObject.position.x = obj.x;
@@ -64,8 +64,8 @@ export class Scene {
 
     private static parseStartingBuilding(json: any, library: GameLibrary) : GameObject {
         let startingBuilding = new Building();
-        startingBuilding.width = 150;
-        startingBuilding.height = 150;
+        startingBuilding.width = 25;
+        startingBuilding.height = 25;
         startingBuilding.position.x = json.startingPosition.x;
         startingBuilding.position.y = json.startingPosition.y;
         startingBuilding.image = document.createElement("img") as HTMLImageElement;
