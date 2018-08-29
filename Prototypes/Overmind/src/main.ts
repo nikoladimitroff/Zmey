@@ -23,7 +23,7 @@ class GameLoop {
     constructor(context: CanvasRenderingContext2D) {
         this.context = context;
         this.camera = new Camera(context);
-        this.camera.setZoomLevels(0.5, 2);
+        this.camera.setZoomLevels(0.1, 10);
         this.economy = new EconomyManager();
         this.brushManager = new BrushManager();
         this.ui = new UIController();
