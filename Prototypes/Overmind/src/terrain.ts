@@ -1,6 +1,6 @@
 import { Vector2 } from './vector';
 
-noise.seed(121);
+noise.seed(125);
 // each terrain has 3x6 tiles
 // each tile is 32/32 pixels
 
@@ -39,6 +39,8 @@ export class TerrainInfo {
     public magicEnergy:number;
     public photoEnergy:number;
 
+
+    private static mapScaleFactor = 50;
     private findBiome(): any {
         for(let i = 0; i < Terrain.biomes.length; ++i) {
             const current = Terrain.biomes[i];
@@ -53,6 +55,8 @@ export class TerrainInfo {
 
     constructor(pos: Vector2) {
         this.position = pos;
+        this.position.x /= TerrainInfo.mapScaleFactor;
+        this.position.y /= TerrainInfo.mapScaleFactor;
         this.latitude =         noise.simplex2(pos.x + 10000, pos.y + 10000);
         this.humidity =         (noise.simplex2(pos.x + 20000, pos.y + 20000) + 1) / 2;
         this.temperature =      noise.simplex2(pos.x + 30000, pos.y + 30000);
@@ -83,10 +87,6 @@ export class Terrain {
                                               32, 32, target.x , target.y , Terrain.tileSize, Terrain.tileSize);
     }
 
-    public queryInfo(point: Vector2): TerrainInfo {
-        return new TerrainInfo(point);
-    }
-
     public render(context: CanvasRenderingContext2D, tiles: HTMLImageElement): void {
         let sizeW = Math.floor(context.canvas.width / Terrain.tileSize);
         let sizeH = Math.floor(context.canvas.height / Terrain.tileSize);
@@ -95,15 +95,16 @@ export class Terrain {
             for (let j = 0; j < sizeW; ++j) {
                 const target = {x: j * Terrain.tileSize,
                                 y: i * Terrain.tileSize};
-                let ti = new TerrainInfo(new Vector2(j * Terrain.tileSize / Terrain.mapScaleFactor, i * Terrain.tileSize / Terrain.mapScaleFactor));
+                let ti = new TerrainInfo(new Vector2(j, i));
                 Terrain.drawTile(context, tiles, ti.biomeName, "mid", target);
             }
         }
 
      }
 
+
     private static tileSize = 32;
-    private static mapScaleFactor = 1200;
+
     private static biomes = [
 
         {

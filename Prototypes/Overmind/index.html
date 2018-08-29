@@ -41,28 +41,78 @@
             </section>
             <div class="display-options-wrapper">
             <h3>Display Options</h3>
-            <label class="container">enableBrushesABBA
+            <label class="container">enable brushes ABBA
                 <input type="checkbox" v-model="displayOption.enableBrushesABBA">
                 <span class="checkmark"></span>
             </label>
-            <label class="container">hideGatheringPoints
+            <label class="container">hide gathering points
                 <input type="checkbox" v-model="displayOption.hideGatheringPoints">
                 <span class="checkmark"></span>
             </label>
-            <label class="container">hideCorridors
+            <label class="container">hide corridors
                 <input type="checkbox" v-model="displayOption.hideCorridors">
                 <span class="checkmark"></span>
             </label>
-            <label class="container">hideMiningAreas
+            <label class="container">hide mining areas
                 <input type="checkbox" v-model="displayOption.hideMiningAreas">
                 <span class="checkmark"></span>
             </label>
-            <label class="container">hideUrbanAreas
+            <label class="container">hide urban areas
                 <input type="checkbox" v-model="displayOption.hideUrbanAreas">
                 <span class="checkmark"></span>
             </label>
+            <label class="container">show terrain information
+                <input type="checkbox" v-model="showTerrainInfo">
+                <span class="checkmark"></span>
+            </label>
+            </div>
+            <div id="terrain-info-display" v-show="showTerrainInfo">
+                <table>
+                    <tr>
+                        <th>biome name</th>
+                        <th>{{terrainInfo.biomeName}}</th>
+                    </tr>
+                    <tr>
+                        <th>latitude</th>
+                        <th>{{terrainInfo.latitude.toFixed(1)}}</th>
+                    </tr>
+                    <tr>
+                        <th>humidity</th>
+                        <th>{{terrainInfo.humidity.toFixed(1)}}</th>
+                    </tr>
+                    <tr>
+                        <th>temperature</th>
+                        <th>{{terrainInfo.temperature.toFixed(1)}}</th>
+                    </tr>
+                    <tr>
+                        <th>iron</th>
+                        <th>{{terrainInfo.iron.toFixed(1)}}</th>
+                    </tr>
+                    <tr>
+                        <th>wood</th>
+                        <th>{{terrainInfo.wood.toFixed(1)}}</th>
+                    </tr>
+                    <tr>
+                        <th>food</th>
+                        <th>{{terrainInfo.food.toFixed(1)}}</th>
+                    </tr>
+                    <tr>
+                        <th>radioactivity</th>
+                        <th>{{terrainInfo.radioactivity.toFixed(1)}}</th>
+                    </tr>
+                    <tr>
+                        <th>magic energy</th>
+                        <th>{{terrainInfo.magicEnergy.toFixed(1)}}</th>
+                    </tr>
+                    <tr>
+                        <th>photo energy</th>
+                        <th>{{terrainInfo.photoEnergy.toFixed(1)}}</th>
+                    </tr>
+                </table>
             </div>
         </main>
+
+
         <canvas></canvas>
     </body>
     <script>
@@ -74,5 +124,7 @@
         });
 
         requirejs(["src/main"]);
+
+
     </script>
 </html>

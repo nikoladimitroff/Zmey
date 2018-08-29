@@ -59,7 +59,7 @@ class GameLoop {
 
         this.brushManager.startTimers(this.economy, this.scene);
 
-        this.ui.initialize(this.economy, this.library.unitBook, this.library.playerBook, this.scene, sceneDescription.humanPlayer, this.camera.displayOptions);
+        this.ui.initialize(this.economy, this.library.unitBook, this.library.playerBook, this.scene, sceneDescription.humanPlayer, this.camera);
  
     }
     private updateFrame(): void {
@@ -107,6 +107,7 @@ class GameLoop {
 async function main(): Promise<any> {
     const canvas = document.querySelector("canvas") as HTMLCanvasElement;
     const loop = new GameLoop(canvas.getContext("2d") as CanvasRenderingContext2D);
+
     await loop.init();
     loop.run();
     // Expose as global for debugging
