@@ -1,5 +1,6 @@
+import { Vector2 } from './vector';
 
-noise.seed(129);
+noise.seed(121);
 // each terrain has 3x6 tiles
 // each tile is 32/32 pixels
 
@@ -25,6 +26,52 @@ function isInRange(range: any, v: number): boolean {
     return range.max >= v && range.min <= v;
 }
 
+export class TerrainInfo {
+    public position:Vector2;
+    public biomeName: string;
+    public latitude: number;
+    public humidity: number;
+    public temperature: number;
+    public iron:number;
+    public wood:number;
+    public food:number;
+    public radioactivity:number;
+    public magicEnergy:number;
+    public photoEnergy:number;
+
+    private findBiome(): any {
+        for(let i = 0; i < Terrain.biomes.length; ++i) {
+            const current = Terrain.biomes[i];
+            if (isInRange(current.latitude, this.latitude) &&
+            isInRange(current.humidity, this.humidity) && true
+            /*isInRange(current.temperature, tileDescr.temperature)*/) {
+                return current;
+            }
+        }
+        return null;
+    }
+
+    constructor(pos: Vector2) {
+        this.position = pos;
+        this.latitude =         noise.simplex2(pos.x + 10000, pos.y + 10000);
+        this.humidity =         (noise.simplex2(pos.x + 20000, pos.y + 20000) + 1) / 2;
+        this.temperature =      noise.simplex2(pos.x + 30000, pos.y + 30000);
+        this.iron =             noise.simplex2(pos.x + 40000, pos.y + 40000);
+        this.wood =             noise.simplex2(pos.x + 50000, pos.y + 50000);
+        this.food =             noise.simplex2(pos.x + 60000, pos.y + 60000);
+        this.radioactivity =    noise.simplex2(pos.x + 70000, pos.y + 70000);
+        this.magicEnergy =      noise.simplex2(pos.x + 80000, pos.y + 80000);
+        this.photoEnergy =      noise.simplex2(pos.x + 90000, pos.y + 90000);
+        let biome = this.findBiome();
+        if (biome) {
+            this.biomeName = biome.tileName;
+        }
+        else {
+            console.error(this.latitude + " " + this.humidity);
+        }
+    }
+}
+
 export class Terrain {
 
     constructor() {
@@ -36,40 +83,27 @@ export class Terrain {
                                               32, 32, target.x , target.y , Terrain.tileSize, Terrain.tileSize);
     }
 
-    private static findBiome(tileDescr: any): any {
-        for(let i = 0; i < Terrain.biomes.length; ++i) {
-            const current = Terrain.biomes[i];
-            if (isInRange(current.latitude, tileDescr.latitude) &&
-            isInRange(current.humidity, tileDescr.humidity) && true
-            /*isInRange(current.temperature, tileDescr.temperature)*/) {
-                return current;
-            }
-        }
-        return null;
+    public queryInfo(point: Vector2): TerrainInfo {
+        return new TerrainInfo(point);
     }
+
     public render(context: CanvasRenderingContext2D, tiles: HTMLImageElement): void {
         let sizeW = Math.floor(context.canvas.width / Terrain.tileSize);
         let sizeH = Math.floor(context.canvas.height / Terrain.tileSize);
 
         for (let i = 0; i < sizeH; ++i) {
             for (let j = 0; j < sizeW; ++j) {
-                const ele = noise.simplex2(j / 50, i / 50);
-                const humi = (noise.simplex2(1000+ (j / 50), 1000 + (i / 50)) + 1) / 2;
                 const target = {x: j * Terrain.tileSize,
                                 y: i * Terrain.tileSize};
-                const biome = Terrain.findBiome({latitude: ele, humidity: humi, temperature: 0});
-                if (biome) {
-                    Terrain.drawTile(context, tiles, biome.tileName, "mid", target);
-                }
-                else {
-                    console.error(ele + " " + humi);
-                }
+                let ti = new TerrainInfo(new Vector2(j * Terrain.tileSize / Terrain.mapScaleFactor, i * Terrain.tileSize / Terrain.mapScaleFactor));
+                Terrain.drawTile(context, tiles, ti.biomeName, "mid", target);
             }
         }
 
      }
 
     private static tileSize = 32;
+    private static mapScaleFactor = 1200;
     private static biomes = [
 
         {
