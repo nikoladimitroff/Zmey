@@ -53,3 +53,9 @@ section#player-info {
     margin-top: 0.5em;
     margin-right: 0.5em;
 }
+
+.display-options-wrapper {
+    display: flex;
+    flex-direction: column;
+    border-top: 2px solid white;
+}
