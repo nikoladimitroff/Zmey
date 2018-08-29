@@ -29,7 +29,7 @@ export class Building extends RectangleGameObject {
         const x = (this.position.x - camera.getPosition().x) * camera.getZoom();
         const y = (this.position.y - camera.getPosition().y) * camera.getZoom();
         context.beginPath();
-        context.arc(x, y,150,0,2*Math.PI);
+        context.arc(x, y, 150 * camera.getZoom() ,0,2*Math.PI);
         context.fill();
         context.stroke();
     }
