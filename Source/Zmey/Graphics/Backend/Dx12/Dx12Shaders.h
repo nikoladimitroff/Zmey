@@ -17,14 +17,14 @@ namespace Shaders
 {
 namespace UI
 {
-#include "../../Source/Graphics/Shaders/Compiled/DirectX/UIVS.h"
-#include "../../Source/Graphics/Shaders/Compiled/DirectX/UIPS.h"
+#include "../../Source/Zmey/Graphics/Shaders/Compiled/DirectX/UIVS.h"
+#include "../../Source/Zmey/Graphics/Shaders/Compiled/DirectX/UIPS.h"
 }
 
 namespace Mesh
 {
-#include "../../Source/Graphics/Shaders/Compiled/DirectX/MeshVS.h"
-#include "../../Source/Graphics/Shaders/Compiled/DirectX/MeshPS.h"
+#include "../../Source/Zmey/Graphics/Shaders/Compiled/DirectX/MeshVS.h"
+#include "../../Source/Zmey/Graphics/Shaders/Compiled/DirectX/MeshPS.h"
 }
 }
 }

@@ -8,8 +8,8 @@
 
 #include <Zmey/Config.h>
 
-static const std::string sSourceFolder = "Source/Graphics/Shaders/Source/";
-static const std::string sOutputCompilationFolder = "Source/Graphics/Shaders/Compiled/";
+static const std::string sSourceFolder = "Source/Zmey/Graphics/Shaders/Source/";
+static const std::string sOutputCompilationFolder = "Source/Zmey/Graphics/Shaders/Compiled/";
 static const std::string sOutputFolderSpirv = "Spir-V/";
 static const std::string sOutputFolderDirectx = "DirectX/";
 static const std::string sFileWildcard = "*.hlsl";

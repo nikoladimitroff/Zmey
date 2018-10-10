@@ -11,48 +11,17 @@
     <Filter Include="Source\Platform">
       <UniqueIdentifier>{c655c366-ccd2-4906-be25-b742c453d087}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="include\Memory">
-      <UniqueIdentifier>{68e40dfd-8c59-4055-9bd6-98cd9687bdee}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\Platform">
-      <UniqueIdentifier>{153a696c-2b63-4f6f-87ab-7cd902b771da}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\ResourceLoader">
       <UniqueIdentifier>{7cddd9e1-96c0-4041-ba4d-acc2f7a481d8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\ResourceLoader">
-      <UniqueIdentifier>{bb476c33-dd08-42bd-9abd-686d15a51b1c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\Graphics">
-      <UniqueIdentifier>{dad92acd-a865-44ab-ae9e-f15830e3ad2d}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Graphics">
       <UniqueIdentifier>{5bec6814-93b9-4420-9d18-494d10907021}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\Math">
-      <UniqueIdentifier>{7bc7cd7c-e7de-48eb-9278-b1655ac432fd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\Graphics\Features">
-      <UniqueIdentifier>{26b58d7d-487a-4d67-a453-7cb4b06bbfe9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Graphics\Features">
       <UniqueIdentifier>{f51dca22-c95a-4c61-8918-2de823829188}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\Components">
-      <UniqueIdentifier>{86f30f91-cbec-49a8-9728-8debfbda1adc}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Components">
       <UniqueIdentifier>{f2ece02b-9daa-457e-acc3-131512ef5f46}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\Graphics\Backend">
-      <UniqueIdentifier>{3fd2aeee-5fab-4f0a-bcbb-563d1e11eea9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\Graphics\Backend\Vulkan">
-      <UniqueIdentifier>{03790615-ab7b-4b74-a786-58b98e22baef}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Graphics\Backend">
       <UniqueIdentifier>{4c4ba4f0-76bc-4968-a3ef-a14bc5565267}</UniqueIdentifier>
@@ -60,29 +29,17 @@
     <Filter Include="Source\Graphics\Backend\Vulkan">
       <UniqueIdentifier>{ff9155a6-0de9-44f4-8062-bf750eb84bb4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\Graphics\Backend\Dx12">
-      <UniqueIdentifier>{d86348d2-3ef2-4251-8148-5bf5e33cb322}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source\Graphics\Backend\Dx12">
       <UniqueIdentifier>{58d019d2-840b-42ad-8832-b4fc21a16177}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Graphics\Backend\Dx12">
       <UniqueIdentifier>{58d019d2-840b-42ad-8832-b4fc21a16177}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\Graphics\Managers">
-      <UniqueIdentifier>{361f81ff-c7e6-4b43-a2f5-dd2205236ed2}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Graphics\Managers">
       <UniqueIdentifier>{821632d7-a07c-4ab0-8721-79eb349be595}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Physics">
       <UniqueIdentifier>{5b9bc6d9-b009-4d18-8497-d4749c1ba485}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\Physics">
-      <UniqueIdentifier>{2005c030-ed70-4009-b76d-6b0c6e2d8ee0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\Job">
-      <UniqueIdentifier>{0678867f-71bb-4402-92d9-9b14f90f5f02}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Job">
       <UniqueIdentifier>{40208c78-f4d6-4bae-bf9d-421d626fa26e}</UniqueIdentifier>
@@ -96,211 +53,208 @@
     <Filter Include="Source\ThirdParty\imgui">
       <UniqueIdentifier>{4acbc6fc-218f-45a3-b930-1684a09731b1}</UniqueIdentifier>
     </Filter>
-    <Filter Include="include\Components\Game">
-      <UniqueIdentifier>{573ec492-4fcc-46ba-9259-d2445651154c}</UniqueIdentifier>
+    <Filter Include="Source\Math">
+      <UniqueIdentifier>{f36966e6-b28b-4055-8400-da9fc9cdc9fa}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\include\Zmey\Config.h">
-      <Filter>include</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Config.h">
+      <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\EngineLoop.h">
-      <Filter>include</Filter>
+    <ClInclude Include="..\..\Source\Zmey\EngineLoop.h">
+      <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Logging.h">
-      <Filter>include</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Logging.h">
+      <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\LogHandler.h">
-      <Filter>include</Filter>
+    <ClInclude Include="..\..\Source\Zmey\LogHandler.h">
+      <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Modules.h">
-      <Filter>include</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Modules.h">
+      <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Memory\Allocator.h">
-      <Filter>include\Memory</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Memory\LinearAllocator.h">
-      <Filter>include\Memory</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Memory\MemoryManagement.h">
-      <Filter>include\Memory</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Memory\StlAllocator.h">
-      <Filter>include\Memory</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Platform\Platform.h">
-      <Filter>include\Platform</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\Platform\WindowsPlatform.h">
+    <ClInclude Include="..\..\Source\Zmey\Memory\Allocator.h">
       <Filter>Source\Memory</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\ResourceLoader\ResourceLoader.h">
-      <Filter>include\ResourceLoader</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Memory\LinearAllocator.h">
+      <Filter>Source\Memory</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Memory\PoolAllocator.h">
-      <Filter>include\Memory</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Memory\MemoryManagement.h">
+      <Filter>Source\Memory</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Graphics\Renderer.h">
-      <Filter>include\Graphics</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Memory\StlAllocator.h">
+      <Filter>Source\Memory</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Graphics\FrameData.h">
-      <Filter>include\Graphics</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Platform\Platform.h">
+      <Filter>Source\Platform</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Math\Math.h">
-      <Filter>include\Math</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Platform\WindowsPlatform.h">
+      <Filter>Source\Memory</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Graphics\RenderPasses.h">
-      <Filter>include\Graphics</Filter>
+    <ClInclude Include="..\..\Source\Zmey\ResourceLoader\ResourceLoader.h">
+      <Filter>Source\ResourceLoader</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Graphics\View.h">
-      <Filter>include\Graphics</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Memory\PoolAllocator.h">
+      <Filter>Source\Memory</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Graphics\Features.h">
-      <Filter>include\Graphics</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Graphics\Renderer.h">
+      <Filter>Source\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Graphics\Features\MeshRenderer.h">
-      <Filter>include\Graphics\Features</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Graphics\FrameData.h">
+      <Filter>Source\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\EntityManager.h">
-      <Filter>include</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Graphics\RenderPasses.h">
+      <Filter>Source\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\World.h">
-      <Filter>include</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Graphics\View.h">
+      <Filter>Source\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Components\TransformManager.h">
-      <Filter>include\Components</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Graphics\Features.h">
+      <Filter>Source\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Hash.h">
-      <Filter>include</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Graphics\Features\MeshRenderer.h">
+      <Filter>Source\Graphics\Features</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Components\ComponentRegistry.h">
-      <Filter>include\Components</Filter>
+    <ClInclude Include="..\..\Source\Zmey\EntityManager.h">
+      <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Components\ComponentRegistryCommon.h">
-      <Filter>include\Components</Filter>
+    <ClInclude Include="..\..\Source\Zmey\World.h">
+      <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Components\ComponentManager.h">
-      <Filter>include\Components</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Components\TransformManager.h">
+      <Filter>Source\Components</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\MemoryStream.h">
-      <Filter>include</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Hash.h">
+      <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\BackendDeclarations.h">
-      <Filter>include\Graphics\Backend</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Components\ComponentRegistry.h">
+      <Filter>Source\Components</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Vulkan\VulkanCommandList.h">
-      <Filter>include\Graphics\Backend\Vulkan</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Components\ComponentRegistryCommon.h">
+      <Filter>Source\Components</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\CommandList.h">
-      <Filter>include\Graphics\Backend</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Components\ComponentManager.h">
+      <Filter>Source\Components</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Vulkan\VulkanHelpers.h">
-      <Filter>include\Graphics\Backend\Vulkan</Filter>
+    <ClInclude Include="..\..\Source\Zmey\MemoryStream.h">
+      <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Vulkan\VulkanShaders.h">
-      <Filter>include\Graphics\Backend\Vulkan</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Graphics\Backend\BackendDeclarations.h">
+      <Filter>Source\Graphics\Backend</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Dx12\Dx12CommandList.h">
-      <Filter>include\Graphics\Backend\Dx12</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Graphics\Backend\Vulkan\VulkanCommandList.h">
+      <Filter>Source\Graphics\Backend\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Dx12\Dx12Helpers.h">
-      <Filter>include\Graphics\Backend\Dx12</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Graphics\Backend\CommandList.h">
+      <Filter>Source\Graphics\Backend</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Dx12\Dx12Shaders.h">
-      <Filter>include\Graphics\Backend\Dx12</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Graphics\Backend\Vulkan\VulkanHelpers.h">
+      <Filter>Source\Graphics\Backend\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Graphics\GraphicsObjects.h">
-      <Filter>include\Graphics</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Graphics\Backend\Vulkan\VulkanShaders.h">
+      <Filter>Source\Graphics\Backend\Vulkan</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Graphics\Managers\MeshManager.h">
-      <Filter>include\Graphics\Managers</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Graphics\Backend\Dx12\Dx12CommandList.h">
+      <Filter>Source\Graphics\Backend\Dx12</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Graphics\Managers\BufferManager.h">
-      <Filter>include\Graphics\Managers</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Graphics\Backend\Dx12\Dx12Helpers.h">
+      <Filter>Source\Graphics\Backend\Dx12</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\SettingsManager.h">
-      <Filter>include</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Graphics\Backend\Dx12\Dx12Shaders.h">
+      <Filter>Source\Graphics\Backend\Dx12</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\InputController.h">
-      <Filter>include</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Graphics\GraphicsObjects.h">
+      <Filter>Source\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Utilities.h">
-      <Filter>include</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Graphics\Managers\MeshManager.h">
+      <Filter>Source\Graphics\Managers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Game.h">
-      <Filter>include</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Graphics\Managers\BufferManager.h">
+      <Filter>Source\Graphics\Managers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Components\TagManager.h">
-      <Filter>include\Components</Filter>
+    <ClInclude Include="..\..\Source\Zmey\SettingsManager.h">
+      <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\ResourceLoader\DDSLoader.h">
-      <Filter>include\ResourceLoader</Filter>
+    <ClInclude Include="..\..\Source\Zmey\InputController.h">
+      <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Components\MeshComponentManager.h">
-      <Filter>include\Components</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Utilities.h">
+      <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Physics\PhysicsActor.h">
-      <Filter>include\Physics</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Game.h">
+      <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Physics\PhysicsEngine.h">
-      <Filter>include\Physics</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Components\TagManager.h">
+      <Filter>Source\Components</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Physics\PhysicsComponentManager.h">
-      <Filter>include\Physics</Filter>
+    <ClInclude Include="..\..\Source\Zmey\ResourceLoader\DDSLoader.h">
+      <Filter>Source\ResourceLoader</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Profile.h">
-      <Filter>include</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Components\MeshComponentManager.h">
+      <Filter>Source\Components</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Job\JobSystem.h">
-      <Filter>include\Job</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Physics\PhysicsActor.h">
+      <Filter>Source\Physics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Job\JobSystemImpl.h">
-      <Filter>include\Job</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Physics\PhysicsEngine.h">
+      <Filter>Source\Physics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Job\Queue.h">
-      <Filter>include\Job</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Physics\PhysicsComponentManager.h">
+      <Filter>Source\Physics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Graphics\Managers\TextureManager.h">
-      <Filter>include\Graphics\Managers</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Profile.h">
+      <Filter>Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Buffer.h">
-      <Filter>include\Graphics\Backend</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Job\JobSystem.h">
+      <Filter>Source\Job</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Dx12\Dx12Device.h">
-      <Filter>include\Graphics\Backend\Dx12</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Job\JobSystemImpl.h">
+      <Filter>Source\Job</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Device.h">
-      <Filter>include\Graphics\Backend</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Job\Queue.h">
+      <Filter>Source\Job</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\GraphicsPipelineState.h">
-      <Filter>include\Graphics\Backend</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Graphics\Managers\TextureManager.h">
+      <Filter>Source\Graphics\Managers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Texture.h">
-      <Filter>include\Graphics\Backend</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Graphics\Backend\Buffer.h">
+      <Filter>Source\Graphics\Backend</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Dx12\Dx12Texture.h">
-      <Filter>include\Graphics\Backend\Dx12</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Graphics\Backend\Dx12\Dx12Device.h">
+      <Filter>Source\Graphics\Backend\Dx12</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Graphics\Managers\UploadHeap.h">
-      <Filter>include\Graphics\Managers</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Graphics\Backend\Device.h">
+      <Filter>Source\Graphics\Backend</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Graphics\RendererGlobals.h">
-      <Filter>include\Graphics</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Graphics\Backend\GraphicsPipelineState.h">
+      <Filter>Source\Graphics\Backend</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Vulkan\VulkanBuffer.h">
-      <Filter>include</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Graphics\Backend\Texture.h">
+      <Filter>Source\Graphics\Backend</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Vulkan\VulkanDevice.h">
-      <Filter>include\Graphics\Backend\Vulkan</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Graphics\Backend\Dx12\Dx12Texture.h">
+      <Filter>Source\Graphics\Backend\Dx12</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\Vulkan\VulkanTexture.h">
-      <Filter>include\Graphics\Backend\Vulkan</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Graphics\Managers\UploadHeap.h">
+      <Filter>Source\Graphics\Managers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Zmey\Graphics\RendererGlobals.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Zmey\Graphics\Backend\Vulkan\VulkanBuffer.h">
+      <Filter>Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Zmey\Graphics\Backend\Vulkan\VulkanDevice.h">
+      <Filter>Source\Graphics\Backend\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Zmey\Graphics\Backend\Vulkan\VulkanTexture.h">
+      <Filter>Source\Graphics\Backend\Vulkan</Filter>
     </ClInclude>
     <ClInclude Include="..\..\ThirdParty\include\imgui\imconfig.h">
       <Filter>Source\ThirdParty\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Components\SpellComponentManager.h">
-      <Filter>include\Components\Game</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Components\SpellComponentManager.h">
+      <Filter>Source\Components\Game</Filter>
     </ClInclude>
     <ClInclude Include="..\..\ThirdParty\include\imgui\imgui.h">
       <Filter>Source\ThirdParty\imgui</Filter>
@@ -317,114 +271,117 @@
     <ClInclude Include="..\..\ThirdParty\include\imgui\stb_truetype.h">
       <Filter>Source\ThirdParty\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Graphics\Features\UIRenderer.h">
-      <Filter>include\Graphics\Features</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Graphics\Features\UIRenderer.h">
+      <Filter>Source\Graphics\Features</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Graphics\Managers\MaterialManager.h">
-      <Filter>include\Graphics\Managers</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Graphics\Managers\MaterialManager.h">
+      <Filter>Source\Graphics\Managers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Graphics\ResourceSet.h">
-      <Filter>include\Graphics</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Graphics\ResourceSet.h">
+      <Filter>Source\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\Zmey\Graphics\Backend\BackendResourceSet.h">
-      <Filter>include\Graphics\Backend</Filter>
+    <ClInclude Include="..\..\Source\Zmey\Graphics\Backend\BackendResourceSet.h">
+      <Filter>Source\Graphics\Backend</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Zmey\Math\Math.h">
+      <Filter>Source\Math</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\Source\EngineLoop.cpp">
+    <ClCompile Include="..\..\Source\Zmey\EngineLoop.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Logging.cpp">
+    <ClCompile Include="..\..\Source\Zmey\Logging.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Modules.cpp">
+    <ClCompile Include="..\..\Source\Zmey\Modules.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Memory\MemoryManagement.cpp">
+    <ClCompile Include="..\..\Source\Zmey\Memory\MemoryManagement.cpp">
       <Filter>Source\Memory</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Platform\WindowsPlatform.cpp">
+    <ClCompile Include="..\..\Source\Zmey\Platform\WindowsPlatform.cpp">
       <Filter>Source\Platform</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\ResourceLoader\ResourceLoader.cpp">
+    <ClCompile Include="..\..\Source\Zmey\ResourceLoader\ResourceLoader.cpp">
       <Filter>Source\ResourceLoader</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Graphics\Renderer.cpp">
+    <ClCompile Include="..\..\Source\Zmey\Graphics\Renderer.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Graphics\Features\MeshRenderer.cpp">
+    <ClCompile Include="..\..\Source\Zmey\Graphics\Features\MeshRenderer.cpp">
       <Filter>Source\Graphics\Features</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\EntityManager.cpp">
+    <ClCompile Include="..\..\Source\Zmey\EntityManager.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Components\TransformManager.cpp">
+    <ClCompile Include="..\..\Source\Zmey\Components\TransformManager.cpp">
       <Filter>Source\Components</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Components\ComponentRegistry.cpp">
+    <ClCompile Include="..\..\Source\Zmey\Components\ComponentRegistry.cpp">
       <Filter>Source\Components</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\World.cpp">
+    <ClCompile Include="..\..\Source\Zmey\World.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Graphics\Backend\Vulkan\VulkanShaders.cpp">
+    <ClCompile Include="..\..\Source\Zmey\Graphics\Backend\Vulkan\VulkanShaders.cpp">
       <Filter>Source\Graphics\Backend\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Graphics\Backend\Vulkan\VulkanCommandList.cpp">
+    <ClCompile Include="..\..\Source\Zmey\Graphics\Backend\Vulkan\VulkanCommandList.cpp">
       <Filter>Source\Graphics\Backend\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Graphics\Backend\Dx12\Dx12CommandList.cpp">
+    <ClCompile Include="..\..\Source\Zmey\Graphics\Backend\Dx12\Dx12CommandList.cpp">
       <Filter>Source\Graphics\Backend\Dx12</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Graphics\Managers\MeshManager.cpp">
+    <ClCompile Include="..\..\Source\Zmey\Graphics\Managers\MeshManager.cpp">
       <Filter>Source\Graphics\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Graphics\Managers\BufferManager.cpp">
+    <ClCompile Include="..\..\Source\Zmey\Graphics\Managers\BufferManager.cpp">
       <Filter>Source\Graphics\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\SettingsManager.cpp">
+    <ClCompile Include="..\..\Source\Zmey\SettingsManager.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Graphics\View.cpp">
+    <ClCompile Include="..\..\Source\Zmey\Graphics\View.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\InputController.cpp">
+    <ClCompile Include="..\..\Source\Zmey\InputController.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Components\TagManager.cpp">
+    <ClCompile Include="..\..\Source\Zmey\Components\TagManager.cpp">
       <Filter>Source\Components</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\ResourceLoader\DDSLoader.cpp">
+    <ClCompile Include="..\..\Source\Zmey\ResourceLoader\DDSLoader.cpp">
       <Filter>Source\ResourceLoader</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Components\MeshComponentManager.cpp">
+    <ClCompile Include="..\..\Source\Zmey\Components\MeshComponentManager.cpp">
       <Filter>Source\Components</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Physics\PhysicsEngine.cpp">
+    <ClCompile Include="..\..\Source\Zmey\Physics\PhysicsEngine.cpp">
       <Filter>Source\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Physics\PhysicsComponentManager.cpp">
+    <ClCompile Include="..\..\Source\Zmey\Physics\PhysicsComponentManager.cpp">
       <Filter>Source\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Physics\PhysicsActor.cpp">
+    <ClCompile Include="..\..\Source\Zmey\Physics\PhysicsActor.cpp">
       <Filter>Source\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Job\JobSystemImpl.cpp">
+    <ClCompile Include="..\..\Source\Zmey\Job\JobSystemImpl.cpp">
       <Filter>Source\Job</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Graphics\Managers\TextureManager.cpp">
+    <ClCompile Include="..\..\Source\Zmey\Graphics\Managers\TextureManager.cpp">
       <Filter>Source\Graphics\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Graphics\Backend\Dx12\Dx12Device.cpp">
+    <ClCompile Include="..\..\Source\Zmey\Graphics\Backend\Dx12\Dx12Device.cpp">
       <Filter>Source\Graphics\Backend\Dx12</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Graphics\Managers\UploadHeap.cpp">
+    <ClCompile Include="..\..\Source\Zmey\Graphics\Managers\UploadHeap.cpp">
       <Filter>Source\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Graphics\Backend\Vulkan\VulkanDevice.cpp">
+    <ClCompile Include="..\..\Source\Zmey\Graphics\Backend\Vulkan\VulkanDevice.cpp">
       <Filter>Source\Graphics\Backend\Vulkan</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Components\SpellComponentManager.cpp">
+    <ClCompile Include="..\..\Source\Zmey\Components\SpellComponentManager.cpp">
       <Filter>Source\Components\Game</Filter>
     </ClCompile>
     <ClCompile Include="..\..\ThirdParty\include\imgui\imgui.cpp">
@@ -436,13 +393,13 @@
     <ClCompile Include="..\..\ThirdParty\include\imgui\imgui_draw.cpp">
       <Filter>Source\ThirdParty\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Graphics\Features\UIRenderer.cpp">
+    <ClCompile Include="..\..\Source\Zmey\Graphics\Features\UIRenderer.cpp">
       <Filter>Source\Graphics\Features</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Graphics\Managers\MaterialManager.cpp">
+    <ClCompile Include="..\..\Source\Zmey\Graphics\Managers\MaterialManager.cpp">
       <Filter>Source\Graphics\Managers</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\Graphics\Backend\CommandList.cpp">
+    <ClCompile Include="..\..\Source\Zmey\Graphics\Backend\CommandList.cpp">
       <Filter>Source\Graphics\Backend</Filter>
     </ClCompile>
   </ItemGroup>

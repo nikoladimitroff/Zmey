@@ -78,7 +78,7 @@ def main():
         dir_util.copy_tree(thirdparties, args.output, update=1)
         dir_util.copy_tree(thirdparties_per_config, args.output, update=1)
 
-    shaders_dir = path.join(REPO_ROOT_DIR, "Source/Graphics/Shaders/Source")
+    shaders_dir = path.join(REPO_ROOT_DIR, "Source/Zmey/Graphics/Shaders/Source")
     shader_compiler = path.join(args.output, "ShaderCompiler.exe")
 
     content_dir = path.join(REPO_ROOT_DIR, "Games/GiftOfTheSanctum/Content")
