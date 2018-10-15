@@ -1,169 +1,205 @@
 ﻿using UnityEngine;
 
-namespace UnityTemplateProjects
+[RequireComponent(typeof(Camera))]
+
+public class SimpleCameraController : MonoBehaviour
 {
-    public class SimpleCameraController : MonoBehaviour
+
+    public float ScreenEdgeBorderThickness = 5.0f; // distance from screen edge. Used for mouse movement
+
+    [Header("Camera Mode")]
+    [Space]
+    public bool RTSMode = true;
+    public bool FlyCameraMode = false;
+
+    [Header("Movement Speeds")]
+    [Space]
+    public float minPanSpeed;
+    public float maxPanSpeed;
+    public float secToMaxSpeed; //seconds taken to reach max speed;
+    public float zoomSpeed;
+
+    [Header("Movement Limits")]
+    [Space]
+    public bool enableMovementLimits;
+    public Vector2 heightLimit;
+    public Vector2 lenghtLimit;
+    public Vector2 widthLimit;
+    private Vector2 zoomLimit;
+
+    private float panSpeed;
+    private Vector3 initialPos;
+    private Vector3 panMovement;
+    private Vector3 pos;
+    private Quaternion rot;
+    private bool rotationActive = false;
+    private Vector3 lastMousePosition;
+    private Quaternion initialRot;
+    private float panIncrease = 0.0f;
+
+    [Header("Rotation")]
+    [Space]
+    public bool rotationEnabled;
+    public float rotateSpeed;
+
+
+
+
+
+    // Use this for initialization
+    void Start()
     {
-        class CameraState
+        initialPos = transform.position;
+        initialRot = transform.rotation;
+        zoomLimit.x = 15;
+        zoomLimit.y = 65;
+
+        Cursor.visible = true;
+    }
+
+
+    void Update()
+    {
+        Cursor.lockState = CursorLockMode.Confined;
+        if (Input.GetKey(KeyCode.Escape))
         {
-            public float yaw;
-            public float pitch;
-            public float roll;
-            public float x;
-            public float y;
-            public float z;
-
-            public void SetFromTransform(Transform t)
-            {
-                pitch = t.eulerAngles.x;
-                yaw = t.eulerAngles.y;
-                roll = t.eulerAngles.z;
-                x = t.position.x;
-                y = t.position.y;
-                z = t.position.z;
-            }
-
-            public void Translate(Vector3 translation)
-            {
-                Vector3 rotatedTranslation = Quaternion.Euler(pitch, yaw, roll) * translation;
-
-                x += rotatedTranslation.x;
-                y += rotatedTranslation.y;
-                z += rotatedTranslation.z;
-            }
-
-            public void LerpTowards(CameraState target, float positionLerpPct, float rotationLerpPct)
-            {
-                yaw = Mathf.Lerp(yaw, target.yaw, rotationLerpPct);
-                pitch = Mathf.Lerp(pitch, target.pitch, rotationLerpPct);
-                roll = Mathf.Lerp(roll, target.roll, rotationLerpPct);
-                
-                x = Mathf.Lerp(x, target.x, positionLerpPct);
-                y = Mathf.Lerp(y, target.y, positionLerpPct);
-                z = Mathf.Lerp(z, target.z, positionLerpPct);
-            }
-
-            public void UpdateTransform(Transform t)
-            {
-                t.eulerAngles = new Vector3(pitch, yaw, roll);
-                t.position = new Vector3(x, y, z);
-            }
-        }
-        
-        CameraState m_TargetCameraState = new CameraState();
-        CameraState m_InterpolatingCameraState = new CameraState();
-
-        [Header("Movement Settings")]
-        [Tooltip("Exponential boost factor on translation, controllable by mouse wheel.")]
-        public float boost = 3.5f;
-
-        [Tooltip("Time it takes to interpolate camera position 99% of the way to the target."), Range(0.001f, 1f)]
-        public float positionLerpTime = 0.2f;
-
-        [Header("Rotation Settings")]
-        [Tooltip("X = Change in mouse position.\nY = Multiplicative factor for camera rotation.")]
-        public AnimationCurve mouseSensitivityCurve = new AnimationCurve(new Keyframe(0f, 0.5f, 0f, 5f), new Keyframe(1f, 2.5f, 0f, 0f));
-
-        [Tooltip("Time it takes to interpolate camera rotation 99% of the way to the target."), Range(0.001f, 1f)]
-        public float rotationLerpTime = 0.01f;
-
-        [Tooltip("Whether or not to invert our Y axis for mouse input to rotation.")]
-        public bool invertY = false;
-
-        void OnEnable()
-        {
-            m_TargetCameraState.SetFromTransform(transform);
-            m_InterpolatingCameraState.SetFromTransform(transform);
+            Application.Quit();
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#endif
         }
 
-        Vector3 GetInputTranslationDirection()
+        #region Camera Mode
+
+        //check that ony one mode is choosen
+        if (RTSMode == true) FlyCameraMode = false;
+        if (FlyCameraMode == true) RTSMode = false;
+
+        #endregion
+
+        #region Movement
+
+        panMovement = Vector3.zero;
+
+        if (Input.GetKey(KeyCode.W) || Input.mousePosition.y >= Screen.height - ScreenEdgeBorderThickness)
         {
-            Vector3 direction = new Vector3();
-            if (Input.GetKey(KeyCode.W))
-            {
-                direction += Vector3.forward;
-            }
-            if (Input.GetKey(KeyCode.S))
-            {
-                direction += Vector3.back;
-            }
-            if (Input.GetKey(KeyCode.A))
-            {
-                direction += Vector3.left;
-            }
-            if (Input.GetKey(KeyCode.D))
-            {
-                direction += Vector3.right;
-            }
-            if (Input.GetKey(KeyCode.Q))
-            {
-                direction += Vector3.down;
-            }
-            if (Input.GetKey(KeyCode.E))
-            {
-                direction += Vector3.up;
-            }
-            return direction;
+            panMovement += Vector3.forward * panSpeed * Time.deltaTime;
         }
-        
-        void Update()
+        if (Input.GetKey(KeyCode.S) || Input.mousePosition.y <= ScreenEdgeBorderThickness)
         {
-            // Exit Sample  
-
-            if (Input.GetKey(KeyCode.Escape))
-            {
-                Application.Quit();
-				#if UNITY_EDITOR
-				UnityEditor.EditorApplication.isPlaying = false; 
-				#endif
-            }
-            // Hide and lock cursor when right mouse button pressed
-            if (Input.GetMouseButtonDown(1))
-            {
-                Cursor.lockState = CursorLockMode.Locked;
-            }
-
-            // Unlock and show cursor when right mouse button released
-            if (Input.GetMouseButtonUp(1))
-            {
-                Cursor.visible = true;
-                Cursor.lockState = CursorLockMode.None;
-            }
-
-            // Rotation
-            if (Input.GetMouseButton(1))
-            {
-                var mouseMovement = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y") * (invertY ? 1 : -1));
-                
-                var mouseSensitivityFactor = mouseSensitivityCurve.Evaluate(mouseMovement.magnitude);
-
-                m_TargetCameraState.yaw += mouseMovement.x * mouseSensitivityFactor;
-                m_TargetCameraState.pitch += mouseMovement.y * mouseSensitivityFactor;
-            }
-            
-            // Translation
-            var translation = GetInputTranslationDirection() * Time.deltaTime;
-
-            // Speed up movement when shift key held
-            if (Input.GetKey(KeyCode.LeftShift))
-            {
-                translation *= 10.0f;
-            }
-            
-            // Modify movement by a boost factor (defined in Inspector and modified in play mode through the mouse scroll wheel)
-            boost += Input.mouseScrollDelta.y * 0.2f;
-            translation *= Mathf.Pow(2.0f, boost);
-
-            m_TargetCameraState.Translate(translation);
-
-            // Framerate-independent interpolation
-            // Calculate the lerp amount, such that we get 99% of the way to our target in the specified time
-            var positionLerpPct = 1f - Mathf.Exp((Mathf.Log(1f - 0.99f) / positionLerpTime) * Time.deltaTime);
-            var rotationLerpPct = 1f - Mathf.Exp((Mathf.Log(1f - 0.99f) / rotationLerpTime) * Time.deltaTime);
-            m_InterpolatingCameraState.LerpTowards(m_TargetCameraState, positionLerpPct, rotationLerpPct);
-
-            m_InterpolatingCameraState.UpdateTransform(transform);
+            panMovement -= Vector3.forward * panSpeed * Time.deltaTime;
         }
+        if (Input.GetKey(KeyCode.A) || Input.mousePosition.x <= ScreenEdgeBorderThickness)
+        {
+            panMovement += Vector3.left * panSpeed * Time.deltaTime;
+        }
+        if (Input.GetKey(KeyCode.D) || Input.mousePosition.x >= Screen.width - ScreenEdgeBorderThickness)
+        {
+            panMovement += Vector3.right * panSpeed * Time.deltaTime;
+            //pos.x += panSpeed * Time.deltaTime;
+        }
+        if (Input.GetKey(KeyCode.Q))
+        {
+            panMovement += Vector3.up * panSpeed * Time.deltaTime;
+        }
+        if (Input.GetKey(KeyCode.E))
+        {
+            panMovement += Vector3.down * panSpeed * Time.deltaTime;
+        }
+
+        if (RTSMode) transform.Translate(panMovement, Space.World);
+        else if (FlyCameraMode) transform.Translate(panMovement, Space.Self);
+
+
+        //increase pan speed
+        if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.S)
+            || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D)
+            || Input.GetKey(KeyCode.E) || Input.GetKey(KeyCode.Q)
+            || Input.mousePosition.y >= Screen.height - ScreenEdgeBorderThickness
+            || Input.mousePosition.y <= ScreenEdgeBorderThickness
+            || Input.mousePosition.x <= ScreenEdgeBorderThickness
+            || Input.mousePosition.x >= Screen.width - ScreenEdgeBorderThickness)
+        {
+            panIncrease += Time.deltaTime / secToMaxSpeed;
+            panSpeed = Mathf.Lerp(minPanSpeed, maxPanSpeed, panIncrease);
+        }
+        else
+        {
+            panIncrease = 0;
+            panSpeed = minPanSpeed;
+        }
+
+        #endregion
+
+        #region Zoom
+
+        Camera.main.fieldOfView -= Input.mouseScrollDelta.y * zoomSpeed;
+        Camera.main.fieldOfView = Mathf.Clamp(Camera.main.fieldOfView, zoomLimit.x, zoomLimit.y);
+
+        #endregion
+
+        #region mouse rotation
+
+        if (rotationEnabled)
+        {
+            // Mouse Rotation
+            if (Input.GetMouseButton(0))
+            {
+                rotationActive = true;
+                Vector3 mouseDelta;
+                if (lastMousePosition.x >= 0 &&
+                    lastMousePosition.y >= 0 &&
+                    lastMousePosition.x <= Screen.width &&
+                    lastMousePosition.y <= Screen.height)
+                    mouseDelta = Input.mousePosition - lastMousePosition;
+                else
+                {
+                    mouseDelta = Vector3.zero;
+                }
+                var rotation = Vector3.up * Time.deltaTime * rotateSpeed * mouseDelta.x;
+                rotation += Vector3.left * Time.deltaTime * rotateSpeed * mouseDelta.y;
+
+                transform.Rotate(rotation, Space.World);
+
+                // Make sure z rotation stays locked
+                rotation = transform.rotation.eulerAngles;
+                rotation.z = 0;
+                transform.rotation = Quaternion.Euler(rotation);
+            }
+
+            if (Input.GetMouseButtonUp(0))
+            {
+                rotationActive = false;
+                if (RTSMode) transform.rotation = Quaternion.Slerp(transform.rotation, initialRot, 0.5f * Time.time);
+            }
+
+            lastMousePosition = Input.mousePosition;
+
+        }
+
+
+        #endregion
+
+
+        #region boundaries
+
+        if (enableMovementLimits == true)
+        {
+            //movement limits
+            pos = transform.position;
+            pos.y = Mathf.Clamp(pos.y, heightLimit.x, heightLimit.y);
+            pos.z = Mathf.Clamp(pos.z, lenghtLimit.x, lenghtLimit.y);
+            pos.x = Mathf.Clamp(pos.x, widthLimit.x, widthLimit.y);
+            transform.position = pos;
+        }
+
+
+
+        #endregion
+
     }
 
 }
+
+
+
