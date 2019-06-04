@@ -8,6 +8,8 @@
 #include <atomic>
 #include <unordered_map>
 
+#include <EASTL/vector.h>
+
 namespace Zmey
 {
 namespace Job
@@ -73,8 +75,8 @@ private:
 
 	NextFreeFiber GetNextFreeFiber();
 
-	std::vector<std::thread> m_WorkerThreads;
-	std::vector<FiberHandle> m_Fibers;
+	eastl::vector<std::thread> m_WorkerThreads;
+	eastl::vector<FiberHandle> m_Fibers;
 
 	Queue<JobData> m_Jobs;
 	Queue<unsigned> m_FreeFibers;

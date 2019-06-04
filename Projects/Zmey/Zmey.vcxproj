@@ -74,7 +74,7 @@
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)ThirdParty\libx64;$(SolutionDir)ThirdParty\libx64\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>PxPvdSDKDEBUG_x64.lib;PhysX3Extensions.lib;PhysX3DEBUG_x64.lib;PxFoundationDEBUG_x64.lib;vulkan-1.lib;d3d12.lib;dxgi.lib;Xinput.lib;easy_profiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>EASTL.lib;PxPvdSDKDEBUG_x64.lib;PhysX3Extensions.lib;PhysX3DEBUG_x64.lib;PxFoundationDEBUG_x64.lib;vulkan-1.lib;d3d12.lib;dxgi.lib;Xinput.lib;easy_profiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent />
@@ -108,7 +108,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>$(SolutionDir)ThirdParty\libx64;$(SolutionDir)ThirdParty\libx64\$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>PhysX3Extensions.lib;PhysX3_x64.lib;PxFoundation_x64.lib;vulkan-1.lib;d3d12.lib;dxgi.lib;Xinput.lib;easy_profiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>EASTL.lib;PhysX3Extensions.lib;PhysX3_x64.lib;PxFoundation_x64.lib;vulkan-1.lib;d3d12.lib;dxgi.lib;Xinput.lib;easy_profiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TreatLinkerWarningAsErrors>true</TreatLinkerWarningAsErrors>
     </Link>
     <PostBuildEvent />

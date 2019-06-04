@@ -25,3 +25,14 @@ void operator delete[](void* ptr)
 {
 	Zmey::GAllocator->Free(ptr);
 }
+
+// Needed for eastl
+void* operator new[](size_t size, const char* pName, int flags, unsigned debugFlags, const char* file, int line)
+{
+	return Zmey::GAllocator->Malloc(size, 0);
+}
+
+void* operator new[](size_t size, size_t alignment, size_t alignmentOffset, const char* pName, int flags, unsigned debugFlags, const char* file, int line)
+{
+	return Zmey::GAllocator->Malloc(size, static_cast<unsigned>(alignment));
+}
